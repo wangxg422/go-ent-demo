@@ -39,31 +39,31 @@ type Dept struct {
 
 // DeptEdges holds the relations/edges for other nodes in the graph.
 type DeptEdges struct {
-	// SysUsers holds the value of the sysUsers edge.
-	SysUsers []*User `json:"sysUsers,omitempty"`
-	// SysRoles holds the value of the sysRoles edge.
-	SysRoles []*Role `json:"sysRoles,omitempty"`
+	// Users holds the value of the users edge.
+	Users []*User `json:"users,omitempty"`
+	// Roles holds the value of the roles edge.
+	Roles []*Role `json:"roles,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
 }
 
-// SysUsersOrErr returns the SysUsers value or an error if the edge
+// UsersOrErr returns the Users value or an error if the edge
 // was not loaded in eager-loading.
-func (e DeptEdges) SysUsersOrErr() ([]*User, error) {
+func (e DeptEdges) UsersOrErr() ([]*User, error) {
 	if e.loadedTypes[0] {
-		return e.SysUsers, nil
+		return e.Users, nil
 	}
-	return nil, &NotLoadedError{edge: "sysUsers"}
+	return nil, &NotLoadedError{edge: "users"}
 }
 
-// SysRolesOrErr returns the SysRoles value or an error if the edge
+// RolesOrErr returns the Roles value or an error if the edge
 // was not loaded in eager-loading.
-func (e DeptEdges) SysRolesOrErr() ([]*Role, error) {
+func (e DeptEdges) RolesOrErr() ([]*Role, error) {
 	if e.loadedTypes[1] {
-		return e.SysRoles, nil
+		return e.Roles, nil
 	}
-	return nil, &NotLoadedError{edge: "sysRoles"}
+	return nil, &NotLoadedError{edge: "roles"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -151,14 +151,14 @@ func (d *Dept) Value(name string) (ent.Value, error) {
 	return d.selectValues.Get(name)
 }
 
-// QuerySysUsers queries the "sysUsers" edge of the Dept entity.
-func (d *Dept) QuerySysUsers() *UserQuery {
-	return NewDeptClient(d.config).QuerySysUsers(d)
+// QueryUsers queries the "users" edge of the Dept entity.
+func (d *Dept) QueryUsers() *UserQuery {
+	return NewDeptClient(d.config).QueryUsers(d)
 }
 
-// QuerySysRoles queries the "sysRoles" edge of the Dept entity.
-func (d *Dept) QuerySysRoles() *RoleQuery {
-	return NewDeptClient(d.config).QuerySysRoles(d)
+// QueryRoles queries the "roles" edge of the Dept entity.
+func (d *Dept) QueryRoles() *RoleQuery {
+	return NewDeptClient(d.config).QueryRoles(d)
 }
 
 // Update returns a builder for updating this Dept.

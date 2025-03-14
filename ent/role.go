@@ -29,31 +29,31 @@ type Role struct {
 
 // RoleEdges holds the relations/edges for other nodes in the graph.
 type RoleEdges struct {
-	// SysDepts holds the value of the sysDepts edge.
-	SysDepts []*Dept `json:"sysDepts,omitempty"`
-	// SysUsers holds the value of the sysUsers edge.
-	SysUsers []*User `json:"sysUsers,omitempty"`
+	// Depts holds the value of the depts edge.
+	Depts []*Dept `json:"depts,omitempty"`
+	// Users holds the value of the users edge.
+	Users []*User `json:"users,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
 }
 
-// SysDeptsOrErr returns the SysDepts value or an error if the edge
+// DeptsOrErr returns the Depts value or an error if the edge
 // was not loaded in eager-loading.
-func (e RoleEdges) SysDeptsOrErr() ([]*Dept, error) {
+func (e RoleEdges) DeptsOrErr() ([]*Dept, error) {
 	if e.loadedTypes[0] {
-		return e.SysDepts, nil
+		return e.Depts, nil
 	}
-	return nil, &NotLoadedError{edge: "sysDepts"}
+	return nil, &NotLoadedError{edge: "depts"}
 }
 
-// SysUsersOrErr returns the SysUsers value or an error if the edge
+// UsersOrErr returns the Users value or an error if the edge
 // was not loaded in eager-loading.
-func (e RoleEdges) SysUsersOrErr() ([]*User, error) {
+func (e RoleEdges) UsersOrErr() ([]*User, error) {
 	if e.loadedTypes[1] {
-		return e.SysUsers, nil
+		return e.Users, nil
 	}
-	return nil, &NotLoadedError{edge: "sysUsers"}
+	return nil, &NotLoadedError{edge: "users"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -111,14 +111,14 @@ func (r *Role) Value(name string) (ent.Value, error) {
 	return r.selectValues.Get(name)
 }
 
-// QuerySysDepts queries the "sysDepts" edge of the Role entity.
-func (r *Role) QuerySysDepts() *DeptQuery {
-	return NewRoleClient(r.config).QuerySysDepts(r)
+// QueryDepts queries the "depts" edge of the Role entity.
+func (r *Role) QueryDepts() *DeptQuery {
+	return NewRoleClient(r.config).QueryDepts(r)
 }
 
-// QuerySysUsers queries the "sysUsers" edge of the Role entity.
-func (r *Role) QuerySysUsers() *UserQuery {
-	return NewRoleClient(r.config).QuerySysUsers(r)
+// QueryUsers queries the "users" edge of the Role entity.
+func (r *Role) QueryUsers() *UserQuery {
+	return NewRoleClient(r.config).QueryUsers(r)
 }
 
 // Update returns a builder for updating this Role.

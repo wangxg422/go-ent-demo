@@ -26,24 +26,24 @@ const (
 	FieldSex = "sex"
 	// FieldDeptID holds the string denoting the dept_id field in the database.
 	FieldDeptID = "dept_id"
-	// EdgeSysDept holds the string denoting the sysdept edge name in mutations.
-	EdgeSysDept = "sysDept"
-	// EdgeSysRoles holds the string denoting the sysroles edge name in mutations.
-	EdgeSysRoles = "sysRoles"
+	// EdgeDept holds the string denoting the dept edge name in mutations.
+	EdgeDept = "dept"
+	// EdgeRoles holds the string denoting the roles edge name in mutations.
+	EdgeRoles = "roles"
 	// Table holds the table name of the user in the database.
 	Table = "user"
-	// SysDeptTable is the table that holds the sysDept relation/edge.
-	SysDeptTable = "user"
-	// SysDeptInverseTable is the table name for the Dept entity.
+	// DeptTable is the table that holds the dept relation/edge.
+	DeptTable = "user"
+	// DeptInverseTable is the table name for the Dept entity.
 	// It exists in this package in order to avoid circular dependency with the "dept" package.
-	SysDeptInverseTable = "dept"
-	// SysDeptColumn is the table column denoting the sysDept relation/edge.
-	SysDeptColumn = "dept_id"
-	// SysRolesTable is the table that holds the sysRoles relation/edge. The primary key declared below.
-	SysRolesTable = "sys_user_role"
-	// SysRolesInverseTable is the table name for the Role entity.
+	DeptInverseTable = "dept"
+	// DeptColumn is the table column denoting the dept relation/edge.
+	DeptColumn = "dept_id"
+	// RolesTable is the table that holds the roles relation/edge. The primary key declared below.
+	RolesTable = "user_role"
+	// RolesInverseTable is the table name for the Role entity.
 	// It exists in this package in order to avoid circular dependency with the "role" package.
-	SysRolesInverseTable = "role"
+	RolesInverseTable = "role"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -59,9 +59,9 @@ var Columns = []string{
 }
 
 var (
-	// SysRolesPrimaryKey and SysRolesColumn2 are the table columns denoting the
-	// primary key for the sysRoles relation (M2M).
-	SysRolesPrimaryKey = []string{"user_id", "role_id"}
+	// RolesPrimaryKey and RolesColumn2 are the table columns denoting the
+	// primary key for the roles relation (M2M).
+	RolesPrimaryKey = []string{"user_id", "role_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -117,37 +117,37 @@ func ByDeptID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDeptID, opts...).ToFunc()
 }
 
-// BySysDeptField orders the results by sysDept field.
-func BySysDeptField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByDeptField orders the results by dept field.
+func ByDeptField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newSysDeptStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborTerms(s, newDeptStep(), sql.OrderByField(field, opts...))
 	}
 }
 
-// BySysRolesCount orders the results by sysRoles count.
-func BySysRolesCount(opts ...sql.OrderTermOption) OrderOption {
+// ByRolesCount orders the results by roles count.
+func ByRolesCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newSysRolesStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newRolesStep(), opts...)
 	}
 }
 
-// BySysRoles orders the results by sysRoles terms.
-func BySysRoles(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByRoles orders the results by roles terms.
+func ByRoles(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newSysRolesStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newRolesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
-func newSysDeptStep() *sqlgraph.Step {
+func newDeptStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(SysDeptInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, SysDeptTable, SysDeptColumn),
+		sqlgraph.To(DeptInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, DeptTable, DeptColumn),
 	)
 }
-func newSysRolesStep() *sqlgraph.Step {
+func newRolesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(SysRolesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, false, SysRolesTable, SysRolesPrimaryKey...),
+		sqlgraph.To(RolesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, RolesTable, RolesPrimaryKey...),
 	)
 }

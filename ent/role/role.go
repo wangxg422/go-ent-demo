@@ -16,22 +16,22 @@ const (
 	FieldRoleName = "role_name"
 	// FieldRoleCode holds the string denoting the role_code field in the database.
 	FieldRoleCode = "role_code"
-	// EdgeSysDepts holds the string denoting the sysdepts edge name in mutations.
-	EdgeSysDepts = "sysDepts"
-	// EdgeSysUsers holds the string denoting the sysusers edge name in mutations.
-	EdgeSysUsers = "sysUsers"
+	// EdgeDepts holds the string denoting the depts edge name in mutations.
+	EdgeDepts = "depts"
+	// EdgeUsers holds the string denoting the users edge name in mutations.
+	EdgeUsers = "users"
 	// Table holds the table name of the role in the database.
 	Table = "role"
-	// SysDeptsTable is the table that holds the sysDepts relation/edge. The primary key declared below.
-	SysDeptsTable = "sys_role_dept"
-	// SysDeptsInverseTable is the table name for the Dept entity.
+	// DeptsTable is the table that holds the depts relation/edge. The primary key declared below.
+	DeptsTable = "role_dept"
+	// DeptsInverseTable is the table name for the Dept entity.
 	// It exists in this package in order to avoid circular dependency with the "dept" package.
-	SysDeptsInverseTable = "dept"
-	// SysUsersTable is the table that holds the sysUsers relation/edge. The primary key declared below.
-	SysUsersTable = "sys_user_role"
-	// SysUsersInverseTable is the table name for the User entity.
+	DeptsInverseTable = "dept"
+	// UsersTable is the table that holds the users relation/edge. The primary key declared below.
+	UsersTable = "user_role"
+	// UsersInverseTable is the table name for the User entity.
 	// It exists in this package in order to avoid circular dependency with the "user" package.
-	SysUsersInverseTable = "user"
+	UsersInverseTable = "user"
 )
 
 // Columns holds all SQL columns for role fields.
@@ -42,12 +42,12 @@ var Columns = []string{
 }
 
 var (
-	// SysDeptsPrimaryKey and SysDeptsColumn2 are the table columns denoting the
-	// primary key for the sysDepts relation (M2M).
-	SysDeptsPrimaryKey = []string{"role_id", "dept_id"}
-	// SysUsersPrimaryKey and SysUsersColumn2 are the table columns denoting the
-	// primary key for the sysUsers relation (M2M).
-	SysUsersPrimaryKey = []string{"user_id", "role_id"}
+	// DeptsPrimaryKey and DeptsColumn2 are the table columns denoting the
+	// primary key for the depts relation (M2M).
+	DeptsPrimaryKey = []string{"role_id", "dept_id"}
+	// UsersPrimaryKey and UsersColumn2 are the table columns denoting the
+	// primary key for the users relation (M2M).
+	UsersPrimaryKey = []string{"user_id", "role_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -78,44 +78,44 @@ func ByRoleCode(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRoleCode, opts...).ToFunc()
 }
 
-// BySysDeptsCount orders the results by sysDepts count.
-func BySysDeptsCount(opts ...sql.OrderTermOption) OrderOption {
+// ByDeptsCount orders the results by depts count.
+func ByDeptsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newSysDeptsStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newDeptsStep(), opts...)
 	}
 }
 
-// BySysDepts orders the results by sysDepts terms.
-func BySysDepts(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByDepts orders the results by depts terms.
+func ByDepts(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newSysDeptsStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newDeptsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 
-// BySysUsersCount orders the results by sysUsers count.
-func BySysUsersCount(opts ...sql.OrderTermOption) OrderOption {
+// ByUsersCount orders the results by users count.
+func ByUsersCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newSysUsersStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newUsersStep(), opts...)
 	}
 }
 
-// BySysUsers orders the results by sysUsers terms.
-func BySysUsers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByUsers orders the results by users terms.
+func ByUsers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newSysUsersStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newUsersStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
-func newSysDeptsStep() *sqlgraph.Step {
+func newDeptsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(SysDeptsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, false, SysDeptsTable, SysDeptsPrimaryKey...),
+		sqlgraph.To(DeptsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, DeptsTable, DeptsPrimaryKey...),
 	)
 }
-func newSysUsersStep() *sqlgraph.Step {
+func newUsersStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(SysUsersInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, true, SysUsersTable, SysUsersPrimaryKey...),
+		sqlgraph.To(UsersInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, UsersTable, UsersPrimaryKey...),
 	)
 }

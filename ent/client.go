@@ -326,15 +326,15 @@ func (c *DeptClient) GetX(ctx context.Context, id int64) *Dept {
 	return obj
 }
 
-// QuerySysUsers queries the sysUsers edge of a Dept.
-func (c *DeptClient) QuerySysUsers(d *Dept) *UserQuery {
+// QueryUsers queries the users edge of a Dept.
+func (c *DeptClient) QueryUsers(d *Dept) *UserQuery {
 	query := (&UserClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := d.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(dept.Table, dept.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, dept.SysUsersTable, dept.SysUsersColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, dept.UsersTable, dept.UsersColumn),
 		)
 		fromV = sqlgraph.Neighbors(d.driver.Dialect(), step)
 		return fromV, nil
@@ -342,15 +342,15 @@ func (c *DeptClient) QuerySysUsers(d *Dept) *UserQuery {
 	return query
 }
 
-// QuerySysRoles queries the sysRoles edge of a Dept.
-func (c *DeptClient) QuerySysRoles(d *Dept) *RoleQuery {
+// QueryRoles queries the roles edge of a Dept.
+func (c *DeptClient) QueryRoles(d *Dept) *RoleQuery {
 	query := (&RoleClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := d.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(dept.Table, dept.FieldID, id),
 			sqlgraph.To(role.Table, role.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, dept.SysRolesTable, dept.SysRolesPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, true, dept.RolesTable, dept.RolesPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(d.driver.Dialect(), step)
 		return fromV, nil
@@ -491,15 +491,15 @@ func (c *RoleClient) GetX(ctx context.Context, id int64) *Role {
 	return obj
 }
 
-// QuerySysDepts queries the sysDepts edge of a Role.
-func (c *RoleClient) QuerySysDepts(r *Role) *DeptQuery {
+// QueryDepts queries the depts edge of a Role.
+func (c *RoleClient) QueryDepts(r *Role) *DeptQuery {
 	query := (&DeptClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := r.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(role.Table, role.FieldID, id),
 			sqlgraph.To(dept.Table, dept.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, role.SysDeptsTable, role.SysDeptsPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, false, role.DeptsTable, role.DeptsPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
 		return fromV, nil
@@ -507,15 +507,15 @@ func (c *RoleClient) QuerySysDepts(r *Role) *DeptQuery {
 	return query
 }
 
-// QuerySysUsers queries the sysUsers edge of a Role.
-func (c *RoleClient) QuerySysUsers(r *Role) *UserQuery {
+// QueryUsers queries the users edge of a Role.
+func (c *RoleClient) QueryUsers(r *Role) *UserQuery {
 	query := (&UserClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := r.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(role.Table, role.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, role.SysUsersTable, role.SysUsersPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, true, role.UsersTable, role.UsersPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
 		return fromV, nil
@@ -656,15 +656,15 @@ func (c *UserClient) GetX(ctx context.Context, id int64) *User {
 	return obj
 }
 
-// QuerySysDept queries the sysDept edge of a User.
-func (c *UserClient) QuerySysDept(u *User) *DeptQuery {
+// QueryDept queries the dept edge of a User.
+func (c *UserClient) QueryDept(u *User) *DeptQuery {
 	query := (&DeptClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := u.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(dept.Table, dept.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, user.SysDeptTable, user.SysDeptColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, user.DeptTable, user.DeptColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil
@@ -672,15 +672,15 @@ func (c *UserClient) QuerySysDept(u *User) *DeptQuery {
 	return query
 }
 
-// QuerySysRoles queries the sysRoles edge of a User.
-func (c *UserClient) QuerySysRoles(u *User) *RoleQuery {
+// QueryRoles queries the roles edge of a User.
+func (c *UserClient) QueryRoles(u *User) *RoleQuery {
 	query := (&RoleClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := u.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(role.Table, role.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, user.SysRolesTable, user.SysRolesPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, false, user.RolesTable, user.RolesPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

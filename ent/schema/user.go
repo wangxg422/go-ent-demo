@@ -30,12 +30,12 @@ func (User) Fields() []ent.Field {
 // Edges of the User.
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("sysDept", Dept.Type).
-			Ref("sysUsers").
+		edge.From("dept", Dept.Type).
+			Ref("users").
 			Field("dept_id").
 			Unique(),
-		edge.To("sysRoles", Role.Type).
-			StorageKey(edge.Table("sys_user_role"), edge.Columns("user_id", "role_id"))}
+		edge.To("roles", Role.Type).
+			StorageKey(edge.Table("user_role"), edge.Columns("user_id", "role_id"))}
 }
 
 func (User) Annotations() []schema.Annotation {

@@ -170,34 +170,34 @@ func (du *DeptUpdate) ClearEmail() *DeptUpdate {
 	return du
 }
 
-// AddSysUserIDs adds the "sysUsers" edge to the User entity by IDs.
-func (du *DeptUpdate) AddSysUserIDs(ids ...int64) *DeptUpdate {
-	du.mutation.AddSysUserIDs(ids...)
+// AddUserIDs adds the "users" edge to the User entity by IDs.
+func (du *DeptUpdate) AddUserIDs(ids ...int64) *DeptUpdate {
+	du.mutation.AddUserIDs(ids...)
 	return du
 }
 
-// AddSysUsers adds the "sysUsers" edges to the User entity.
-func (du *DeptUpdate) AddSysUsers(u ...*User) *DeptUpdate {
+// AddUsers adds the "users" edges to the User entity.
+func (du *DeptUpdate) AddUsers(u ...*User) *DeptUpdate {
 	ids := make([]int64, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
-	return du.AddSysUserIDs(ids...)
+	return du.AddUserIDs(ids...)
 }
 
-// AddSysRoleIDs adds the "sysRoles" edge to the Role entity by IDs.
-func (du *DeptUpdate) AddSysRoleIDs(ids ...int64) *DeptUpdate {
-	du.mutation.AddSysRoleIDs(ids...)
+// AddRoleIDs adds the "roles" edge to the Role entity by IDs.
+func (du *DeptUpdate) AddRoleIDs(ids ...int64) *DeptUpdate {
+	du.mutation.AddRoleIDs(ids...)
 	return du
 }
 
-// AddSysRoles adds the "sysRoles" edges to the Role entity.
-func (du *DeptUpdate) AddSysRoles(r ...*Role) *DeptUpdate {
+// AddRoles adds the "roles" edges to the Role entity.
+func (du *DeptUpdate) AddRoles(r ...*Role) *DeptUpdate {
 	ids := make([]int64, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
-	return du.AddSysRoleIDs(ids...)
+	return du.AddRoleIDs(ids...)
 }
 
 // Mutation returns the DeptMutation object of the builder.
@@ -205,46 +205,46 @@ func (du *DeptUpdate) Mutation() *DeptMutation {
 	return du.mutation
 }
 
-// ClearSysUsers clears all "sysUsers" edges to the User entity.
-func (du *DeptUpdate) ClearSysUsers() *DeptUpdate {
-	du.mutation.ClearSysUsers()
+// ClearUsers clears all "users" edges to the User entity.
+func (du *DeptUpdate) ClearUsers() *DeptUpdate {
+	du.mutation.ClearUsers()
 	return du
 }
 
-// RemoveSysUserIDs removes the "sysUsers" edge to User entities by IDs.
-func (du *DeptUpdate) RemoveSysUserIDs(ids ...int64) *DeptUpdate {
-	du.mutation.RemoveSysUserIDs(ids...)
+// RemoveUserIDs removes the "users" edge to User entities by IDs.
+func (du *DeptUpdate) RemoveUserIDs(ids ...int64) *DeptUpdate {
+	du.mutation.RemoveUserIDs(ids...)
 	return du
 }
 
-// RemoveSysUsers removes "sysUsers" edges to User entities.
-func (du *DeptUpdate) RemoveSysUsers(u ...*User) *DeptUpdate {
+// RemoveUsers removes "users" edges to User entities.
+func (du *DeptUpdate) RemoveUsers(u ...*User) *DeptUpdate {
 	ids := make([]int64, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
-	return du.RemoveSysUserIDs(ids...)
+	return du.RemoveUserIDs(ids...)
 }
 
-// ClearSysRoles clears all "sysRoles" edges to the Role entity.
-func (du *DeptUpdate) ClearSysRoles() *DeptUpdate {
-	du.mutation.ClearSysRoles()
+// ClearRoles clears all "roles" edges to the Role entity.
+func (du *DeptUpdate) ClearRoles() *DeptUpdate {
+	du.mutation.ClearRoles()
 	return du
 }
 
-// RemoveSysRoleIDs removes the "sysRoles" edge to Role entities by IDs.
-func (du *DeptUpdate) RemoveSysRoleIDs(ids ...int64) *DeptUpdate {
-	du.mutation.RemoveSysRoleIDs(ids...)
+// RemoveRoleIDs removes the "roles" edge to Role entities by IDs.
+func (du *DeptUpdate) RemoveRoleIDs(ids ...int64) *DeptUpdate {
+	du.mutation.RemoveRoleIDs(ids...)
 	return du
 }
 
-// RemoveSysRoles removes "sysRoles" edges to Role entities.
-func (du *DeptUpdate) RemoveSysRoles(r ...*Role) *DeptUpdate {
+// RemoveRoles removes "roles" edges to Role entities.
+func (du *DeptUpdate) RemoveRoles(r ...*Role) *DeptUpdate {
 	ids := make([]int64, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
-	return du.RemoveSysRoleIDs(ids...)
+	return du.RemoveRoleIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -325,12 +325,12 @@ func (du *DeptUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if du.mutation.EmailCleared() {
 		_spec.ClearField(dept.FieldEmail, field.TypeString)
 	}
-	if du.mutation.SysUsersCleared() {
+	if du.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   dept.SysUsersTable,
-			Columns: []string{dept.SysUsersColumn},
+			Table:   dept.UsersTable,
+			Columns: []string{dept.UsersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt64),
@@ -338,12 +338,12 @@ func (du *DeptUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := du.mutation.RemovedSysUsersIDs(); len(nodes) > 0 && !du.mutation.SysUsersCleared() {
+	if nodes := du.mutation.RemovedUsersIDs(); len(nodes) > 0 && !du.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   dept.SysUsersTable,
-			Columns: []string{dept.SysUsersColumn},
+			Table:   dept.UsersTable,
+			Columns: []string{dept.UsersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt64),
@@ -354,12 +354,12 @@ func (du *DeptUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := du.mutation.SysUsersIDs(); len(nodes) > 0 {
+	if nodes := du.mutation.UsersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   dept.SysUsersTable,
-			Columns: []string{dept.SysUsersColumn},
+			Table:   dept.UsersTable,
+			Columns: []string{dept.UsersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt64),
@@ -370,12 +370,12 @@ func (du *DeptUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if du.mutation.SysRolesCleared() {
+	if du.mutation.RolesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   dept.SysRolesTable,
-			Columns: dept.SysRolesPrimaryKey,
+			Table:   dept.RolesTable,
+			Columns: dept.RolesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt64),
@@ -383,12 +383,12 @@ func (du *DeptUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := du.mutation.RemovedSysRolesIDs(); len(nodes) > 0 && !du.mutation.SysRolesCleared() {
+	if nodes := du.mutation.RemovedRolesIDs(); len(nodes) > 0 && !du.mutation.RolesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   dept.SysRolesTable,
-			Columns: dept.SysRolesPrimaryKey,
+			Table:   dept.RolesTable,
+			Columns: dept.RolesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt64),
@@ -399,12 +399,12 @@ func (du *DeptUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := du.mutation.SysRolesIDs(); len(nodes) > 0 {
+	if nodes := du.mutation.RolesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   dept.SysRolesTable,
-			Columns: dept.SysRolesPrimaryKey,
+			Table:   dept.RolesTable,
+			Columns: dept.RolesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt64),
@@ -576,34 +576,34 @@ func (duo *DeptUpdateOne) ClearEmail() *DeptUpdateOne {
 	return duo
 }
 
-// AddSysUserIDs adds the "sysUsers" edge to the User entity by IDs.
-func (duo *DeptUpdateOne) AddSysUserIDs(ids ...int64) *DeptUpdateOne {
-	duo.mutation.AddSysUserIDs(ids...)
+// AddUserIDs adds the "users" edge to the User entity by IDs.
+func (duo *DeptUpdateOne) AddUserIDs(ids ...int64) *DeptUpdateOne {
+	duo.mutation.AddUserIDs(ids...)
 	return duo
 }
 
-// AddSysUsers adds the "sysUsers" edges to the User entity.
-func (duo *DeptUpdateOne) AddSysUsers(u ...*User) *DeptUpdateOne {
+// AddUsers adds the "users" edges to the User entity.
+func (duo *DeptUpdateOne) AddUsers(u ...*User) *DeptUpdateOne {
 	ids := make([]int64, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
-	return duo.AddSysUserIDs(ids...)
+	return duo.AddUserIDs(ids...)
 }
 
-// AddSysRoleIDs adds the "sysRoles" edge to the Role entity by IDs.
-func (duo *DeptUpdateOne) AddSysRoleIDs(ids ...int64) *DeptUpdateOne {
-	duo.mutation.AddSysRoleIDs(ids...)
+// AddRoleIDs adds the "roles" edge to the Role entity by IDs.
+func (duo *DeptUpdateOne) AddRoleIDs(ids ...int64) *DeptUpdateOne {
+	duo.mutation.AddRoleIDs(ids...)
 	return duo
 }
 
-// AddSysRoles adds the "sysRoles" edges to the Role entity.
-func (duo *DeptUpdateOne) AddSysRoles(r ...*Role) *DeptUpdateOne {
+// AddRoles adds the "roles" edges to the Role entity.
+func (duo *DeptUpdateOne) AddRoles(r ...*Role) *DeptUpdateOne {
 	ids := make([]int64, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
-	return duo.AddSysRoleIDs(ids...)
+	return duo.AddRoleIDs(ids...)
 }
 
 // Mutation returns the DeptMutation object of the builder.
@@ -611,46 +611,46 @@ func (duo *DeptUpdateOne) Mutation() *DeptMutation {
 	return duo.mutation
 }
 
-// ClearSysUsers clears all "sysUsers" edges to the User entity.
-func (duo *DeptUpdateOne) ClearSysUsers() *DeptUpdateOne {
-	duo.mutation.ClearSysUsers()
+// ClearUsers clears all "users" edges to the User entity.
+func (duo *DeptUpdateOne) ClearUsers() *DeptUpdateOne {
+	duo.mutation.ClearUsers()
 	return duo
 }
 
-// RemoveSysUserIDs removes the "sysUsers" edge to User entities by IDs.
-func (duo *DeptUpdateOne) RemoveSysUserIDs(ids ...int64) *DeptUpdateOne {
-	duo.mutation.RemoveSysUserIDs(ids...)
+// RemoveUserIDs removes the "users" edge to User entities by IDs.
+func (duo *DeptUpdateOne) RemoveUserIDs(ids ...int64) *DeptUpdateOne {
+	duo.mutation.RemoveUserIDs(ids...)
 	return duo
 }
 
-// RemoveSysUsers removes "sysUsers" edges to User entities.
-func (duo *DeptUpdateOne) RemoveSysUsers(u ...*User) *DeptUpdateOne {
+// RemoveUsers removes "users" edges to User entities.
+func (duo *DeptUpdateOne) RemoveUsers(u ...*User) *DeptUpdateOne {
 	ids := make([]int64, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
-	return duo.RemoveSysUserIDs(ids...)
+	return duo.RemoveUserIDs(ids...)
 }
 
-// ClearSysRoles clears all "sysRoles" edges to the Role entity.
-func (duo *DeptUpdateOne) ClearSysRoles() *DeptUpdateOne {
-	duo.mutation.ClearSysRoles()
+// ClearRoles clears all "roles" edges to the Role entity.
+func (duo *DeptUpdateOne) ClearRoles() *DeptUpdateOne {
+	duo.mutation.ClearRoles()
 	return duo
 }
 
-// RemoveSysRoleIDs removes the "sysRoles" edge to Role entities by IDs.
-func (duo *DeptUpdateOne) RemoveSysRoleIDs(ids ...int64) *DeptUpdateOne {
-	duo.mutation.RemoveSysRoleIDs(ids...)
+// RemoveRoleIDs removes the "roles" edge to Role entities by IDs.
+func (duo *DeptUpdateOne) RemoveRoleIDs(ids ...int64) *DeptUpdateOne {
+	duo.mutation.RemoveRoleIDs(ids...)
 	return duo
 }
 
-// RemoveSysRoles removes "sysRoles" edges to Role entities.
-func (duo *DeptUpdateOne) RemoveSysRoles(r ...*Role) *DeptUpdateOne {
+// RemoveRoles removes "roles" edges to Role entities.
+func (duo *DeptUpdateOne) RemoveRoles(r ...*Role) *DeptUpdateOne {
 	ids := make([]int64, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
-	return duo.RemoveSysRoleIDs(ids...)
+	return duo.RemoveRoleIDs(ids...)
 }
 
 // Where appends a list predicates to the DeptUpdate builder.
@@ -761,12 +761,12 @@ func (duo *DeptUpdateOne) sqlSave(ctx context.Context) (_node *Dept, err error) 
 	if duo.mutation.EmailCleared() {
 		_spec.ClearField(dept.FieldEmail, field.TypeString)
 	}
-	if duo.mutation.SysUsersCleared() {
+	if duo.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   dept.SysUsersTable,
-			Columns: []string{dept.SysUsersColumn},
+			Table:   dept.UsersTable,
+			Columns: []string{dept.UsersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt64),
@@ -774,12 +774,12 @@ func (duo *DeptUpdateOne) sqlSave(ctx context.Context) (_node *Dept, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := duo.mutation.RemovedSysUsersIDs(); len(nodes) > 0 && !duo.mutation.SysUsersCleared() {
+	if nodes := duo.mutation.RemovedUsersIDs(); len(nodes) > 0 && !duo.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   dept.SysUsersTable,
-			Columns: []string{dept.SysUsersColumn},
+			Table:   dept.UsersTable,
+			Columns: []string{dept.UsersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt64),
@@ -790,12 +790,12 @@ func (duo *DeptUpdateOne) sqlSave(ctx context.Context) (_node *Dept, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := duo.mutation.SysUsersIDs(); len(nodes) > 0 {
+	if nodes := duo.mutation.UsersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   dept.SysUsersTable,
-			Columns: []string{dept.SysUsersColumn},
+			Table:   dept.UsersTable,
+			Columns: []string{dept.UsersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt64),
@@ -806,12 +806,12 @@ func (duo *DeptUpdateOne) sqlSave(ctx context.Context) (_node *Dept, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if duo.mutation.SysRolesCleared() {
+	if duo.mutation.RolesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   dept.SysRolesTable,
-			Columns: dept.SysRolesPrimaryKey,
+			Table:   dept.RolesTable,
+			Columns: dept.RolesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt64),
@@ -819,12 +819,12 @@ func (duo *DeptUpdateOne) sqlSave(ctx context.Context) (_node *Dept, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := duo.mutation.RemovedSysRolesIDs(); len(nodes) > 0 && !duo.mutation.SysRolesCleared() {
+	if nodes := duo.mutation.RemovedRolesIDs(); len(nodes) > 0 && !duo.mutation.RolesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   dept.SysRolesTable,
-			Columns: dept.SysRolesPrimaryKey,
+			Table:   dept.RolesTable,
+			Columns: dept.RolesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt64),
@@ -835,12 +835,12 @@ func (duo *DeptUpdateOne) sqlSave(ctx context.Context) (_node *Dept, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := duo.mutation.SysRolesIDs(); len(nodes) > 0 {
+	if nodes := duo.mutation.RolesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   dept.SysRolesTable,
-			Columns: dept.SysRolesPrimaryKey,
+			Table:   dept.RolesTable,
+			Columns: dept.RolesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt64),

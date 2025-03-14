@@ -25,10 +25,10 @@ func (Role) Fields() []ent.Field {
 // Edges of the Role.
 func (Role) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("sysDepts", Dept.Type).
-			StorageKey(edge.Table("sys_role_dept"), edge.Columns("role_id", "dept_id")),
-		edge.From("sysUsers", User.Type).
-			Ref("sysRoles"),
+		edge.To("depts", Dept.Type).
+			StorageKey(edge.Table("role_dept"), edge.Columns("role_id", "dept_id")),
+		edge.From("users", User.Type).
+			Ref("roles"),
 	}
 }
 

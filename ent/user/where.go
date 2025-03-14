@@ -534,21 +534,21 @@ func DeptIDNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldDeptID))
 }
 
-// HasSysDept applies the HasEdge predicate on the "sysDept" edge.
-func HasSysDept() predicate.User {
+// HasDept applies the HasEdge predicate on the "dept" edge.
+func HasDept() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, SysDeptTable, SysDeptColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, DeptTable, DeptColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasSysDeptWith applies the HasEdge predicate on the "sysDept" edge with a given conditions (other predicates).
-func HasSysDeptWith(preds ...predicate.Dept) predicate.User {
+// HasDeptWith applies the HasEdge predicate on the "dept" edge with a given conditions (other predicates).
+func HasDeptWith(preds ...predicate.Dept) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		step := newSysDeptStep()
+		step := newDeptStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -557,21 +557,21 @@ func HasSysDeptWith(preds ...predicate.Dept) predicate.User {
 	})
 }
 
-// HasSysRoles applies the HasEdge predicate on the "sysRoles" edge.
-func HasSysRoles() predicate.User {
+// HasRoles applies the HasEdge predicate on the "roles" edge.
+func HasRoles() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, SysRolesTable, SysRolesPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, false, RolesTable, RolesPrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasSysRolesWith applies the HasEdge predicate on the "sysRoles" edge with a given conditions (other predicates).
-func HasSysRolesWith(preds ...predicate.Role) predicate.User {
+// HasRolesWith applies the HasEdge predicate on the "roles" edge with a given conditions (other predicates).
+func HasRolesWith(preds ...predicate.Role) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		step := newSysRolesStep()
+		step := newRolesStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

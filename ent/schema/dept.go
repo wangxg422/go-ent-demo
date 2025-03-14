@@ -30,9 +30,9 @@ func (Dept) Fields() []ent.Field {
 // Edges of the Dept.
 func (Dept) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("sysUsers", User.Type),
-		edge.From("sysRoles", Role.Type).
-			Ref("sysDepts"),
+		edge.To("users", User.Type),
+		edge.From("roles", Role.Type).
+			Ref("depts"),
 	}
 }
 

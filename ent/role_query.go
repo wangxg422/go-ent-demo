@@ -21,12 +21,12 @@ import (
 // RoleQuery is the builder for querying Role entities.
 type RoleQuery struct {
 	config
-	ctx          *QueryContext
-	order        []role.OrderOption
-	inters       []Interceptor
-	predicates   []predicate.Role
-	withSysDepts *DeptQuery
-	withSysUsers *UserQuery
+	ctx        *QueryContext
+	order      []role.OrderOption
+	inters     []Interceptor
+	predicates []predicate.Role
+	withDepts  *DeptQuery
+	withUsers  *UserQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -63,8 +63,8 @@ func (rq *RoleQuery) Order(o ...role.OrderOption) *RoleQuery {
 	return rq
 }
 
-// QuerySysDepts chains the current query on the "sysDepts" edge.
-func (rq *RoleQuery) QuerySysDepts() *DeptQuery {
+// QueryDepts chains the current query on the "depts" edge.
+func (rq *RoleQuery) QueryDepts() *DeptQuery {
 	query := (&DeptClient{config: rq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := rq.prepareQuery(ctx); err != nil {
@@ -77,7 +77,7 @@ func (rq *RoleQuery) QuerySysDepts() *DeptQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(role.Table, role.FieldID, selector),
 			sqlgraph.To(dept.Table, dept.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, role.SysDeptsTable, role.SysDeptsPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, false, role.DeptsTable, role.DeptsPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
 		return fromU, nil
@@ -85,8 +85,8 @@ func (rq *RoleQuery) QuerySysDepts() *DeptQuery {
 	return query
 }
 
-// QuerySysUsers chains the current query on the "sysUsers" edge.
-func (rq *RoleQuery) QuerySysUsers() *UserQuery {
+// QueryUsers chains the current query on the "users" edge.
+func (rq *RoleQuery) QueryUsers() *UserQuery {
 	query := (&UserClient{config: rq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := rq.prepareQuery(ctx); err != nil {
@@ -99,7 +99,7 @@ func (rq *RoleQuery) QuerySysUsers() *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(role.Table, role.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, role.SysUsersTable, role.SysUsersPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, true, role.UsersTable, role.UsersPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
 		return fromU, nil
@@ -294,38 +294,38 @@ func (rq *RoleQuery) Clone() *RoleQuery {
 		return nil
 	}
 	return &RoleQuery{
-		config:       rq.config,
-		ctx:          rq.ctx.Clone(),
-		order:        append([]role.OrderOption{}, rq.order...),
-		inters:       append([]Interceptor{}, rq.inters...),
-		predicates:   append([]predicate.Role{}, rq.predicates...),
-		withSysDepts: rq.withSysDepts.Clone(),
-		withSysUsers: rq.withSysUsers.Clone(),
+		config:     rq.config,
+		ctx:        rq.ctx.Clone(),
+		order:      append([]role.OrderOption{}, rq.order...),
+		inters:     append([]Interceptor{}, rq.inters...),
+		predicates: append([]predicate.Role{}, rq.predicates...),
+		withDepts:  rq.withDepts.Clone(),
+		withUsers:  rq.withUsers.Clone(),
 		// clone intermediate query.
 		sql:  rq.sql.Clone(),
 		path: rq.path,
 	}
 }
 
-// WithSysDepts tells the query-builder to eager-load the nodes that are connected to
-// the "sysDepts" edge. The optional arguments are used to configure the query builder of the edge.
-func (rq *RoleQuery) WithSysDepts(opts ...func(*DeptQuery)) *RoleQuery {
+// WithDepts tells the query-builder to eager-load the nodes that are connected to
+// the "depts" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *RoleQuery) WithDepts(opts ...func(*DeptQuery)) *RoleQuery {
 	query := (&DeptClient{config: rq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	rq.withSysDepts = query
+	rq.withDepts = query
 	return rq
 }
 
-// WithSysUsers tells the query-builder to eager-load the nodes that are connected to
-// the "sysUsers" edge. The optional arguments are used to configure the query builder of the edge.
-func (rq *RoleQuery) WithSysUsers(opts ...func(*UserQuery)) *RoleQuery {
+// WithUsers tells the query-builder to eager-load the nodes that are connected to
+// the "users" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *RoleQuery) WithUsers(opts ...func(*UserQuery)) *RoleQuery {
 	query := (&UserClient{config: rq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	rq.withSysUsers = query
+	rq.withUsers = query
 	return rq
 }
 
@@ -408,8 +408,8 @@ func (rq *RoleQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Role, e
 		nodes       = []*Role{}
 		_spec       = rq.querySpec()
 		loadedTypes = [2]bool{
-			rq.withSysDepts != nil,
-			rq.withSysUsers != nil,
+			rq.withDepts != nil,
+			rq.withUsers != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -430,24 +430,24 @@ func (rq *RoleQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Role, e
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := rq.withSysDepts; query != nil {
-		if err := rq.loadSysDepts(ctx, query, nodes,
-			func(n *Role) { n.Edges.SysDepts = []*Dept{} },
-			func(n *Role, e *Dept) { n.Edges.SysDepts = append(n.Edges.SysDepts, e) }); err != nil {
+	if query := rq.withDepts; query != nil {
+		if err := rq.loadDepts(ctx, query, nodes,
+			func(n *Role) { n.Edges.Depts = []*Dept{} },
+			func(n *Role, e *Dept) { n.Edges.Depts = append(n.Edges.Depts, e) }); err != nil {
 			return nil, err
 		}
 	}
-	if query := rq.withSysUsers; query != nil {
-		if err := rq.loadSysUsers(ctx, query, nodes,
-			func(n *Role) { n.Edges.SysUsers = []*User{} },
-			func(n *Role, e *User) { n.Edges.SysUsers = append(n.Edges.SysUsers, e) }); err != nil {
+	if query := rq.withUsers; query != nil {
+		if err := rq.loadUsers(ctx, query, nodes,
+			func(n *Role) { n.Edges.Users = []*User{} },
+			func(n *Role, e *User) { n.Edges.Users = append(n.Edges.Users, e) }); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
 }
 
-func (rq *RoleQuery) loadSysDepts(ctx context.Context, query *DeptQuery, nodes []*Role, init func(*Role), assign func(*Role, *Dept)) error {
+func (rq *RoleQuery) loadDepts(ctx context.Context, query *DeptQuery, nodes []*Role, init func(*Role), assign func(*Role, *Dept)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
 	byID := make(map[int64]*Role)
 	nids := make(map[int64]map[*Role]struct{})
@@ -459,11 +459,11 @@ func (rq *RoleQuery) loadSysDepts(ctx context.Context, query *DeptQuery, nodes [
 		}
 	}
 	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(role.SysDeptsTable)
-		s.Join(joinT).On(s.C(dept.FieldID), joinT.C(role.SysDeptsPrimaryKey[1]))
-		s.Where(sql.InValues(joinT.C(role.SysDeptsPrimaryKey[0]), edgeIDs...))
+		joinT := sql.Table(role.DeptsTable)
+		s.Join(joinT).On(s.C(dept.FieldID), joinT.C(role.DeptsPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(role.DeptsPrimaryKey[0]), edgeIDs...))
 		columns := s.SelectedColumns()
-		s.Select(joinT.C(role.SysDeptsPrimaryKey[0]))
+		s.Select(joinT.C(role.DeptsPrimaryKey[0]))
 		s.AppendSelect(columns...)
 		s.SetDistinct(false)
 	})
@@ -500,7 +500,7 @@ func (rq *RoleQuery) loadSysDepts(ctx context.Context, query *DeptQuery, nodes [
 	for _, n := range neighbors {
 		nodes, ok := nids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected "sysDepts" node returned %v`, n.ID)
+			return fmt.Errorf(`unexpected "depts" node returned %v`, n.ID)
 		}
 		for kn := range nodes {
 			assign(kn, n)
@@ -508,7 +508,7 @@ func (rq *RoleQuery) loadSysDepts(ctx context.Context, query *DeptQuery, nodes [
 	}
 	return nil
 }
-func (rq *RoleQuery) loadSysUsers(ctx context.Context, query *UserQuery, nodes []*Role, init func(*Role), assign func(*Role, *User)) error {
+func (rq *RoleQuery) loadUsers(ctx context.Context, query *UserQuery, nodes []*Role, init func(*Role), assign func(*Role, *User)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
 	byID := make(map[int64]*Role)
 	nids := make(map[int64]map[*Role]struct{})
@@ -520,11 +520,11 @@ func (rq *RoleQuery) loadSysUsers(ctx context.Context, query *UserQuery, nodes [
 		}
 	}
 	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(role.SysUsersTable)
-		s.Join(joinT).On(s.C(user.FieldID), joinT.C(role.SysUsersPrimaryKey[0]))
-		s.Where(sql.InValues(joinT.C(role.SysUsersPrimaryKey[1]), edgeIDs...))
+		joinT := sql.Table(role.UsersTable)
+		s.Join(joinT).On(s.C(user.FieldID), joinT.C(role.UsersPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(role.UsersPrimaryKey[1]), edgeIDs...))
 		columns := s.SelectedColumns()
-		s.Select(joinT.C(role.SysUsersPrimaryKey[1]))
+		s.Select(joinT.C(role.UsersPrimaryKey[1]))
 		s.AppendSelect(columns...)
 		s.SetDistinct(false)
 	})
@@ -561,7 +561,7 @@ func (rq *RoleQuery) loadSysUsers(ctx context.Context, query *UserQuery, nodes [
 	for _, n := range neighbors {
 		nodes, ok := nids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected "sysUsers" node returned %v`, n.ID)
+			return fmt.Errorf(`unexpected "users" node returned %v`, n.ID)
 		}
 		for kn := range nodes {
 			assign(kn, n)

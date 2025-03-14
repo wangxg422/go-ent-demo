@@ -42,7 +42,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	_,err = client.User.Create().SetID(1).SetUserName("zhangsan").SetSex(1).SetDeptID(1).AddSysRoleIDs(1, 2).Save(ctx)
+	_,err = client.User.Create().SetID(1).SetUserName("zhangsan").SetSex(1).SetDeptID(1).AddRoleIDs(1, 2).Save(ctx)
 	if err != nil {
 		log.Fatalln(err)
 	}

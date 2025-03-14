@@ -117,34 +117,34 @@ func (dc *DeptCreate) SetID(i int64) *DeptCreate {
 	return dc
 }
 
-// AddSysUserIDs adds the "sysUsers" edge to the User entity by IDs.
-func (dc *DeptCreate) AddSysUserIDs(ids ...int64) *DeptCreate {
-	dc.mutation.AddSysUserIDs(ids...)
+// AddUserIDs adds the "users" edge to the User entity by IDs.
+func (dc *DeptCreate) AddUserIDs(ids ...int64) *DeptCreate {
+	dc.mutation.AddUserIDs(ids...)
 	return dc
 }
 
-// AddSysUsers adds the "sysUsers" edges to the User entity.
-func (dc *DeptCreate) AddSysUsers(u ...*User) *DeptCreate {
+// AddUsers adds the "users" edges to the User entity.
+func (dc *DeptCreate) AddUsers(u ...*User) *DeptCreate {
 	ids := make([]int64, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
-	return dc.AddSysUserIDs(ids...)
+	return dc.AddUserIDs(ids...)
 }
 
-// AddSysRoleIDs adds the "sysRoles" edge to the Role entity by IDs.
-func (dc *DeptCreate) AddSysRoleIDs(ids ...int64) *DeptCreate {
-	dc.mutation.AddSysRoleIDs(ids...)
+// AddRoleIDs adds the "roles" edge to the Role entity by IDs.
+func (dc *DeptCreate) AddRoleIDs(ids ...int64) *DeptCreate {
+	dc.mutation.AddRoleIDs(ids...)
 	return dc
 }
 
-// AddSysRoles adds the "sysRoles" edges to the Role entity.
-func (dc *DeptCreate) AddSysRoles(r ...*Role) *DeptCreate {
+// AddRoles adds the "roles" edges to the Role entity.
+func (dc *DeptCreate) AddRoles(r ...*Role) *DeptCreate {
 	ids := make([]int64, len(r))
 	for i := range r {
 		ids[i] = r[i].ID
 	}
-	return dc.AddSysRoleIDs(ids...)
+	return dc.AddRoleIDs(ids...)
 }
 
 // Mutation returns the DeptMutation object of the builder.
@@ -244,12 +244,12 @@ func (dc *DeptCreate) createSpec() (*Dept, *sqlgraph.CreateSpec) {
 		_spec.SetField(dept.FieldEmail, field.TypeString, value)
 		_node.Email = value
 	}
-	if nodes := dc.mutation.SysUsersIDs(); len(nodes) > 0 {
+	if nodes := dc.mutation.UsersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   dept.SysUsersTable,
-			Columns: []string{dept.SysUsersColumn},
+			Table:   dept.UsersTable,
+			Columns: []string{dept.UsersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt64),
@@ -260,12 +260,12 @@ func (dc *DeptCreate) createSpec() (*Dept, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := dc.mutation.SysRolesIDs(); len(nodes) > 0 {
+	if nodes := dc.mutation.RolesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   dept.SysRolesTable,
-			Columns: dept.SysRolesPrimaryKey,
+			Table:   dept.RolesTable,
+			Columns: dept.RolesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt64),

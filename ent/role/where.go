@@ -214,21 +214,21 @@ func RoleCodeContainsFold(v string) predicate.Role {
 	return predicate.Role(sql.FieldContainsFold(FieldRoleCode, v))
 }
 
-// HasSysDepts applies the HasEdge predicate on the "sysDepts" edge.
-func HasSysDepts() predicate.Role {
+// HasDepts applies the HasEdge predicate on the "depts" edge.
+func HasDepts() predicate.Role {
 	return predicate.Role(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, SysDeptsTable, SysDeptsPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, false, DeptsTable, DeptsPrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasSysDeptsWith applies the HasEdge predicate on the "sysDepts" edge with a given conditions (other predicates).
-func HasSysDeptsWith(preds ...predicate.Dept) predicate.Role {
+// HasDeptsWith applies the HasEdge predicate on the "depts" edge with a given conditions (other predicates).
+func HasDeptsWith(preds ...predicate.Dept) predicate.Role {
 	return predicate.Role(func(s *sql.Selector) {
-		step := newSysDeptsStep()
+		step := newDeptsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -237,21 +237,21 @@ func HasSysDeptsWith(preds ...predicate.Dept) predicate.Role {
 	})
 }
 
-// HasSysUsers applies the HasEdge predicate on the "sysUsers" edge.
-func HasSysUsers() predicate.Role {
+// HasUsers applies the HasEdge predicate on the "users" edge.
+func HasUsers() predicate.Role {
 	return predicate.Role(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, SysUsersTable, SysUsersPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, true, UsersTable, UsersPrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasSysUsersWith applies the HasEdge predicate on the "sysUsers" edge with a given conditions (other predicates).
-func HasSysUsersWith(preds ...predicate.User) predicate.Role {
+// HasUsersWith applies the HasEdge predicate on the "users" edge with a given conditions (other predicates).
+func HasUsersWith(preds ...predicate.User) predicate.Role {
 	return predicate.Role(func(s *sql.Selector) {
-		step := newSysUsersStep()
+		step := newUsersStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

@@ -21,12 +21,12 @@ import (
 // UserQuery is the builder for querying User entities.
 type UserQuery struct {
 	config
-	ctx          *QueryContext
-	order        []user.OrderOption
-	inters       []Interceptor
-	predicates   []predicate.User
-	withSysDept  *DeptQuery
-	withSysRoles *RoleQuery
+	ctx        *QueryContext
+	order      []user.OrderOption
+	inters     []Interceptor
+	predicates []predicate.User
+	withDept   *DeptQuery
+	withRoles  *RoleQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -63,8 +63,8 @@ func (uq *UserQuery) Order(o ...user.OrderOption) *UserQuery {
 	return uq
 }
 
-// QuerySysDept chains the current query on the "sysDept" edge.
-func (uq *UserQuery) QuerySysDept() *DeptQuery {
+// QueryDept chains the current query on the "dept" edge.
+func (uq *UserQuery) QueryDept() *DeptQuery {
 	query := (&DeptClient{config: uq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := uq.prepareQuery(ctx); err != nil {
@@ -77,7 +77,7 @@ func (uq *UserQuery) QuerySysDept() *DeptQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(dept.Table, dept.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, user.SysDeptTable, user.SysDeptColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, user.DeptTable, user.DeptColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -85,8 +85,8 @@ func (uq *UserQuery) QuerySysDept() *DeptQuery {
 	return query
 }
 
-// QuerySysRoles chains the current query on the "sysRoles" edge.
-func (uq *UserQuery) QuerySysRoles() *RoleQuery {
+// QueryRoles chains the current query on the "roles" edge.
+func (uq *UserQuery) QueryRoles() *RoleQuery {
 	query := (&RoleClient{config: uq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := uq.prepareQuery(ctx); err != nil {
@@ -99,7 +99,7 @@ func (uq *UserQuery) QuerySysRoles() *RoleQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(role.Table, role.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, user.SysRolesTable, user.SysRolesPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2M, false, user.RolesTable, user.RolesPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -294,38 +294,38 @@ func (uq *UserQuery) Clone() *UserQuery {
 		return nil
 	}
 	return &UserQuery{
-		config:       uq.config,
-		ctx:          uq.ctx.Clone(),
-		order:        append([]user.OrderOption{}, uq.order...),
-		inters:       append([]Interceptor{}, uq.inters...),
-		predicates:   append([]predicate.User{}, uq.predicates...),
-		withSysDept:  uq.withSysDept.Clone(),
-		withSysRoles: uq.withSysRoles.Clone(),
+		config:     uq.config,
+		ctx:        uq.ctx.Clone(),
+		order:      append([]user.OrderOption{}, uq.order...),
+		inters:     append([]Interceptor{}, uq.inters...),
+		predicates: append([]predicate.User{}, uq.predicates...),
+		withDept:   uq.withDept.Clone(),
+		withRoles:  uq.withRoles.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
 	}
 }
 
-// WithSysDept tells the query-builder to eager-load the nodes that are connected to
-// the "sysDept" edge. The optional arguments are used to configure the query builder of the edge.
-func (uq *UserQuery) WithSysDept(opts ...func(*DeptQuery)) *UserQuery {
+// WithDept tells the query-builder to eager-load the nodes that are connected to
+// the "dept" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithDept(opts ...func(*DeptQuery)) *UserQuery {
 	query := (&DeptClient{config: uq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	uq.withSysDept = query
+	uq.withDept = query
 	return uq
 }
 
-// WithSysRoles tells the query-builder to eager-load the nodes that are connected to
-// the "sysRoles" edge. The optional arguments are used to configure the query builder of the edge.
-func (uq *UserQuery) WithSysRoles(opts ...func(*RoleQuery)) *UserQuery {
+// WithRoles tells the query-builder to eager-load the nodes that are connected to
+// the "roles" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithRoles(opts ...func(*RoleQuery)) *UserQuery {
 	query := (&RoleClient{config: uq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	uq.withSysRoles = query
+	uq.withRoles = query
 	return uq
 }
 
@@ -408,8 +408,8 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
 		loadedTypes = [2]bool{
-			uq.withSysDept != nil,
-			uq.withSysRoles != nil,
+			uq.withDept != nil,
+			uq.withRoles != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -430,23 +430,23 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := uq.withSysDept; query != nil {
-		if err := uq.loadSysDept(ctx, query, nodes, nil,
-			func(n *User, e *Dept) { n.Edges.SysDept = e }); err != nil {
+	if query := uq.withDept; query != nil {
+		if err := uq.loadDept(ctx, query, nodes, nil,
+			func(n *User, e *Dept) { n.Edges.Dept = e }); err != nil {
 			return nil, err
 		}
 	}
-	if query := uq.withSysRoles; query != nil {
-		if err := uq.loadSysRoles(ctx, query, nodes,
-			func(n *User) { n.Edges.SysRoles = []*Role{} },
-			func(n *User, e *Role) { n.Edges.SysRoles = append(n.Edges.SysRoles, e) }); err != nil {
+	if query := uq.withRoles; query != nil {
+		if err := uq.loadRoles(ctx, query, nodes,
+			func(n *User) { n.Edges.Roles = []*Role{} },
+			func(n *User, e *Role) { n.Edges.Roles = append(n.Edges.Roles, e) }); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
 }
 
-func (uq *UserQuery) loadSysDept(ctx context.Context, query *DeptQuery, nodes []*User, init func(*User), assign func(*User, *Dept)) error {
+func (uq *UserQuery) loadDept(ctx context.Context, query *DeptQuery, nodes []*User, init func(*User), assign func(*User, *Dept)) error {
 	ids := make([]int64, 0, len(nodes))
 	nodeids := make(map[int64][]*User)
 	for i := range nodes {
@@ -475,7 +475,7 @@ func (uq *UserQuery) loadSysDept(ctx context.Context, query *DeptQuery, nodes []
 	}
 	return nil
 }
-func (uq *UserQuery) loadSysRoles(ctx context.Context, query *RoleQuery, nodes []*User, init func(*User), assign func(*User, *Role)) error {
+func (uq *UserQuery) loadRoles(ctx context.Context, query *RoleQuery, nodes []*User, init func(*User), assign func(*User, *Role)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
 	byID := make(map[int64]*User)
 	nids := make(map[int64]map[*User]struct{})
@@ -487,11 +487,11 @@ func (uq *UserQuery) loadSysRoles(ctx context.Context, query *RoleQuery, nodes [
 		}
 	}
 	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(user.SysRolesTable)
-		s.Join(joinT).On(s.C(role.FieldID), joinT.C(user.SysRolesPrimaryKey[1]))
-		s.Where(sql.InValues(joinT.C(user.SysRolesPrimaryKey[0]), edgeIDs...))
+		joinT := sql.Table(user.RolesTable)
+		s.Join(joinT).On(s.C(role.FieldID), joinT.C(user.RolesPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(user.RolesPrimaryKey[0]), edgeIDs...))
 		columns := s.SelectedColumns()
-		s.Select(joinT.C(user.SysRolesPrimaryKey[0]))
+		s.Select(joinT.C(user.RolesPrimaryKey[0]))
 		s.AppendSelect(columns...)
 		s.SetDistinct(false)
 	})
@@ -528,7 +528,7 @@ func (uq *UserQuery) loadSysRoles(ctx context.Context, query *RoleQuery, nodes [
 	for _, n := range neighbors {
 		nodes, ok := nids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected "sysRoles" node returned %v`, n.ID)
+			return fmt.Errorf(`unexpected "roles" node returned %v`, n.ID)
 		}
 		for kn := range nodes {
 			assign(kn, n)
@@ -562,7 +562,7 @@ func (uq *UserQuery) querySpec() *sqlgraph.QuerySpec {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
-		if uq.withSysDept != nil {
+		if uq.withDept != nil {
 			_spec.Node.AddColumnOnce(user.FieldDeptID)
 		}
 	}
