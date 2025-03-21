@@ -47,6 +47,12 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	_,err = client.User.Update().Where(user.UserNameEQ("zhangsan")).SetNickName("zhangsan").Save(ctx);
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+
 	query_user,err := client.User.Query().Where(user.UserNameEQ("zhangsan")).Only(ctx);
 	if err != nil {
 		log.Fatalln(err)
