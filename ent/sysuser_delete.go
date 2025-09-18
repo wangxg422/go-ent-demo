@@ -5,33 +5,33 @@ package ent
 import (
 	"context"
 	"go-ent-demo/ent/predicate"
-	"go-ent-demo/ent/user"
+	"go-ent-demo/ent/sysuser"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
 
-// UserDelete is the builder for deleting a User entity.
-type UserDelete struct {
+// SysUserDelete is the builder for deleting a SysUser entity.
+type SysUserDelete struct {
 	config
 	hooks    []Hook
-	mutation *UserMutation
+	mutation *SysUserMutation
 }
 
-// Where appends a list predicates to the UserDelete builder.
-func (_d *UserDelete) Where(ps ...predicate.User) *UserDelete {
+// Where appends a list predicates to the SysUserDelete builder.
+func (_d *SysUserDelete) Where(ps ...predicate.SysUser) *SysUserDelete {
 	_d.mutation.Where(ps...)
 	return _d
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (_d *UserDelete) Exec(ctx context.Context) (int, error) {
+func (_d *SysUserDelete) Exec(ctx context.Context) (int, error) {
 	return withHooks(ctx, _d.sqlExec, _d.mutation, _d.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_d *UserDelete) ExecX(ctx context.Context) int {
+func (_d *SysUserDelete) ExecX(ctx context.Context) int {
 	n, err := _d.Exec(ctx)
 	if err != nil {
 		panic(err)
@@ -39,8 +39,8 @@ func (_d *UserDelete) ExecX(ctx context.Context) int {
 	return n
 }
 
-func (_d *UserDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(user.Table, sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt64))
+func (_d *SysUserDelete) sqlExec(ctx context.Context) (int, error) {
+	_spec := sqlgraph.NewDeleteSpec(sysuser.Table, sqlgraph.NewFieldSpec(sysuser.FieldID, field.TypeInt64))
 	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -56,32 +56,32 @@ func (_d *UserDelete) sqlExec(ctx context.Context) (int, error) {
 	return affected, err
 }
 
-// UserDeleteOne is the builder for deleting a single User entity.
-type UserDeleteOne struct {
-	_d *UserDelete
+// SysUserDeleteOne is the builder for deleting a single SysUser entity.
+type SysUserDeleteOne struct {
+	_d *SysUserDelete
 }
 
-// Where appends a list predicates to the UserDelete builder.
-func (_d *UserDeleteOne) Where(ps ...predicate.User) *UserDeleteOne {
+// Where appends a list predicates to the SysUserDelete builder.
+func (_d *SysUserDeleteOne) Where(ps ...predicate.SysUser) *SysUserDeleteOne {
 	_d._d.mutation.Where(ps...)
 	return _d
 }
 
 // Exec executes the deletion query.
-func (_d *UserDeleteOne) Exec(ctx context.Context) error {
+func (_d *SysUserDeleteOne) Exec(ctx context.Context) error {
 	n, err := _d._d.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
 	case n == 0:
-		return &NotFoundError{user.Label}
+		return &NotFoundError{sysuser.Label}
 	default:
 		return nil
 	}
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_d *UserDeleteOne) ExecX(ctx context.Context) {
+func (_d *SysUserDeleteOne) ExecX(ctx context.Context) {
 	if err := _d.Exec(ctx); err != nil {
 		panic(err)
 	}

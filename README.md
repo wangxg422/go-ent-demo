@@ -10,6 +10,7 @@ go run -mod=mod entgo.io/ent/cmd/ent new Dept
 
 ``` shell
 go generate ./ent
+go run entgo.io/ent/cmd/ent generate ./schema --target dal
 ```
 
 ## run

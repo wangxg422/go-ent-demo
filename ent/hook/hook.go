@@ -8,40 +8,40 @@ import (
 	"go-ent-demo/ent"
 )
 
-// The DeptFunc type is an adapter to allow the use of ordinary
-// function as Dept mutator.
-type DeptFunc func(context.Context, *ent.DeptMutation) (ent.Value, error)
+// The SysDeptFunc type is an adapter to allow the use of ordinary
+// function as SysDept mutator.
+type SysDeptFunc func(context.Context, *ent.SysDeptMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f DeptFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.DeptMutation); ok {
+func (f SysDeptFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SysDeptMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.DeptMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SysDeptMutation", m)
 }
 
-// The RoleFunc type is an adapter to allow the use of ordinary
-// function as Role mutator.
-type RoleFunc func(context.Context, *ent.RoleMutation) (ent.Value, error)
+// The SysRoleFunc type is an adapter to allow the use of ordinary
+// function as SysRole mutator.
+type SysRoleFunc func(context.Context, *ent.SysRoleMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f RoleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.RoleMutation); ok {
+func (f SysRoleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SysRoleMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RoleMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SysRoleMutation", m)
 }
 
-// The UserFunc type is an adapter to allow the use of ordinary
-// function as User mutator.
-type UserFunc func(context.Context, *ent.UserMutation) (ent.Value, error)
+// The SysUserFunc type is an adapter to allow the use of ordinary
+// function as SysUser mutator.
+type SysUserFunc func(context.Context, *ent.SysUserMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f UserFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.UserMutation); ok {
+func (f SysUserFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SysUserMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SysUserMutation", m)
 }
 
 // Condition is a hook condition function.

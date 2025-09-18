@@ -5,29 +5,28 @@ package ent
 import (
 	"context"
 	"fmt"
-	"go-ent-demo/ent/dept"
-	"go-ent-demo/ent/role"
-	"go-ent-demo/ent/user"
+	"go-ent-demo/ent/sysrole"
+	"go-ent-demo/ent/sysuser"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
 
-// RoleCreate is the builder for creating a Role entity.
-type RoleCreate struct {
+// SysRoleCreate is the builder for creating a SysRole entity.
+type SysRoleCreate struct {
 	config
-	mutation *RoleMutation
+	mutation *SysRoleMutation
 	hooks    []Hook
 }
 
 // SetRoleName sets the "role_name" field.
-func (_c *RoleCreate) SetRoleName(v string) *RoleCreate {
+func (_c *SysRoleCreate) SetRoleName(v string) *SysRoleCreate {
 	_c.mutation.SetRoleName(v)
 	return _c
 }
 
 // SetNillableRoleName sets the "role_name" field if the given value is not nil.
-func (_c *RoleCreate) SetNillableRoleName(v *string) *RoleCreate {
+func (_c *SysRoleCreate) SetNillableRoleName(v *string) *SysRoleCreate {
 	if v != nil {
 		_c.SetRoleName(*v)
 	}
@@ -35,13 +34,13 @@ func (_c *RoleCreate) SetNillableRoleName(v *string) *RoleCreate {
 }
 
 // SetRoleCode sets the "role_code" field.
-func (_c *RoleCreate) SetRoleCode(v string) *RoleCreate {
+func (_c *SysRoleCreate) SetRoleCode(v string) *SysRoleCreate {
 	_c.mutation.SetRoleCode(v)
 	return _c
 }
 
 // SetNillableRoleCode sets the "role_code" field if the given value is not nil.
-func (_c *RoleCreate) SetNillableRoleCode(v *string) *RoleCreate {
+func (_c *SysRoleCreate) SetNillableRoleCode(v *string) *SysRoleCreate {
 	if v != nil {
 		_c.SetRoleCode(*v)
 	}
@@ -49,53 +48,38 @@ func (_c *RoleCreate) SetNillableRoleCode(v *string) *RoleCreate {
 }
 
 // SetID sets the "id" field.
-func (_c *RoleCreate) SetID(v int64) *RoleCreate {
+func (_c *SysRoleCreate) SetID(v int64) *SysRoleCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
 
-// AddDeptIDs adds the "depts" edge to the Dept entity by IDs.
-func (_c *RoleCreate) AddDeptIDs(ids ...int64) *RoleCreate {
-	_c.mutation.AddDeptIDs(ids...)
+// AddSysUserIDs adds the "sys_users" edge to the SysUser entity by IDs.
+func (_c *SysRoleCreate) AddSysUserIDs(ids ...int64) *SysRoleCreate {
+	_c.mutation.AddSysUserIDs(ids...)
 	return _c
 }
 
-// AddDepts adds the "depts" edges to the Dept entity.
-func (_c *RoleCreate) AddDepts(v ...*Dept) *RoleCreate {
+// AddSysUsers adds the "sys_users" edges to the SysUser entity.
+func (_c *SysRoleCreate) AddSysUsers(v ...*SysUser) *SysRoleCreate {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _c.AddDeptIDs(ids...)
+	return _c.AddSysUserIDs(ids...)
 }
 
-// AddUserIDs adds the "users" edge to the User entity by IDs.
-func (_c *RoleCreate) AddUserIDs(ids ...int64) *RoleCreate {
-	_c.mutation.AddUserIDs(ids...)
-	return _c
-}
-
-// AddUsers adds the "users" edges to the User entity.
-func (_c *RoleCreate) AddUsers(v ...*User) *RoleCreate {
-	ids := make([]int64, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _c.AddUserIDs(ids...)
-}
-
-// Mutation returns the RoleMutation object of the builder.
-func (_c *RoleCreate) Mutation() *RoleMutation {
+// Mutation returns the SysRoleMutation object of the builder.
+func (_c *SysRoleCreate) Mutation() *SysRoleMutation {
 	return _c.mutation
 }
 
-// Save creates the Role in the database.
-func (_c *RoleCreate) Save(ctx context.Context) (*Role, error) {
+// Save creates the SysRole in the database.
+func (_c *SysRoleCreate) Save(ctx context.Context) (*SysRole, error) {
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (_c *RoleCreate) SaveX(ctx context.Context) *Role {
+func (_c *SysRoleCreate) SaveX(ctx context.Context) *SysRole {
 	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -104,24 +88,24 @@ func (_c *RoleCreate) SaveX(ctx context.Context) *Role {
 }
 
 // Exec executes the query.
-func (_c *RoleCreate) Exec(ctx context.Context) error {
+func (_c *SysRoleCreate) Exec(ctx context.Context) error {
 	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_c *RoleCreate) ExecX(ctx context.Context) {
+func (_c *SysRoleCreate) ExecX(ctx context.Context) {
 	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_c *RoleCreate) check() error {
+func (_c *SysRoleCreate) check() error {
 	return nil
 }
 
-func (_c *RoleCreate) sqlSave(ctx context.Context) (*Role, error) {
+func (_c *SysRoleCreate) sqlSave(ctx context.Context) (*SysRole, error) {
 	if err := _c.check(); err != nil {
 		return nil, err
 	}
@@ -141,48 +125,32 @@ func (_c *RoleCreate) sqlSave(ctx context.Context) (*Role, error) {
 	return _node, nil
 }
 
-func (_c *RoleCreate) createSpec() (*Role, *sqlgraph.CreateSpec) {
+func (_c *SysRoleCreate) createSpec() (*SysRole, *sqlgraph.CreateSpec) {
 	var (
-		_node = &Role{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(role.Table, sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt64))
+		_node = &SysRole{config: _c.config}
+		_spec = sqlgraph.NewCreateSpec(sysrole.Table, sqlgraph.NewFieldSpec(sysrole.FieldID, field.TypeInt64))
 	)
 	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
 	if value, ok := _c.mutation.RoleName(); ok {
-		_spec.SetField(role.FieldRoleName, field.TypeString, value)
+		_spec.SetField(sysrole.FieldRoleName, field.TypeString, value)
 		_node.RoleName = value
 	}
 	if value, ok := _c.mutation.RoleCode(); ok {
-		_spec.SetField(role.FieldRoleCode, field.TypeString, value)
+		_spec.SetField(sysrole.FieldRoleCode, field.TypeString, value)
 		_node.RoleCode = value
 	}
-	if nodes := _c.mutation.DeptsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: false,
-			Table:   role.DeptsTable,
-			Columns: role.DeptsPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(dept.FieldID, field.TypeInt64),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := _c.mutation.UsersIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.SysUsersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
-			Table:   role.UsersTable,
-			Columns: role.UsersPrimaryKey,
+			Table:   sysrole.SysUsersTable,
+			Columns: sysrole.SysUsersPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt64),
+				IDSpec: sqlgraph.NewFieldSpec(sysuser.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -193,26 +161,26 @@ func (_c *RoleCreate) createSpec() (*Role, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
-// RoleCreateBulk is the builder for creating many Role entities in bulk.
-type RoleCreateBulk struct {
+// SysRoleCreateBulk is the builder for creating many SysRole entities in bulk.
+type SysRoleCreateBulk struct {
 	config
 	err      error
-	builders []*RoleCreate
+	builders []*SysRoleCreate
 }
 
-// Save creates the Role entities in the database.
-func (_c *RoleCreateBulk) Save(ctx context.Context) ([]*Role, error) {
+// Save creates the SysRole entities in the database.
+func (_c *SysRoleCreateBulk) Save(ctx context.Context) ([]*SysRole, error) {
 	if _c.err != nil {
 		return nil, _c.err
 	}
 	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
-	nodes := make([]*Role, len(_c.builders))
+	nodes := make([]*SysRole, len(_c.builders))
 	mutators := make([]Mutator, len(_c.builders))
 	for i := range _c.builders {
 		func(i int, root context.Context) {
 			builder := _c.builders[i]
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-				mutation, ok := m.(*RoleMutation)
+				mutation, ok := m.(*SysRoleMutation)
 				if !ok {
 					return nil, fmt.Errorf("unexpected mutation type %T", m)
 				}
@@ -259,7 +227,7 @@ func (_c *RoleCreateBulk) Save(ctx context.Context) ([]*Role, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_c *RoleCreateBulk) SaveX(ctx context.Context) []*Role {
+func (_c *SysRoleCreateBulk) SaveX(ctx context.Context) []*SysRole {
 	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -268,13 +236,13 @@ func (_c *RoleCreateBulk) SaveX(ctx context.Context) []*Role {
 }
 
 // Exec executes the query.
-func (_c *RoleCreateBulk) Exec(ctx context.Context) error {
+func (_c *SysRoleCreateBulk) Exec(ctx context.Context) error {
 	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_c *RoleCreateBulk) ExecX(ctx context.Context) {
+func (_c *SysRoleCreateBulk) ExecX(ctx context.Context) {
 	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}

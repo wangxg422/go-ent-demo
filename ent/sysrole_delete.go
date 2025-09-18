@@ -4,34 +4,34 @@ package ent
 
 import (
 	"context"
-	"go-ent-demo/ent/dept"
 	"go-ent-demo/ent/predicate"
+	"go-ent-demo/ent/sysrole"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
 
-// DeptDelete is the builder for deleting a Dept entity.
-type DeptDelete struct {
+// SysRoleDelete is the builder for deleting a SysRole entity.
+type SysRoleDelete struct {
 	config
 	hooks    []Hook
-	mutation *DeptMutation
+	mutation *SysRoleMutation
 }
 
-// Where appends a list predicates to the DeptDelete builder.
-func (_d *DeptDelete) Where(ps ...predicate.Dept) *DeptDelete {
+// Where appends a list predicates to the SysRoleDelete builder.
+func (_d *SysRoleDelete) Where(ps ...predicate.SysRole) *SysRoleDelete {
 	_d.mutation.Where(ps...)
 	return _d
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (_d *DeptDelete) Exec(ctx context.Context) (int, error) {
+func (_d *SysRoleDelete) Exec(ctx context.Context) (int, error) {
 	return withHooks(ctx, _d.sqlExec, _d.mutation, _d.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_d *DeptDelete) ExecX(ctx context.Context) int {
+func (_d *SysRoleDelete) ExecX(ctx context.Context) int {
 	n, err := _d.Exec(ctx)
 	if err != nil {
 		panic(err)
@@ -39,8 +39,8 @@ func (_d *DeptDelete) ExecX(ctx context.Context) int {
 	return n
 }
 
-func (_d *DeptDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(dept.Table, sqlgraph.NewFieldSpec(dept.FieldID, field.TypeInt64))
+func (_d *SysRoleDelete) sqlExec(ctx context.Context) (int, error) {
+	_spec := sqlgraph.NewDeleteSpec(sysrole.Table, sqlgraph.NewFieldSpec(sysrole.FieldID, field.TypeInt64))
 	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -56,32 +56,32 @@ func (_d *DeptDelete) sqlExec(ctx context.Context) (int, error) {
 	return affected, err
 }
 
-// DeptDeleteOne is the builder for deleting a single Dept entity.
-type DeptDeleteOne struct {
-	_d *DeptDelete
+// SysRoleDeleteOne is the builder for deleting a single SysRole entity.
+type SysRoleDeleteOne struct {
+	_d *SysRoleDelete
 }
 
-// Where appends a list predicates to the DeptDelete builder.
-func (_d *DeptDeleteOne) Where(ps ...predicate.Dept) *DeptDeleteOne {
+// Where appends a list predicates to the SysRoleDelete builder.
+func (_d *SysRoleDeleteOne) Where(ps ...predicate.SysRole) *SysRoleDeleteOne {
 	_d._d.mutation.Where(ps...)
 	return _d
 }
 
 // Exec executes the deletion query.
-func (_d *DeptDeleteOne) Exec(ctx context.Context) error {
+func (_d *SysRoleDeleteOne) Exec(ctx context.Context) error {
 	n, err := _d._d.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
 	case n == 0:
-		return &NotFoundError{dept.Label}
+		return &NotFoundError{sysrole.Label}
 	default:
 		return nil
 	}
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_d *DeptDeleteOne) ExecX(ctx context.Context) {
+func (_d *SysRoleDeleteOne) ExecX(ctx context.Context) {
 	if err := _d.Exec(ctx); err != nil {
 		panic(err)
 	}

@@ -9,12 +9,12 @@ import (
 )
 
 // User holds the schema definition for the User entity.
-type User struct {
+type SysUser struct {
 	ent.Schema
 }
 
 // Fields of the User.
-func (User) Fields() []ent.Field {
+func (SysUser) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("id").StructTag(`json:"id,string"`).Comment("用户id"),
 		field.String("user_name").StructTag(`json:"userName"`),
@@ -28,19 +28,20 @@ func (User) Fields() []ent.Field {
 }
 
 // Edges of the User.
-func (User) Edges() []ent.Edge {
+func (SysUser) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("dept", Dept.Type).
-			Ref("users").
+		// 用户 - 部门 （多对一）
+		edge.From("sys_dept", SysDept.Type).
+			Ref("sys_users").
 			Field("dept_id").
-			Unique(),
-		edge.To("roles", Role.Type).
-			StorageKey(edge.Table("user_role"), edge.Columns("user_id", "role_id"))}
+			Unique(), // 每个用户只属于一个部门
+		edge.To("sys_roles", SysRole.Type).
+			StorageKey(edge.Table("sys_user_role"), edge.Columns("user_id", "role_id"))}
 }
 
-func (User) Annotations() []schema.Annotation {
+func (SysUser) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		entsql.Annotation{Table: "user"},
+		entsql.Annotation{Table: "sys_user"},
 		entsql.WithComments(true),
 		schema.Comment("系统用户表"),
 	}

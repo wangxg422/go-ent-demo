@@ -6,9 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"go-ent-demo/ent/dept"
-	"go-ent-demo/ent/role"
-	"go-ent-demo/ent/user"
+	"go-ent-demo/ent/sysdept"
+	"go-ent-demo/ent/sysrole"
+	"go-ent-demo/ent/sysuser"
 	"reflect"
 	"sync"
 
@@ -75,9 +75,9 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			dept.Table: dept.ValidColumn,
-			role.Table: role.ValidColumn,
-			user.Table: user.ValidColumn,
+			sysdept.Table: sysdept.ValidColumn,
+			sysrole.Table: sysrole.ValidColumn,
+			sysuser.Table: sysuser.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)

@@ -6,10 +6,9 @@ import (
 	"context"
 	"database/sql/driver"
 	"fmt"
-	"go-ent-demo/ent/dept"
 	"go-ent-demo/ent/predicate"
-	"go-ent-demo/ent/role"
-	"go-ent-demo/ent/user"
+	"go-ent-demo/ent/sysdept"
+	"go-ent-demo/ent/sysuser"
 	"math"
 
 	"entgo.io/ent"
@@ -18,54 +17,53 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-// DeptQuery is the builder for querying Dept entities.
-type DeptQuery struct {
+// SysDeptQuery is the builder for querying SysDept entities.
+type SysDeptQuery struct {
 	config
-	ctx        *QueryContext
-	order      []dept.OrderOption
-	inters     []Interceptor
-	predicates []predicate.Dept
-	withUsers  *UserQuery
-	withRoles  *RoleQuery
+	ctx          *QueryContext
+	order        []sysdept.OrderOption
+	inters       []Interceptor
+	predicates   []predicate.SysDept
+	withSysUsers *SysUserQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
 }
 
-// Where adds a new predicate for the DeptQuery builder.
-func (_q *DeptQuery) Where(ps ...predicate.Dept) *DeptQuery {
+// Where adds a new predicate for the SysDeptQuery builder.
+func (_q *SysDeptQuery) Where(ps ...predicate.SysDept) *SysDeptQuery {
 	_q.predicates = append(_q.predicates, ps...)
 	return _q
 }
 
 // Limit the number of records to be returned by this query.
-func (_q *DeptQuery) Limit(limit int) *DeptQuery {
+func (_q *SysDeptQuery) Limit(limit int) *SysDeptQuery {
 	_q.ctx.Limit = &limit
 	return _q
 }
 
 // Offset to start from.
-func (_q *DeptQuery) Offset(offset int) *DeptQuery {
+func (_q *SysDeptQuery) Offset(offset int) *SysDeptQuery {
 	_q.ctx.Offset = &offset
 	return _q
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (_q *DeptQuery) Unique(unique bool) *DeptQuery {
+func (_q *SysDeptQuery) Unique(unique bool) *SysDeptQuery {
 	_q.ctx.Unique = &unique
 	return _q
 }
 
 // Order specifies how the records should be ordered.
-func (_q *DeptQuery) Order(o ...dept.OrderOption) *DeptQuery {
+func (_q *SysDeptQuery) Order(o ...sysdept.OrderOption) *SysDeptQuery {
 	_q.order = append(_q.order, o...)
 	return _q
 }
 
-// QueryUsers chains the current query on the "users" edge.
-func (_q *DeptQuery) QueryUsers() *UserQuery {
-	query := (&UserClient{config: _q.config}).Query()
+// QuerySysUsers chains the current query on the "sys_users" edge.
+func (_q *SysDeptQuery) QuerySysUsers() *SysUserQuery {
+	query := (&SysUserClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -75,9 +73,9 @@ func (_q *DeptQuery) QueryUsers() *UserQuery {
 			return nil, err
 		}
 		step := sqlgraph.NewStep(
-			sqlgraph.From(dept.Table, dept.FieldID, selector),
-			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, dept.UsersTable, dept.UsersColumn),
+			sqlgraph.From(sysdept.Table, sysdept.FieldID, selector),
+			sqlgraph.To(sysuser.Table, sysuser.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, sysdept.SysUsersTable, sysdept.SysUsersColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -85,43 +83,21 @@ func (_q *DeptQuery) QueryUsers() *UserQuery {
 	return query
 }
 
-// QueryRoles chains the current query on the "roles" edge.
-func (_q *DeptQuery) QueryRoles() *RoleQuery {
-	query := (&RoleClient{config: _q.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := _q.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(dept.Table, dept.FieldID, selector),
-			sqlgraph.To(role.Table, role.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, dept.RolesTable, dept.RolesPrimaryKey...),
-		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// First returns the first Dept entity from the query.
-// Returns a *NotFoundError when no Dept was found.
-func (_q *DeptQuery) First(ctx context.Context) (*Dept, error) {
+// First returns the first SysDept entity from the query.
+// Returns a *NotFoundError when no SysDept was found.
+func (_q *SysDeptQuery) First(ctx context.Context) (*SysDept, error) {
 	nodes, err := _q.Limit(1).All(setContextOp(ctx, _q.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
-		return nil, &NotFoundError{dept.Label}
+		return nil, &NotFoundError{sysdept.Label}
 	}
 	return nodes[0], nil
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (_q *DeptQuery) FirstX(ctx context.Context) *Dept {
+func (_q *SysDeptQuery) FirstX(ctx context.Context) *SysDept {
 	node, err := _q.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -129,22 +105,22 @@ func (_q *DeptQuery) FirstX(ctx context.Context) *Dept {
 	return node
 }
 
-// FirstID returns the first Dept ID from the query.
-// Returns a *NotFoundError when no Dept ID was found.
-func (_q *DeptQuery) FirstID(ctx context.Context) (id int64, err error) {
+// FirstID returns the first SysDept ID from the query.
+// Returns a *NotFoundError when no SysDept ID was found.
+func (_q *SysDeptQuery) FirstID(ctx context.Context) (id int64, err error) {
 	var ids []int64
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
-		err = &NotFoundError{dept.Label}
+		err = &NotFoundError{sysdept.Label}
 		return
 	}
 	return ids[0], nil
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *DeptQuery) FirstIDX(ctx context.Context) int64 {
+func (_q *SysDeptQuery) FirstIDX(ctx context.Context) int64 {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -152,10 +128,10 @@ func (_q *DeptQuery) FirstIDX(ctx context.Context) int64 {
 	return id
 }
 
-// Only returns a single Dept entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when more than one Dept entity is found.
-// Returns a *NotFoundError when no Dept entities are found.
-func (_q *DeptQuery) Only(ctx context.Context) (*Dept, error) {
+// Only returns a single SysDept entity found by the query, ensuring it only returns one.
+// Returns a *NotSingularError when more than one SysDept entity is found.
+// Returns a *NotFoundError when no SysDept entities are found.
+func (_q *SysDeptQuery) Only(ctx context.Context) (*SysDept, error) {
 	nodes, err := _q.Limit(2).All(setContextOp(ctx, _q.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
@@ -164,14 +140,14 @@ func (_q *DeptQuery) Only(ctx context.Context) (*Dept, error) {
 	case 1:
 		return nodes[0], nil
 	case 0:
-		return nil, &NotFoundError{dept.Label}
+		return nil, &NotFoundError{sysdept.Label}
 	default:
-		return nil, &NotSingularError{dept.Label}
+		return nil, &NotSingularError{sysdept.Label}
 	}
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (_q *DeptQuery) OnlyX(ctx context.Context) *Dept {
+func (_q *SysDeptQuery) OnlyX(ctx context.Context) *SysDept {
 	node, err := _q.Only(ctx)
 	if err != nil {
 		panic(err)
@@ -179,10 +155,10 @@ func (_q *DeptQuery) OnlyX(ctx context.Context) *Dept {
 	return node
 }
 
-// OnlyID is like Only, but returns the only Dept ID in the query.
-// Returns a *NotSingularError when more than one Dept ID is found.
+// OnlyID is like Only, but returns the only SysDept ID in the query.
+// Returns a *NotSingularError when more than one SysDept ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *DeptQuery) OnlyID(ctx context.Context) (id int64, err error) {
+func (_q *SysDeptQuery) OnlyID(ctx context.Context) (id int64, err error) {
 	var ids []int64
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
@@ -191,15 +167,15 @@ func (_q *DeptQuery) OnlyID(ctx context.Context) (id int64, err error) {
 	case 1:
 		id = ids[0]
 	case 0:
-		err = &NotFoundError{dept.Label}
+		err = &NotFoundError{sysdept.Label}
 	default:
-		err = &NotSingularError{dept.Label}
+		err = &NotSingularError{sysdept.Label}
 	}
 	return
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *DeptQuery) OnlyIDX(ctx context.Context) int64 {
+func (_q *SysDeptQuery) OnlyIDX(ctx context.Context) int64 {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -207,18 +183,18 @@ func (_q *DeptQuery) OnlyIDX(ctx context.Context) int64 {
 	return id
 }
 
-// All executes the query and returns a list of Depts.
-func (_q *DeptQuery) All(ctx context.Context) ([]*Dept, error) {
+// All executes the query and returns a list of SysDepts.
+func (_q *SysDeptQuery) All(ctx context.Context) ([]*SysDept, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryAll)
 	if err := _q.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	qr := querierAll[[]*Dept, *DeptQuery]()
-	return withInterceptors[[]*Dept](ctx, _q, qr, _q.inters)
+	qr := querierAll[[]*SysDept, *SysDeptQuery]()
+	return withInterceptors[[]*SysDept](ctx, _q, qr, _q.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
-func (_q *DeptQuery) AllX(ctx context.Context) []*Dept {
+func (_q *SysDeptQuery) AllX(ctx context.Context) []*SysDept {
 	nodes, err := _q.All(ctx)
 	if err != nil {
 		panic(err)
@@ -226,20 +202,20 @@ func (_q *DeptQuery) AllX(ctx context.Context) []*Dept {
 	return nodes
 }
 
-// IDs executes the query and returns a list of Dept IDs.
-func (_q *DeptQuery) IDs(ctx context.Context) (ids []int64, err error) {
+// IDs executes the query and returns a list of SysDept IDs.
+func (_q *SysDeptQuery) IDs(ctx context.Context) (ids []int64, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryIDs)
-	if err = _q.Select(dept.FieldID).Scan(ctx, &ids); err != nil {
+	if err = _q.Select(sysdept.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *DeptQuery) IDsX(ctx context.Context) []int64 {
+func (_q *SysDeptQuery) IDsX(ctx context.Context) []int64 {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -248,16 +224,16 @@ func (_q *DeptQuery) IDsX(ctx context.Context) []int64 {
 }
 
 // Count returns the count of the given query.
-func (_q *DeptQuery) Count(ctx context.Context) (int, error) {
+func (_q *SysDeptQuery) Count(ctx context.Context) (int, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryCount)
 	if err := _q.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return withInterceptors[int](ctx, _q, querierCount[*DeptQuery](), _q.inters)
+	return withInterceptors[int](ctx, _q, querierCount[*SysDeptQuery](), _q.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (_q *DeptQuery) CountX(ctx context.Context) int {
+func (_q *SysDeptQuery) CountX(ctx context.Context) int {
 	count, err := _q.Count(ctx)
 	if err != nil {
 		panic(err)
@@ -266,7 +242,7 @@ func (_q *DeptQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (_q *DeptQuery) Exist(ctx context.Context) (bool, error) {
+func (_q *SysDeptQuery) Exist(ctx context.Context) (bool, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryExist)
 	switch _, err := _q.FirstID(ctx); {
 	case IsNotFound(err):
@@ -279,7 +255,7 @@ func (_q *DeptQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (_q *DeptQuery) ExistX(ctx context.Context) bool {
+func (_q *SysDeptQuery) ExistX(ctx context.Context) bool {
 	exist, err := _q.Exist(ctx)
 	if err != nil {
 		panic(err)
@@ -287,45 +263,33 @@ func (_q *DeptQuery) ExistX(ctx context.Context) bool {
 	return exist
 }
 
-// Clone returns a duplicate of the DeptQuery builder, including all associated steps. It can be
+// Clone returns a duplicate of the SysDeptQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (_q *DeptQuery) Clone() *DeptQuery {
+func (_q *SysDeptQuery) Clone() *SysDeptQuery {
 	if _q == nil {
 		return nil
 	}
-	return &DeptQuery{
-		config:     _q.config,
-		ctx:        _q.ctx.Clone(),
-		order:      append([]dept.OrderOption{}, _q.order...),
-		inters:     append([]Interceptor{}, _q.inters...),
-		predicates: append([]predicate.Dept{}, _q.predicates...),
-		withUsers:  _q.withUsers.Clone(),
-		withRoles:  _q.withRoles.Clone(),
+	return &SysDeptQuery{
+		config:       _q.config,
+		ctx:          _q.ctx.Clone(),
+		order:        append([]sysdept.OrderOption{}, _q.order...),
+		inters:       append([]Interceptor{}, _q.inters...),
+		predicates:   append([]predicate.SysDept{}, _q.predicates...),
+		withSysUsers: _q.withSysUsers.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
 	}
 }
 
-// WithUsers tells the query-builder to eager-load the nodes that are connected to
-// the "users" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *DeptQuery) WithUsers(opts ...func(*UserQuery)) *DeptQuery {
-	query := (&UserClient{config: _q.config}).Query()
+// WithSysUsers tells the query-builder to eager-load the nodes that are connected to
+// the "sys_users" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *SysDeptQuery) WithSysUsers(opts ...func(*SysUserQuery)) *SysDeptQuery {
+	query := (&SysUserClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withUsers = query
-	return _q
-}
-
-// WithRoles tells the query-builder to eager-load the nodes that are connected to
-// the "roles" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *DeptQuery) WithRoles(opts ...func(*RoleQuery)) *DeptQuery {
-	query := (&RoleClient{config: _q.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	_q.withRoles = query
+	_q.withSysUsers = query
 	return _q
 }
 
@@ -339,15 +303,15 @@ func (_q *DeptQuery) WithRoles(opts ...func(*RoleQuery)) *DeptQuery {
 //		Count int `json:"count,omitempty"`
 //	}
 //
-//	client.Dept.Query().
-//		GroupBy(dept.FieldParentID).
+//	client.SysDept.Query().
+//		GroupBy(sysdept.FieldParentID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-func (_q *DeptQuery) GroupBy(field string, fields ...string) *DeptGroupBy {
+func (_q *SysDeptQuery) GroupBy(field string, fields ...string) *SysDeptGroupBy {
 	_q.ctx.Fields = append([]string{field}, fields...)
-	grbuild := &DeptGroupBy{build: _q}
+	grbuild := &SysDeptGroupBy{build: _q}
 	grbuild.flds = &_q.ctx.Fields
-	grbuild.label = dept.Label
+	grbuild.label = sysdept.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
 }
@@ -361,23 +325,23 @@ func (_q *DeptQuery) GroupBy(field string, fields ...string) *DeptGroupBy {
 //		ParentID int64 `json:"parentId,string"`
 //	}
 //
-//	client.Dept.Query().
-//		Select(dept.FieldParentID).
+//	client.SysDept.Query().
+//		Select(sysdept.FieldParentID).
 //		Scan(ctx, &v)
-func (_q *DeptQuery) Select(fields ...string) *DeptSelect {
+func (_q *SysDeptQuery) Select(fields ...string) *SysDeptSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
-	sbuild := &DeptSelect{DeptQuery: _q}
-	sbuild.label = dept.Label
+	sbuild := &SysDeptSelect{SysDeptQuery: _q}
+	sbuild.label = sysdept.Label
 	sbuild.flds, sbuild.scan = &_q.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
-// Aggregate returns a DeptSelect configured with the given aggregations.
-func (_q *DeptQuery) Aggregate(fns ...AggregateFunc) *DeptSelect {
+// Aggregate returns a SysDeptSelect configured with the given aggregations.
+func (_q *SysDeptQuery) Aggregate(fns ...AggregateFunc) *SysDeptSelect {
 	return _q.Select().Aggregate(fns...)
 }
 
-func (_q *DeptQuery) prepareQuery(ctx context.Context) error {
+func (_q *SysDeptQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range _q.inters {
 		if inter == nil {
 			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
@@ -389,7 +353,7 @@ func (_q *DeptQuery) prepareQuery(ctx context.Context) error {
 		}
 	}
 	for _, f := range _q.ctx.Fields {
-		if !dept.ValidColumn(f) {
+		if !sysdept.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
@@ -403,20 +367,19 @@ func (_q *DeptQuery) prepareQuery(ctx context.Context) error {
 	return nil
 }
 
-func (_q *DeptQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Dept, error) {
+func (_q *SysDeptQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*SysDept, error) {
 	var (
-		nodes       = []*Dept{}
+		nodes       = []*SysDept{}
 		_spec       = _q.querySpec()
-		loadedTypes = [2]bool{
-			_q.withUsers != nil,
-			_q.withRoles != nil,
+		loadedTypes = [1]bool{
+			_q.withSysUsers != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
-		return (*Dept).scanValues(nil, columns)
+		return (*SysDept).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
-		node := &Dept{config: _q.config}
+		node := &SysDept{config: _q.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
@@ -430,26 +393,19 @@ func (_q *DeptQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Dept, e
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := _q.withUsers; query != nil {
-		if err := _q.loadUsers(ctx, query, nodes,
-			func(n *Dept) { n.Edges.Users = []*User{} },
-			func(n *Dept, e *User) { n.Edges.Users = append(n.Edges.Users, e) }); err != nil {
-			return nil, err
-		}
-	}
-	if query := _q.withRoles; query != nil {
-		if err := _q.loadRoles(ctx, query, nodes,
-			func(n *Dept) { n.Edges.Roles = []*Role{} },
-			func(n *Dept, e *Role) { n.Edges.Roles = append(n.Edges.Roles, e) }); err != nil {
+	if query := _q.withSysUsers; query != nil {
+		if err := _q.loadSysUsers(ctx, query, nodes,
+			func(n *SysDept) { n.Edges.SysUsers = []*SysUser{} },
+			func(n *SysDept, e *SysUser) { n.Edges.SysUsers = append(n.Edges.SysUsers, e) }); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
 }
 
-func (_q *DeptQuery) loadUsers(ctx context.Context, query *UserQuery, nodes []*Dept, init func(*Dept), assign func(*Dept, *User)) error {
+func (_q *SysDeptQuery) loadSysUsers(ctx context.Context, query *SysUserQuery, nodes []*SysDept, init func(*SysDept), assign func(*SysDept, *SysUser)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[int64]*Dept)
+	nodeids := make(map[int64]*SysDept)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -458,10 +414,10 @@ func (_q *DeptQuery) loadUsers(ctx context.Context, query *UserQuery, nodes []*D
 		}
 	}
 	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(user.FieldDeptID)
+		query.ctx.AppendFieldOnce(sysuser.FieldDeptID)
 	}
-	query.Where(predicate.User(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(dept.UsersColumn), fks...))
+	query.Where(predicate.SysUser(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(sysdept.SysUsersColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -477,69 +433,8 @@ func (_q *DeptQuery) loadUsers(ctx context.Context, query *UserQuery, nodes []*D
 	}
 	return nil
 }
-func (_q *DeptQuery) loadRoles(ctx context.Context, query *RoleQuery, nodes []*Dept, init func(*Dept), assign func(*Dept, *Role)) error {
-	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[int64]*Dept)
-	nids := make(map[int64]map[*Dept]struct{})
-	for i, node := range nodes {
-		edgeIDs[i] = node.ID
-		byID[node.ID] = node
-		if init != nil {
-			init(node)
-		}
-	}
-	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(dept.RolesTable)
-		s.Join(joinT).On(s.C(role.FieldID), joinT.C(dept.RolesPrimaryKey[0]))
-		s.Where(sql.InValues(joinT.C(dept.RolesPrimaryKey[1]), edgeIDs...))
-		columns := s.SelectedColumns()
-		s.Select(joinT.C(dept.RolesPrimaryKey[1]))
-		s.AppendSelect(columns...)
-		s.SetDistinct(false)
-	})
-	if err := query.prepareQuery(ctx); err != nil {
-		return err
-	}
-	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
-		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
-			assign := spec.Assign
-			values := spec.ScanValues
-			spec.ScanValues = func(columns []string) ([]any, error) {
-				values, err := values(columns[1:])
-				if err != nil {
-					return nil, err
-				}
-				return append([]any{new(sql.NullInt64)}, values...), nil
-			}
-			spec.Assign = func(columns []string, values []any) error {
-				outValue := values[0].(*sql.NullInt64).Int64
-				inValue := values[1].(*sql.NullInt64).Int64
-				if nids[inValue] == nil {
-					nids[inValue] = map[*Dept]struct{}{byID[outValue]: {}}
-					return assign(columns[1:], values[1:])
-				}
-				nids[inValue][byID[outValue]] = struct{}{}
-				return nil
-			}
-		})
-	})
-	neighbors, err := withInterceptors[[]*Role](ctx, query, qr, query.inters)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected "roles" node returned %v`, n.ID)
-		}
-		for kn := range nodes {
-			assign(kn, n)
-		}
-	}
-	return nil
-}
 
-func (_q *DeptQuery) sqlCount(ctx context.Context) (int, error) {
+func (_q *SysDeptQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := _q.querySpec()
 	_spec.Node.Columns = _q.ctx.Fields
 	if len(_q.ctx.Fields) > 0 {
@@ -548,8 +443,8 @@ func (_q *DeptQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, _q.driver, _spec)
 }
 
-func (_q *DeptQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(dept.Table, dept.Columns, sqlgraph.NewFieldSpec(dept.FieldID, field.TypeInt64))
+func (_q *SysDeptQuery) querySpec() *sqlgraph.QuerySpec {
+	_spec := sqlgraph.NewQuerySpec(sysdept.Table, sysdept.Columns, sqlgraph.NewFieldSpec(sysdept.FieldID, field.TypeInt64))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
@@ -558,9 +453,9 @@ func (_q *DeptQuery) querySpec() *sqlgraph.QuerySpec {
 	}
 	if fields := _q.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
-		_spec.Node.Columns = append(_spec.Node.Columns, dept.FieldID)
+		_spec.Node.Columns = append(_spec.Node.Columns, sysdept.FieldID)
 		for i := range fields {
-			if fields[i] != dept.FieldID {
+			if fields[i] != sysdept.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
@@ -588,12 +483,12 @@ func (_q *DeptQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (_q *DeptQuery) sqlQuery(ctx context.Context) *sql.Selector {
+func (_q *SysDeptQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(_q.driver.Dialect())
-	t1 := builder.Table(dept.Table)
+	t1 := builder.Table(sysdept.Table)
 	columns := _q.ctx.Fields
 	if len(columns) == 0 {
-		columns = dept.Columns
+		columns = sysdept.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
 	if _q.sql != nil {
@@ -620,28 +515,28 @@ func (_q *DeptQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	return selector
 }
 
-// DeptGroupBy is the group-by builder for Dept entities.
-type DeptGroupBy struct {
+// SysDeptGroupBy is the group-by builder for SysDept entities.
+type SysDeptGroupBy struct {
 	selector
-	build *DeptQuery
+	build *SysDeptQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (_g *DeptGroupBy) Aggregate(fns ...AggregateFunc) *DeptGroupBy {
+func (_g *SysDeptGroupBy) Aggregate(fns ...AggregateFunc) *SysDeptGroupBy {
 	_g.fns = append(_g.fns, fns...)
 	return _g
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (_g *DeptGroupBy) Scan(ctx context.Context, v any) error {
+func (_g *SysDeptGroupBy) Scan(ctx context.Context, v any) error {
 	ctx = setContextOp(ctx, _g.build.ctx, ent.OpQueryGroupBy)
 	if err := _g.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*DeptQuery, *DeptGroupBy](ctx, _g.build, _g, _g.build.inters, v)
+	return scanWithInterceptors[*SysDeptQuery, *SysDeptGroupBy](ctx, _g.build, _g, _g.build.inters, v)
 }
 
-func (_g *DeptGroupBy) sqlScan(ctx context.Context, root *DeptQuery, v any) error {
+func (_g *SysDeptGroupBy) sqlScan(ctx context.Context, root *SysDeptQuery, v any) error {
 	selector := root.sqlQuery(ctx).Select()
 	aggregation := make([]string, 0, len(_g.fns))
 	for _, fn := range _g.fns {
@@ -668,28 +563,28 @@ func (_g *DeptGroupBy) sqlScan(ctx context.Context, root *DeptQuery, v any) erro
 	return sql.ScanSlice(rows, v)
 }
 
-// DeptSelect is the builder for selecting fields of Dept entities.
-type DeptSelect struct {
-	*DeptQuery
+// SysDeptSelect is the builder for selecting fields of SysDept entities.
+type SysDeptSelect struct {
+	*SysDeptQuery
 	selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
-func (_s *DeptSelect) Aggregate(fns ...AggregateFunc) *DeptSelect {
+func (_s *SysDeptSelect) Aggregate(fns ...AggregateFunc) *SysDeptSelect {
 	_s.fns = append(_s.fns, fns...)
 	return _s
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (_s *DeptSelect) Scan(ctx context.Context, v any) error {
+func (_s *SysDeptSelect) Scan(ctx context.Context, v any) error {
 	ctx = setContextOp(ctx, _s.ctx, ent.OpQuerySelect)
 	if err := _s.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*DeptQuery, *DeptSelect](ctx, _s.DeptQuery, _s, _s.inters, v)
+	return scanWithInterceptors[*SysDeptQuery, *SysDeptSelect](ctx, _s.SysDeptQuery, _s, _s.inters, v)
 }
 
-func (_s *DeptSelect) sqlScan(ctx context.Context, root *DeptQuery, v any) error {
+func (_s *SysDeptSelect) sqlScan(ctx context.Context, root *SysDeptQuery, v any) error {
 	selector := root.sqlQuery(ctx)
 	aggregation := make([]string, 0, len(_s.fns))
 	for _, fn := range _s.fns {

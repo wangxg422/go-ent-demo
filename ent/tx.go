@@ -12,12 +12,12 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
-	// Dept is the client for interacting with the Dept builders.
-	Dept *DeptClient
-	// Role is the client for interacting with the Role builders.
-	Role *RoleClient
-	// User is the client for interacting with the User builders.
-	User *UserClient
+	// SysDept is the client for interacting with the SysDept builders.
+	SysDept *SysDeptClient
+	// SysRole is the client for interacting with the SysRole builders.
+	SysRole *SysRoleClient
+	// SysUser is the client for interacting with the SysUser builders.
+	SysUser *SysUserClient
 
 	// lazily loaded.
 	client     *Client
@@ -149,9 +149,9 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
-	tx.Dept = NewDeptClient(tx.config)
-	tx.Role = NewRoleClient(tx.config)
-	tx.User = NewUserClient(tx.config)
+	tx.SysDept = NewSysDeptClient(tx.config)
+	tx.SysRole = NewSysRoleClient(tx.config)
+	tx.SysUser = NewSysUserClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.
@@ -161,7 +161,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: Dept.QueryXXX(), the query will be executed
+// applies a query, for example: SysDept.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

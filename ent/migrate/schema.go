@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	// DeptColumns holds the columns for the "dept" table.
-	DeptColumns = []*schema.Column{
+	// SysDeptColumns holds the columns for the "sys_dept" table.
+	SysDeptColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "部门id"},
 		{Name: "parent_id", Type: field.TypeInt64, Comment: "父级部门id"},
 		{Name: "ancestors", Type: field.TypeString, Nullable: true, Comment: "祖先部门列表"},
@@ -20,25 +20,25 @@ var (
 		{Name: "phone", Type: field.TypeString, Nullable: true, Comment: "部门联系电话"},
 		{Name: "email", Type: field.TypeString, Nullable: true, Comment: "部门电子邮箱"},
 	}
-	// DeptTable holds the schema information for the "dept" table.
-	DeptTable = &schema.Table{
-		Name:       "dept",
+	// SysDeptTable holds the schema information for the "sys_dept" table.
+	SysDeptTable = &schema.Table{
+		Name:       "sys_dept",
 		Comment:    "系统部门表",
-		Columns:    DeptColumns,
-		PrimaryKey: []*schema.Column{DeptColumns[0]},
+		Columns:    SysDeptColumns,
+		PrimaryKey: []*schema.Column{SysDeptColumns[0]},
 	}
-	// RoleColumns holds the columns for the "role" table.
-	RoleColumns = []*schema.Column{
+	// SysRoleColumns holds the columns for the "sys_role" table.
+	SysRoleColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "角色id"},
 		{Name: "role_name", Type: field.TypeString, Nullable: true, Comment: "角色名称"},
 		{Name: "role_code", Type: field.TypeString, Nullable: true, Comment: "角色编码"},
 	}
-	// RoleTable holds the schema information for the "role" table.
-	RoleTable = &schema.Table{
-		Name:       "role",
+	// SysRoleTable holds the schema information for the "sys_role" table.
+	SysRoleTable = &schema.Table{
+		Name:       "sys_role",
 		Comment:    "系统角色表",
-		Columns:    RoleColumns,
-		PrimaryKey: []*schema.Column{RoleColumns[0]},
+		Columns:    SysRoleColumns,
+		PrimaryKey: []*schema.Column{SysRoleColumns[0]},
 	}
 	// UserColumns holds the columns for the "user" table.
 	UserColumns = []*schema.Column{
@@ -59,86 +59,58 @@ var (
 		PrimaryKey: []*schema.Column{UserColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "user_dept_users",
+				Symbol:     "user_sys_dept_sys_users",
 				Columns:    []*schema.Column{UserColumns[7]},
-				RefColumns: []*schema.Column{DeptColumns[0]},
+				RefColumns: []*schema.Column{SysDeptColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
 	}
-	// RoleDeptColumns holds the columns for the "role_dept" table.
-	RoleDeptColumns = []*schema.Column{
-		{Name: "role_id", Type: field.TypeInt64},
-		{Name: "dept_id", Type: field.TypeInt64},
-	}
-	// RoleDeptTable holds the schema information for the "role_dept" table.
-	RoleDeptTable = &schema.Table{
-		Name:       "role_dept",
-		Columns:    RoleDeptColumns,
-		PrimaryKey: []*schema.Column{RoleDeptColumns[0], RoleDeptColumns[1]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "role_dept_role_id",
-				Columns:    []*schema.Column{RoleDeptColumns[0]},
-				RefColumns: []*schema.Column{RoleColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-			{
-				Symbol:     "role_dept_dept_id",
-				Columns:    []*schema.Column{RoleDeptColumns[1]},
-				RefColumns: []*schema.Column{DeptColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-		},
-	}
-	// UserRoleColumns holds the columns for the "user_role" table.
-	UserRoleColumns = []*schema.Column{
+	// SysUserRoleColumns holds the columns for the "sys_user_role" table.
+	SysUserRoleColumns = []*schema.Column{
 		{Name: "user_id", Type: field.TypeInt64},
 		{Name: "role_id", Type: field.TypeInt64},
 	}
-	// UserRoleTable holds the schema information for the "user_role" table.
-	UserRoleTable = &schema.Table{
-		Name:       "user_role",
-		Columns:    UserRoleColumns,
-		PrimaryKey: []*schema.Column{UserRoleColumns[0], UserRoleColumns[1]},
+	// SysUserRoleTable holds the schema information for the "sys_user_role" table.
+	SysUserRoleTable = &schema.Table{
+		Name:       "sys_user_role",
+		Columns:    SysUserRoleColumns,
+		PrimaryKey: []*schema.Column{SysUserRoleColumns[0], SysUserRoleColumns[1]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "user_role_user_id",
-				Columns:    []*schema.Column{UserRoleColumns[0]},
+				Symbol:     "sys_user_role_user_id",
+				Columns:    []*schema.Column{SysUserRoleColumns[0]},
 				RefColumns: []*schema.Column{UserColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
-				Symbol:     "user_role_role_id",
-				Columns:    []*schema.Column{UserRoleColumns[1]},
-				RefColumns: []*schema.Column{RoleColumns[0]},
+				Symbol:     "sys_user_role_role_id",
+				Columns:    []*schema.Column{SysUserRoleColumns[1]},
+				RefColumns: []*schema.Column{SysRoleColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 		},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
-		DeptTable,
-		RoleTable,
+		SysDeptTable,
+		SysRoleTable,
 		UserTable,
-		RoleDeptTable,
-		UserRoleTable,
+		SysUserRoleTable,
 	}
 )
 
 func init() {
-	DeptTable.Annotation = &entsql.Annotation{
-		Table: "dept",
+	SysDeptTable.Annotation = &entsql.Annotation{
+		Table: "sys_dept",
 	}
-	RoleTable.Annotation = &entsql.Annotation{
-		Table: "role",
+	SysRoleTable.Annotation = &entsql.Annotation{
+		Table: "sys_role",
 	}
-	UserTable.ForeignKeys[0].RefTable = DeptTable
+	UserTable.ForeignKeys[0].RefTable = SysDeptTable
 	UserTable.Annotation = &entsql.Annotation{
 		Table: "user",
 	}
-	RoleDeptTable.ForeignKeys[0].RefTable = RoleTable
-	RoleDeptTable.ForeignKeys[1].RefTable = DeptTable
-	UserRoleTable.ForeignKeys[0].RefTable = UserTable
-	UserRoleTable.ForeignKeys[1].RefTable = RoleTable
+	SysUserRoleTable.ForeignKeys[0].RefTable = UserTable
+	SysUserRoleTable.ForeignKeys[1].RefTable = SysRoleTable
 }

@@ -6,35 +6,35 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"go-ent-demo/ent/dept"
-	"go-ent-demo/ent/role"
-	"go-ent-demo/ent/user"
+	"go-ent-demo/ent/sysdept"
+	"go-ent-demo/ent/sysrole"
+	"go-ent-demo/ent/sysuser"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
 
-// UserCreate is the builder for creating a User entity.
-type UserCreate struct {
+// SysUserCreate is the builder for creating a SysUser entity.
+type SysUserCreate struct {
 	config
-	mutation *UserMutation
+	mutation *SysUserMutation
 	hooks    []Hook
 }
 
 // SetUserName sets the "user_name" field.
-func (_c *UserCreate) SetUserName(v string) *UserCreate {
+func (_c *SysUserCreate) SetUserName(v string) *SysUserCreate {
 	_c.mutation.SetUserName(v)
 	return _c
 }
 
 // SetNickName sets the "nick_name" field.
-func (_c *UserCreate) SetNickName(v string) *UserCreate {
+func (_c *SysUserCreate) SetNickName(v string) *SysUserCreate {
 	_c.mutation.SetNickName(v)
 	return _c
 }
 
 // SetNillableNickName sets the "nick_name" field if the given value is not nil.
-func (_c *UserCreate) SetNillableNickName(v *string) *UserCreate {
+func (_c *SysUserCreate) SetNillableNickName(v *string) *SysUserCreate {
 	if v != nil {
 		_c.SetNickName(*v)
 	}
@@ -42,13 +42,13 @@ func (_c *UserCreate) SetNillableNickName(v *string) *UserCreate {
 }
 
 // SetMobile sets the "mobile" field.
-func (_c *UserCreate) SetMobile(v string) *UserCreate {
+func (_c *SysUserCreate) SetMobile(v string) *SysUserCreate {
 	_c.mutation.SetMobile(v)
 	return _c
 }
 
 // SetNillableMobile sets the "mobile" field if the given value is not nil.
-func (_c *UserCreate) SetNillableMobile(v *string) *UserCreate {
+func (_c *SysUserCreate) SetNillableMobile(v *string) *SysUserCreate {
 	if v != nil {
 		_c.SetMobile(*v)
 	}
@@ -56,13 +56,13 @@ func (_c *UserCreate) SetNillableMobile(v *string) *UserCreate {
 }
 
 // SetPassword sets the "password" field.
-func (_c *UserCreate) SetPassword(v string) *UserCreate {
+func (_c *SysUserCreate) SetPassword(v string) *SysUserCreate {
 	_c.mutation.SetPassword(v)
 	return _c
 }
 
 // SetNillablePassword sets the "password" field if the given value is not nil.
-func (_c *UserCreate) SetNillablePassword(v *string) *UserCreate {
+func (_c *SysUserCreate) SetNillablePassword(v *string) *SysUserCreate {
 	if v != nil {
 		_c.SetPassword(*v)
 	}
@@ -70,13 +70,13 @@ func (_c *UserCreate) SetNillablePassword(v *string) *UserCreate {
 }
 
 // SetEmail sets the "email" field.
-func (_c *UserCreate) SetEmail(v string) *UserCreate {
+func (_c *SysUserCreate) SetEmail(v string) *SysUserCreate {
 	_c.mutation.SetEmail(v)
 	return _c
 }
 
 // SetNillableEmail sets the "email" field if the given value is not nil.
-func (_c *UserCreate) SetNillableEmail(v *string) *UserCreate {
+func (_c *SysUserCreate) SetNillableEmail(v *string) *SysUserCreate {
 	if v != nil {
 		_c.SetEmail(*v)
 	}
@@ -84,13 +84,13 @@ func (_c *UserCreate) SetNillableEmail(v *string) *UserCreate {
 }
 
 // SetSex sets the "sex" field.
-func (_c *UserCreate) SetSex(v int8) *UserCreate {
+func (_c *SysUserCreate) SetSex(v int8) *SysUserCreate {
 	_c.mutation.SetSex(v)
 	return _c
 }
 
 // SetNillableSex sets the "sex" field if the given value is not nil.
-func (_c *UserCreate) SetNillableSex(v *int8) *UserCreate {
+func (_c *SysUserCreate) SetNillableSex(v *int8) *SysUserCreate {
 	if v != nil {
 		_c.SetSex(*v)
 	}
@@ -98,13 +98,13 @@ func (_c *UserCreate) SetNillableSex(v *int8) *UserCreate {
 }
 
 // SetDeptID sets the "dept_id" field.
-func (_c *UserCreate) SetDeptID(v int64) *UserCreate {
+func (_c *SysUserCreate) SetDeptID(v int64) *SysUserCreate {
 	_c.mutation.SetDeptID(v)
 	return _c
 }
 
 // SetNillableDeptID sets the "dept_id" field if the given value is not nil.
-func (_c *UserCreate) SetNillableDeptID(v *int64) *UserCreate {
+func (_c *SysUserCreate) SetNillableDeptID(v *int64) *SysUserCreate {
 	if v != nil {
 		_c.SetDeptID(*v)
 	}
@@ -112,43 +112,57 @@ func (_c *UserCreate) SetNillableDeptID(v *int64) *UserCreate {
 }
 
 // SetID sets the "id" field.
-func (_c *UserCreate) SetID(v int64) *UserCreate {
+func (_c *SysUserCreate) SetID(v int64) *SysUserCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
 
-// SetDept sets the "dept" edge to the Dept entity.
-func (_c *UserCreate) SetDept(v *Dept) *UserCreate {
-	return _c.SetDeptID(v.ID)
-}
-
-// AddRoleIDs adds the "roles" edge to the Role entity by IDs.
-func (_c *UserCreate) AddRoleIDs(ids ...int64) *UserCreate {
-	_c.mutation.AddRoleIDs(ids...)
+// SetSysDeptID sets the "sys_dept" edge to the SysDept entity by ID.
+func (_c *SysUserCreate) SetSysDeptID(id int64) *SysUserCreate {
+	_c.mutation.SetSysDeptID(id)
 	return _c
 }
 
-// AddRoles adds the "roles" edges to the Role entity.
-func (_c *UserCreate) AddRoles(v ...*Role) *UserCreate {
+// SetNillableSysDeptID sets the "sys_dept" edge to the SysDept entity by ID if the given value is not nil.
+func (_c *SysUserCreate) SetNillableSysDeptID(id *int64) *SysUserCreate {
+	if id != nil {
+		_c = _c.SetSysDeptID(*id)
+	}
+	return _c
+}
+
+// SetSysDept sets the "sys_dept" edge to the SysDept entity.
+func (_c *SysUserCreate) SetSysDept(v *SysDept) *SysUserCreate {
+	return _c.SetSysDeptID(v.ID)
+}
+
+// AddSysRoleIDs adds the "sys_roles" edge to the SysRole entity by IDs.
+func (_c *SysUserCreate) AddSysRoleIDs(ids ...int64) *SysUserCreate {
+	_c.mutation.AddSysRoleIDs(ids...)
+	return _c
+}
+
+// AddSysRoles adds the "sys_roles" edges to the SysRole entity.
+func (_c *SysUserCreate) AddSysRoles(v ...*SysRole) *SysUserCreate {
 	ids := make([]int64, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _c.AddRoleIDs(ids...)
+	return _c.AddSysRoleIDs(ids...)
 }
 
-// Mutation returns the UserMutation object of the builder.
-func (_c *UserCreate) Mutation() *UserMutation {
+// Mutation returns the SysUserMutation object of the builder.
+func (_c *SysUserCreate) Mutation() *SysUserMutation {
 	return _c.mutation
 }
 
-// Save creates the User in the database.
-func (_c *UserCreate) Save(ctx context.Context) (*User, error) {
+// Save creates the SysUser in the database.
+func (_c *SysUserCreate) Save(ctx context.Context) (*SysUser, error) {
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (_c *UserCreate) SaveX(ctx context.Context) *User {
+func (_c *SysUserCreate) SaveX(ctx context.Context) *SysUser {
 	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -157,27 +171,27 @@ func (_c *UserCreate) SaveX(ctx context.Context) *User {
 }
 
 // Exec executes the query.
-func (_c *UserCreate) Exec(ctx context.Context) error {
+func (_c *SysUserCreate) Exec(ctx context.Context) error {
 	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_c *UserCreate) ExecX(ctx context.Context) {
+func (_c *SysUserCreate) ExecX(ctx context.Context) {
 	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_c *UserCreate) check() error {
+func (_c *SysUserCreate) check() error {
 	if _, ok := _c.mutation.UserName(); !ok {
-		return &ValidationError{Name: "user_name", err: errors.New(`ent: missing required field "User.user_name"`)}
+		return &ValidationError{Name: "user_name", err: errors.New(`ent: missing required field "SysUser.user_name"`)}
 	}
 	return nil
 }
 
-func (_c *UserCreate) sqlSave(ctx context.Context) (*User, error) {
+func (_c *SysUserCreate) sqlSave(ctx context.Context) (*SysUser, error) {
 	if err := _c.check(); err != nil {
 		return nil, err
 	}
@@ -197,48 +211,48 @@ func (_c *UserCreate) sqlSave(ctx context.Context) (*User, error) {
 	return _node, nil
 }
 
-func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
+func (_c *SysUserCreate) createSpec() (*SysUser, *sqlgraph.CreateSpec) {
 	var (
-		_node = &User{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(user.Table, sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt64))
+		_node = &SysUser{config: _c.config}
+		_spec = sqlgraph.NewCreateSpec(sysuser.Table, sqlgraph.NewFieldSpec(sysuser.FieldID, field.TypeInt64))
 	)
 	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
 	if value, ok := _c.mutation.UserName(); ok {
-		_spec.SetField(user.FieldUserName, field.TypeString, value)
+		_spec.SetField(sysuser.FieldUserName, field.TypeString, value)
 		_node.UserName = value
 	}
 	if value, ok := _c.mutation.NickName(); ok {
-		_spec.SetField(user.FieldNickName, field.TypeString, value)
+		_spec.SetField(sysuser.FieldNickName, field.TypeString, value)
 		_node.NickName = value
 	}
 	if value, ok := _c.mutation.Mobile(); ok {
-		_spec.SetField(user.FieldMobile, field.TypeString, value)
+		_spec.SetField(sysuser.FieldMobile, field.TypeString, value)
 		_node.Mobile = value
 	}
 	if value, ok := _c.mutation.Password(); ok {
-		_spec.SetField(user.FieldPassword, field.TypeString, value)
+		_spec.SetField(sysuser.FieldPassword, field.TypeString, value)
 		_node.Password = value
 	}
 	if value, ok := _c.mutation.Email(); ok {
-		_spec.SetField(user.FieldEmail, field.TypeString, value)
+		_spec.SetField(sysuser.FieldEmail, field.TypeString, value)
 		_node.Email = value
 	}
 	if value, ok := _c.mutation.Sex(); ok {
-		_spec.SetField(user.FieldSex, field.TypeInt8, value)
+		_spec.SetField(sysuser.FieldSex, field.TypeInt8, value)
 		_node.Sex = value
 	}
-	if nodes := _c.mutation.DeptIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.SysDeptIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   user.DeptTable,
-			Columns: []string{user.DeptColumn},
+			Table:   sysuser.SysDeptTable,
+			Columns: []string{sysuser.SysDeptColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(dept.FieldID, field.TypeInt64),
+				IDSpec: sqlgraph.NewFieldSpec(sysdept.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -247,15 +261,15 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_node.DeptID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := _c.mutation.RolesIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.SysRolesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
-			Table:   user.RolesTable,
-			Columns: user.RolesPrimaryKey,
+			Table:   sysuser.SysRolesTable,
+			Columns: sysuser.SysRolesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt64),
+				IDSpec: sqlgraph.NewFieldSpec(sysrole.FieldID, field.TypeInt64),
 			},
 		}
 		for _, k := range nodes {
@@ -266,26 +280,26 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
-// UserCreateBulk is the builder for creating many User entities in bulk.
-type UserCreateBulk struct {
+// SysUserCreateBulk is the builder for creating many SysUser entities in bulk.
+type SysUserCreateBulk struct {
 	config
 	err      error
-	builders []*UserCreate
+	builders []*SysUserCreate
 }
 
-// Save creates the User entities in the database.
-func (_c *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
+// Save creates the SysUser entities in the database.
+func (_c *SysUserCreateBulk) Save(ctx context.Context) ([]*SysUser, error) {
 	if _c.err != nil {
 		return nil, _c.err
 	}
 	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
-	nodes := make([]*User, len(_c.builders))
+	nodes := make([]*SysUser, len(_c.builders))
 	mutators := make([]Mutator, len(_c.builders))
 	for i := range _c.builders {
 		func(i int, root context.Context) {
 			builder := _c.builders[i]
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-				mutation, ok := m.(*UserMutation)
+				mutation, ok := m.(*SysUserMutation)
 				if !ok {
 					return nil, fmt.Errorf("unexpected mutation type %T", m)
 				}
@@ -332,7 +346,7 @@ func (_c *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_c *UserCreateBulk) SaveX(ctx context.Context) []*User {
+func (_c *SysUserCreateBulk) SaveX(ctx context.Context) []*SysUser {
 	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -341,13 +355,13 @@ func (_c *UserCreateBulk) SaveX(ctx context.Context) []*User {
 }
 
 // Exec executes the query.
-func (_c *UserCreateBulk) Exec(ctx context.Context) error {
+func (_c *SysUserCreateBulk) Exec(ctx context.Context) error {
 	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_c *UserCreateBulk) ExecX(ctx context.Context) {
+func (_c *SysUserCreateBulk) ExecX(ctx context.Context) {
 	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}

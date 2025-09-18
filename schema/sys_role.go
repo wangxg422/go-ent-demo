@@ -9,12 +9,12 @@ import (
 )
 
 // Role holds the schema definition for the Role entity.
-type Role struct {
+type SysRole struct {
 	ent.Schema
 }
 
 // Fields of the Role.
-func (Role) Fields() []ent.Field {
+func (SysRole) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("id").StructTag(`json:"id,string"`).Comment("角色id"),
 		field.String("role_name").StructTag(`json:"roleName"`).Optional().Comment("角色名称"),
@@ -23,20 +23,17 @@ func (Role) Fields() []ent.Field {
 }
 
 // Edges of the Role.
-func (Role) Edges() []ent.Edge {
+func (SysRole) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("depts", Dept.Type).
-			StorageKey(edge.Table("role_dept"), edge.Columns("role_id", "dept_id")),
-		edge.From("users", User.Type).
-			Ref("roles"),
+		edge.From("sys_users", SysUser.Type).
+			Ref("sys_roles"),
 	}
 }
 
-func (Role) Annotations() []schema.Annotation {
+func (SysRole) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		entsql.Annotation{Table: "role"},
+		entsql.Annotation{Table: "sys_role"},
 		entsql.WithComments(true),
 		schema.Comment("系统角色表"),
 	}
 }
-

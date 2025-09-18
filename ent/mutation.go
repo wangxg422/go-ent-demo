@@ -6,10 +6,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"go-ent-demo/ent/dept"
 	"go-ent-demo/ent/predicate"
-	"go-ent-demo/ent/role"
-	"go-ent-demo/ent/user"
+	"go-ent-demo/ent/sysdept"
+	"go-ent-demo/ent/sysrole"
+	"go-ent-demo/ent/sysuser"
 	"sync"
 
 	"entgo.io/ent"
@@ -25,48 +25,45 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeDept = "Dept"
-	TypeRole = "Role"
-	TypeUser = "User"
+	TypeSysDept = "SysDept"
+	TypeSysRole = "SysRole"
+	TypeSysUser = "SysUser"
 )
 
-// DeptMutation represents an operation that mutates the Dept nodes in the graph.
-type DeptMutation struct {
+// SysDeptMutation represents an operation that mutates the SysDept nodes in the graph.
+type SysDeptMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int64
-	parent_id     *int64
-	addparent_id  *int64
-	ancestors     *string
-	dept_name     *string
-	dept_code     *string
-	leader        *string
-	phone         *string
-	email         *string
-	clearedFields map[string]struct{}
-	users         map[int64]struct{}
-	removedusers  map[int64]struct{}
-	clearedusers  bool
-	roles         map[int64]struct{}
-	removedroles  map[int64]struct{}
-	clearedroles  bool
-	done          bool
-	oldValue      func(context.Context) (*Dept, error)
-	predicates    []predicate.Dept
+	op               Op
+	typ              string
+	id               *int64
+	parent_id        *int64
+	addparent_id     *int64
+	ancestors        *string
+	dept_name        *string
+	dept_code        *string
+	leader           *string
+	phone            *string
+	email            *string
+	clearedFields    map[string]struct{}
+	sys_users        map[int64]struct{}
+	removedsys_users map[int64]struct{}
+	clearedsys_users bool
+	done             bool
+	oldValue         func(context.Context) (*SysDept, error)
+	predicates       []predicate.SysDept
 }
 
-var _ ent.Mutation = (*DeptMutation)(nil)
+var _ ent.Mutation = (*SysDeptMutation)(nil)
 
-// deptOption allows management of the mutation configuration using functional options.
-type deptOption func(*DeptMutation)
+// sysdeptOption allows management of the mutation configuration using functional options.
+type sysdeptOption func(*SysDeptMutation)
 
-// newDeptMutation creates new mutation for the Dept entity.
-func newDeptMutation(c config, op Op, opts ...deptOption) *DeptMutation {
-	m := &DeptMutation{
+// newSysDeptMutation creates new mutation for the SysDept entity.
+func newSysDeptMutation(c config, op Op, opts ...sysdeptOption) *SysDeptMutation {
+	m := &SysDeptMutation{
 		config:        c,
 		op:            op,
-		typ:           TypeDept,
+		typ:           TypeSysDept,
 		clearedFields: make(map[string]struct{}),
 	}
 	for _, opt := range opts {
@@ -75,20 +72,20 @@ func newDeptMutation(c config, op Op, opts ...deptOption) *DeptMutation {
 	return m
 }
 
-// withDeptID sets the ID field of the mutation.
-func withDeptID(id int64) deptOption {
-	return func(m *DeptMutation) {
+// withSysDeptID sets the ID field of the mutation.
+func withSysDeptID(id int64) sysdeptOption {
+	return func(m *SysDeptMutation) {
 		var (
 			err   error
 			once  sync.Once
-			value *Dept
+			value *SysDept
 		)
-		m.oldValue = func(ctx context.Context) (*Dept, error) {
+		m.oldValue = func(ctx context.Context) (*SysDept, error) {
 			once.Do(func() {
 				if m.done {
 					err = errors.New("querying old values post mutation is not allowed")
 				} else {
-					value, err = m.Client().Dept.Get(ctx, id)
+					value, err = m.Client().SysDept.Get(ctx, id)
 				}
 			})
 			return value, err
@@ -97,10 +94,10 @@ func withDeptID(id int64) deptOption {
 	}
 }
 
-// withDept sets the old Dept of the mutation.
-func withDept(node *Dept) deptOption {
-	return func(m *DeptMutation) {
-		m.oldValue = func(context.Context) (*Dept, error) {
+// withSysDept sets the old SysDept of the mutation.
+func withSysDept(node *SysDept) sysdeptOption {
+	return func(m *SysDeptMutation) {
+		m.oldValue = func(context.Context) (*SysDept, error) {
 			return node, nil
 		}
 		m.id = &node.ID
@@ -109,7 +106,7 @@ func withDept(node *Dept) deptOption {
 
 // Client returns a new `ent.Client` from the mutation. If the mutation was
 // executed in a transaction (ent.Tx), a transactional client is returned.
-func (m DeptMutation) Client() *Client {
+func (m SysDeptMutation) Client() *Client {
 	client := &Client{config: m.config}
 	client.init()
 	return client
@@ -117,7 +114,7 @@ func (m DeptMutation) Client() *Client {
 
 // Tx returns an `ent.Tx` for mutations that were executed in transactions;
 // it returns an error otherwise.
-func (m DeptMutation) Tx() (*Tx, error) {
+func (m SysDeptMutation) Tx() (*Tx, error) {
 	if _, ok := m.driver.(*txDriver); !ok {
 		return nil, errors.New("ent: mutation is not running in a transaction")
 	}
@@ -127,14 +124,14 @@ func (m DeptMutation) Tx() (*Tx, error) {
 }
 
 // SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of Dept entities.
-func (m *DeptMutation) SetID(id int64) {
+// operation is only accepted on creation of SysDept entities.
+func (m *SysDeptMutation) SetID(id int64) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *DeptMutation) ID() (id int64, exists bool) {
+func (m *SysDeptMutation) ID() (id int64, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -145,7 +142,7 @@ func (m *DeptMutation) ID() (id int64, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *DeptMutation) IDs(ctx context.Context) ([]int64, error) {
+func (m *SysDeptMutation) IDs(ctx context.Context) ([]int64, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
@@ -154,20 +151,20 @@ func (m *DeptMutation) IDs(ctx context.Context) ([]int64, error) {
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().Dept.Query().Where(m.predicates...).IDs(ctx)
+		return m.Client().SysDept.Query().Where(m.predicates...).IDs(ctx)
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
 }
 
 // SetParentID sets the "parent_id" field.
-func (m *DeptMutation) SetParentID(i int64) {
+func (m *SysDeptMutation) SetParentID(i int64) {
 	m.parent_id = &i
 	m.addparent_id = nil
 }
 
 // ParentID returns the value of the "parent_id" field in the mutation.
-func (m *DeptMutation) ParentID() (r int64, exists bool) {
+func (m *SysDeptMutation) ParentID() (r int64, exists bool) {
 	v := m.parent_id
 	if v == nil {
 		return
@@ -175,10 +172,10 @@ func (m *DeptMutation) ParentID() (r int64, exists bool) {
 	return *v, true
 }
 
-// OldParentID returns the old "parent_id" field's value of the Dept entity.
-// If the Dept object wasn't provided to the builder, the object is fetched from the database.
+// OldParentID returns the old "parent_id" field's value of the SysDept entity.
+// If the SysDept object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeptMutation) OldParentID(ctx context.Context) (v int64, err error) {
+func (m *SysDeptMutation) OldParentID(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldParentID is only allowed on UpdateOne operations")
 	}
@@ -193,7 +190,7 @@ func (m *DeptMutation) OldParentID(ctx context.Context) (v int64, err error) {
 }
 
 // AddParentID adds i to the "parent_id" field.
-func (m *DeptMutation) AddParentID(i int64) {
+func (m *SysDeptMutation) AddParentID(i int64) {
 	if m.addparent_id != nil {
 		*m.addparent_id += i
 	} else {
@@ -202,7 +199,7 @@ func (m *DeptMutation) AddParentID(i int64) {
 }
 
 // AddedParentID returns the value that was added to the "parent_id" field in this mutation.
-func (m *DeptMutation) AddedParentID() (r int64, exists bool) {
+func (m *SysDeptMutation) AddedParentID() (r int64, exists bool) {
 	v := m.addparent_id
 	if v == nil {
 		return
@@ -211,18 +208,18 @@ func (m *DeptMutation) AddedParentID() (r int64, exists bool) {
 }
 
 // ResetParentID resets all changes to the "parent_id" field.
-func (m *DeptMutation) ResetParentID() {
+func (m *SysDeptMutation) ResetParentID() {
 	m.parent_id = nil
 	m.addparent_id = nil
 }
 
 // SetAncestors sets the "ancestors" field.
-func (m *DeptMutation) SetAncestors(s string) {
+func (m *SysDeptMutation) SetAncestors(s string) {
 	m.ancestors = &s
 }
 
 // Ancestors returns the value of the "ancestors" field in the mutation.
-func (m *DeptMutation) Ancestors() (r string, exists bool) {
+func (m *SysDeptMutation) Ancestors() (r string, exists bool) {
 	v := m.ancestors
 	if v == nil {
 		return
@@ -230,10 +227,10 @@ func (m *DeptMutation) Ancestors() (r string, exists bool) {
 	return *v, true
 }
 
-// OldAncestors returns the old "ancestors" field's value of the Dept entity.
-// If the Dept object wasn't provided to the builder, the object is fetched from the database.
+// OldAncestors returns the old "ancestors" field's value of the SysDept entity.
+// If the SysDept object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeptMutation) OldAncestors(ctx context.Context) (v string, err error) {
+func (m *SysDeptMutation) OldAncestors(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldAncestors is only allowed on UpdateOne operations")
 	}
@@ -248,30 +245,30 @@ func (m *DeptMutation) OldAncestors(ctx context.Context) (v string, err error) {
 }
 
 // ClearAncestors clears the value of the "ancestors" field.
-func (m *DeptMutation) ClearAncestors() {
+func (m *SysDeptMutation) ClearAncestors() {
 	m.ancestors = nil
-	m.clearedFields[dept.FieldAncestors] = struct{}{}
+	m.clearedFields[sysdept.FieldAncestors] = struct{}{}
 }
 
 // AncestorsCleared returns if the "ancestors" field was cleared in this mutation.
-func (m *DeptMutation) AncestorsCleared() bool {
-	_, ok := m.clearedFields[dept.FieldAncestors]
+func (m *SysDeptMutation) AncestorsCleared() bool {
+	_, ok := m.clearedFields[sysdept.FieldAncestors]
 	return ok
 }
 
 // ResetAncestors resets all changes to the "ancestors" field.
-func (m *DeptMutation) ResetAncestors() {
+func (m *SysDeptMutation) ResetAncestors() {
 	m.ancestors = nil
-	delete(m.clearedFields, dept.FieldAncestors)
+	delete(m.clearedFields, sysdept.FieldAncestors)
 }
 
 // SetDeptName sets the "dept_name" field.
-func (m *DeptMutation) SetDeptName(s string) {
+func (m *SysDeptMutation) SetDeptName(s string) {
 	m.dept_name = &s
 }
 
 // DeptName returns the value of the "dept_name" field in the mutation.
-func (m *DeptMutation) DeptName() (r string, exists bool) {
+func (m *SysDeptMutation) DeptName() (r string, exists bool) {
 	v := m.dept_name
 	if v == nil {
 		return
@@ -279,10 +276,10 @@ func (m *DeptMutation) DeptName() (r string, exists bool) {
 	return *v, true
 }
 
-// OldDeptName returns the old "dept_name" field's value of the Dept entity.
-// If the Dept object wasn't provided to the builder, the object is fetched from the database.
+// OldDeptName returns the old "dept_name" field's value of the SysDept entity.
+// If the SysDept object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeptMutation) OldDeptName(ctx context.Context) (v string, err error) {
+func (m *SysDeptMutation) OldDeptName(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDeptName is only allowed on UpdateOne operations")
 	}
@@ -297,30 +294,30 @@ func (m *DeptMutation) OldDeptName(ctx context.Context) (v string, err error) {
 }
 
 // ClearDeptName clears the value of the "dept_name" field.
-func (m *DeptMutation) ClearDeptName() {
+func (m *SysDeptMutation) ClearDeptName() {
 	m.dept_name = nil
-	m.clearedFields[dept.FieldDeptName] = struct{}{}
+	m.clearedFields[sysdept.FieldDeptName] = struct{}{}
 }
 
 // DeptNameCleared returns if the "dept_name" field was cleared in this mutation.
-func (m *DeptMutation) DeptNameCleared() bool {
-	_, ok := m.clearedFields[dept.FieldDeptName]
+func (m *SysDeptMutation) DeptNameCleared() bool {
+	_, ok := m.clearedFields[sysdept.FieldDeptName]
 	return ok
 }
 
 // ResetDeptName resets all changes to the "dept_name" field.
-func (m *DeptMutation) ResetDeptName() {
+func (m *SysDeptMutation) ResetDeptName() {
 	m.dept_name = nil
-	delete(m.clearedFields, dept.FieldDeptName)
+	delete(m.clearedFields, sysdept.FieldDeptName)
 }
 
 // SetDeptCode sets the "dept_code" field.
-func (m *DeptMutation) SetDeptCode(s string) {
+func (m *SysDeptMutation) SetDeptCode(s string) {
 	m.dept_code = &s
 }
 
 // DeptCode returns the value of the "dept_code" field in the mutation.
-func (m *DeptMutation) DeptCode() (r string, exists bool) {
+func (m *SysDeptMutation) DeptCode() (r string, exists bool) {
 	v := m.dept_code
 	if v == nil {
 		return
@@ -328,10 +325,10 @@ func (m *DeptMutation) DeptCode() (r string, exists bool) {
 	return *v, true
 }
 
-// OldDeptCode returns the old "dept_code" field's value of the Dept entity.
-// If the Dept object wasn't provided to the builder, the object is fetched from the database.
+// OldDeptCode returns the old "dept_code" field's value of the SysDept entity.
+// If the SysDept object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeptMutation) OldDeptCode(ctx context.Context) (v string, err error) {
+func (m *SysDeptMutation) OldDeptCode(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDeptCode is only allowed on UpdateOne operations")
 	}
@@ -346,30 +343,30 @@ func (m *DeptMutation) OldDeptCode(ctx context.Context) (v string, err error) {
 }
 
 // ClearDeptCode clears the value of the "dept_code" field.
-func (m *DeptMutation) ClearDeptCode() {
+func (m *SysDeptMutation) ClearDeptCode() {
 	m.dept_code = nil
-	m.clearedFields[dept.FieldDeptCode] = struct{}{}
+	m.clearedFields[sysdept.FieldDeptCode] = struct{}{}
 }
 
 // DeptCodeCleared returns if the "dept_code" field was cleared in this mutation.
-func (m *DeptMutation) DeptCodeCleared() bool {
-	_, ok := m.clearedFields[dept.FieldDeptCode]
+func (m *SysDeptMutation) DeptCodeCleared() bool {
+	_, ok := m.clearedFields[sysdept.FieldDeptCode]
 	return ok
 }
 
 // ResetDeptCode resets all changes to the "dept_code" field.
-func (m *DeptMutation) ResetDeptCode() {
+func (m *SysDeptMutation) ResetDeptCode() {
 	m.dept_code = nil
-	delete(m.clearedFields, dept.FieldDeptCode)
+	delete(m.clearedFields, sysdept.FieldDeptCode)
 }
 
 // SetLeader sets the "leader" field.
-func (m *DeptMutation) SetLeader(s string) {
+func (m *SysDeptMutation) SetLeader(s string) {
 	m.leader = &s
 }
 
 // Leader returns the value of the "leader" field in the mutation.
-func (m *DeptMutation) Leader() (r string, exists bool) {
+func (m *SysDeptMutation) Leader() (r string, exists bool) {
 	v := m.leader
 	if v == nil {
 		return
@@ -377,10 +374,10 @@ func (m *DeptMutation) Leader() (r string, exists bool) {
 	return *v, true
 }
 
-// OldLeader returns the old "leader" field's value of the Dept entity.
-// If the Dept object wasn't provided to the builder, the object is fetched from the database.
+// OldLeader returns the old "leader" field's value of the SysDept entity.
+// If the SysDept object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeptMutation) OldLeader(ctx context.Context) (v string, err error) {
+func (m *SysDeptMutation) OldLeader(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldLeader is only allowed on UpdateOne operations")
 	}
@@ -395,30 +392,30 @@ func (m *DeptMutation) OldLeader(ctx context.Context) (v string, err error) {
 }
 
 // ClearLeader clears the value of the "leader" field.
-func (m *DeptMutation) ClearLeader() {
+func (m *SysDeptMutation) ClearLeader() {
 	m.leader = nil
-	m.clearedFields[dept.FieldLeader] = struct{}{}
+	m.clearedFields[sysdept.FieldLeader] = struct{}{}
 }
 
 // LeaderCleared returns if the "leader" field was cleared in this mutation.
-func (m *DeptMutation) LeaderCleared() bool {
-	_, ok := m.clearedFields[dept.FieldLeader]
+func (m *SysDeptMutation) LeaderCleared() bool {
+	_, ok := m.clearedFields[sysdept.FieldLeader]
 	return ok
 }
 
 // ResetLeader resets all changes to the "leader" field.
-func (m *DeptMutation) ResetLeader() {
+func (m *SysDeptMutation) ResetLeader() {
 	m.leader = nil
-	delete(m.clearedFields, dept.FieldLeader)
+	delete(m.clearedFields, sysdept.FieldLeader)
 }
 
 // SetPhone sets the "phone" field.
-func (m *DeptMutation) SetPhone(s string) {
+func (m *SysDeptMutation) SetPhone(s string) {
 	m.phone = &s
 }
 
 // Phone returns the value of the "phone" field in the mutation.
-func (m *DeptMutation) Phone() (r string, exists bool) {
+func (m *SysDeptMutation) Phone() (r string, exists bool) {
 	v := m.phone
 	if v == nil {
 		return
@@ -426,10 +423,10 @@ func (m *DeptMutation) Phone() (r string, exists bool) {
 	return *v, true
 }
 
-// OldPhone returns the old "phone" field's value of the Dept entity.
-// If the Dept object wasn't provided to the builder, the object is fetched from the database.
+// OldPhone returns the old "phone" field's value of the SysDept entity.
+// If the SysDept object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeptMutation) OldPhone(ctx context.Context) (v string, err error) {
+func (m *SysDeptMutation) OldPhone(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldPhone is only allowed on UpdateOne operations")
 	}
@@ -444,30 +441,30 @@ func (m *DeptMutation) OldPhone(ctx context.Context) (v string, err error) {
 }
 
 // ClearPhone clears the value of the "phone" field.
-func (m *DeptMutation) ClearPhone() {
+func (m *SysDeptMutation) ClearPhone() {
 	m.phone = nil
-	m.clearedFields[dept.FieldPhone] = struct{}{}
+	m.clearedFields[sysdept.FieldPhone] = struct{}{}
 }
 
 // PhoneCleared returns if the "phone" field was cleared in this mutation.
-func (m *DeptMutation) PhoneCleared() bool {
-	_, ok := m.clearedFields[dept.FieldPhone]
+func (m *SysDeptMutation) PhoneCleared() bool {
+	_, ok := m.clearedFields[sysdept.FieldPhone]
 	return ok
 }
 
 // ResetPhone resets all changes to the "phone" field.
-func (m *DeptMutation) ResetPhone() {
+func (m *SysDeptMutation) ResetPhone() {
 	m.phone = nil
-	delete(m.clearedFields, dept.FieldPhone)
+	delete(m.clearedFields, sysdept.FieldPhone)
 }
 
 // SetEmail sets the "email" field.
-func (m *DeptMutation) SetEmail(s string) {
+func (m *SysDeptMutation) SetEmail(s string) {
 	m.email = &s
 }
 
 // Email returns the value of the "email" field in the mutation.
-func (m *DeptMutation) Email() (r string, exists bool) {
+func (m *SysDeptMutation) Email() (r string, exists bool) {
 	v := m.email
 	if v == nil {
 		return
@@ -475,10 +472,10 @@ func (m *DeptMutation) Email() (r string, exists bool) {
 	return *v, true
 }
 
-// OldEmail returns the old "email" field's value of the Dept entity.
-// If the Dept object wasn't provided to the builder, the object is fetched from the database.
+// OldEmail returns the old "email" field's value of the SysDept entity.
+// If the SysDept object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeptMutation) OldEmail(ctx context.Context) (v string, err error) {
+func (m *SysDeptMutation) OldEmail(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldEmail is only allowed on UpdateOne operations")
 	}
@@ -493,140 +490,86 @@ func (m *DeptMutation) OldEmail(ctx context.Context) (v string, err error) {
 }
 
 // ClearEmail clears the value of the "email" field.
-func (m *DeptMutation) ClearEmail() {
+func (m *SysDeptMutation) ClearEmail() {
 	m.email = nil
-	m.clearedFields[dept.FieldEmail] = struct{}{}
+	m.clearedFields[sysdept.FieldEmail] = struct{}{}
 }
 
 // EmailCleared returns if the "email" field was cleared in this mutation.
-func (m *DeptMutation) EmailCleared() bool {
-	_, ok := m.clearedFields[dept.FieldEmail]
+func (m *SysDeptMutation) EmailCleared() bool {
+	_, ok := m.clearedFields[sysdept.FieldEmail]
 	return ok
 }
 
 // ResetEmail resets all changes to the "email" field.
-func (m *DeptMutation) ResetEmail() {
+func (m *SysDeptMutation) ResetEmail() {
 	m.email = nil
-	delete(m.clearedFields, dept.FieldEmail)
+	delete(m.clearedFields, sysdept.FieldEmail)
 }
 
-// AddUserIDs adds the "users" edge to the User entity by ids.
-func (m *DeptMutation) AddUserIDs(ids ...int64) {
-	if m.users == nil {
-		m.users = make(map[int64]struct{})
+// AddSysUserIDs adds the "sys_users" edge to the SysUser entity by ids.
+func (m *SysDeptMutation) AddSysUserIDs(ids ...int64) {
+	if m.sys_users == nil {
+		m.sys_users = make(map[int64]struct{})
 	}
 	for i := range ids {
-		m.users[ids[i]] = struct{}{}
+		m.sys_users[ids[i]] = struct{}{}
 	}
 }
 
-// ClearUsers clears the "users" edge to the User entity.
-func (m *DeptMutation) ClearUsers() {
-	m.clearedusers = true
+// ClearSysUsers clears the "sys_users" edge to the SysUser entity.
+func (m *SysDeptMutation) ClearSysUsers() {
+	m.clearedsys_users = true
 }
 
-// UsersCleared reports if the "users" edge to the User entity was cleared.
-func (m *DeptMutation) UsersCleared() bool {
-	return m.clearedusers
+// SysUsersCleared reports if the "sys_users" edge to the SysUser entity was cleared.
+func (m *SysDeptMutation) SysUsersCleared() bool {
+	return m.clearedsys_users
 }
 
-// RemoveUserIDs removes the "users" edge to the User entity by IDs.
-func (m *DeptMutation) RemoveUserIDs(ids ...int64) {
-	if m.removedusers == nil {
-		m.removedusers = make(map[int64]struct{})
+// RemoveSysUserIDs removes the "sys_users" edge to the SysUser entity by IDs.
+func (m *SysDeptMutation) RemoveSysUserIDs(ids ...int64) {
+	if m.removedsys_users == nil {
+		m.removedsys_users = make(map[int64]struct{})
 	}
 	for i := range ids {
-		delete(m.users, ids[i])
-		m.removedusers[ids[i]] = struct{}{}
+		delete(m.sys_users, ids[i])
+		m.removedsys_users[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedUsers returns the removed IDs of the "users" edge to the User entity.
-func (m *DeptMutation) RemovedUsersIDs() (ids []int64) {
-	for id := range m.removedusers {
+// RemovedSysUsers returns the removed IDs of the "sys_users" edge to the SysUser entity.
+func (m *SysDeptMutation) RemovedSysUsersIDs() (ids []int64) {
+	for id := range m.removedsys_users {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// UsersIDs returns the "users" edge IDs in the mutation.
-func (m *DeptMutation) UsersIDs() (ids []int64) {
-	for id := range m.users {
+// SysUsersIDs returns the "sys_users" edge IDs in the mutation.
+func (m *SysDeptMutation) SysUsersIDs() (ids []int64) {
+	for id := range m.sys_users {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetUsers resets all changes to the "users" edge.
-func (m *DeptMutation) ResetUsers() {
-	m.users = nil
-	m.clearedusers = false
-	m.removedusers = nil
+// ResetSysUsers resets all changes to the "sys_users" edge.
+func (m *SysDeptMutation) ResetSysUsers() {
+	m.sys_users = nil
+	m.clearedsys_users = false
+	m.removedsys_users = nil
 }
 
-// AddRoleIDs adds the "roles" edge to the Role entity by ids.
-func (m *DeptMutation) AddRoleIDs(ids ...int64) {
-	if m.roles == nil {
-		m.roles = make(map[int64]struct{})
-	}
-	for i := range ids {
-		m.roles[ids[i]] = struct{}{}
-	}
-}
-
-// ClearRoles clears the "roles" edge to the Role entity.
-func (m *DeptMutation) ClearRoles() {
-	m.clearedroles = true
-}
-
-// RolesCleared reports if the "roles" edge to the Role entity was cleared.
-func (m *DeptMutation) RolesCleared() bool {
-	return m.clearedroles
-}
-
-// RemoveRoleIDs removes the "roles" edge to the Role entity by IDs.
-func (m *DeptMutation) RemoveRoleIDs(ids ...int64) {
-	if m.removedroles == nil {
-		m.removedroles = make(map[int64]struct{})
-	}
-	for i := range ids {
-		delete(m.roles, ids[i])
-		m.removedroles[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedRoles returns the removed IDs of the "roles" edge to the Role entity.
-func (m *DeptMutation) RemovedRolesIDs() (ids []int64) {
-	for id := range m.removedroles {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// RolesIDs returns the "roles" edge IDs in the mutation.
-func (m *DeptMutation) RolesIDs() (ids []int64) {
-	for id := range m.roles {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetRoles resets all changes to the "roles" edge.
-func (m *DeptMutation) ResetRoles() {
-	m.roles = nil
-	m.clearedroles = false
-	m.removedroles = nil
-}
-
-// Where appends a list predicates to the DeptMutation builder.
-func (m *DeptMutation) Where(ps ...predicate.Dept) {
+// Where appends a list predicates to the SysDeptMutation builder.
+func (m *SysDeptMutation) Where(ps ...predicate.SysDept) {
 	m.predicates = append(m.predicates, ps...)
 }
 
-// WhereP appends storage-level predicates to the DeptMutation builder. Using this method,
+// WhereP appends storage-level predicates to the SysDeptMutation builder. Using this method,
 // users can use type-assertion to append predicates that do not depend on any generated package.
-func (m *DeptMutation) WhereP(ps ...func(*sql.Selector)) {
-	p := make([]predicate.Dept, len(ps))
+func (m *SysDeptMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.SysDept, len(ps))
 	for i := range ps {
 		p[i] = ps[i]
 	}
@@ -634,45 +577,45 @@ func (m *DeptMutation) WhereP(ps ...func(*sql.Selector)) {
 }
 
 // Op returns the operation name.
-func (m *DeptMutation) Op() Op {
+func (m *SysDeptMutation) Op() Op {
 	return m.op
 }
 
 // SetOp allows setting the mutation operation.
-func (m *DeptMutation) SetOp(op Op) {
+func (m *SysDeptMutation) SetOp(op Op) {
 	m.op = op
 }
 
-// Type returns the node type of this mutation (Dept).
-func (m *DeptMutation) Type() string {
+// Type returns the node type of this mutation (SysDept).
+func (m *SysDeptMutation) Type() string {
 	return m.typ
 }
 
 // Fields returns all fields that were changed during this mutation. Note that in
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
-func (m *DeptMutation) Fields() []string {
+func (m *SysDeptMutation) Fields() []string {
 	fields := make([]string, 0, 7)
 	if m.parent_id != nil {
-		fields = append(fields, dept.FieldParentID)
+		fields = append(fields, sysdept.FieldParentID)
 	}
 	if m.ancestors != nil {
-		fields = append(fields, dept.FieldAncestors)
+		fields = append(fields, sysdept.FieldAncestors)
 	}
 	if m.dept_name != nil {
-		fields = append(fields, dept.FieldDeptName)
+		fields = append(fields, sysdept.FieldDeptName)
 	}
 	if m.dept_code != nil {
-		fields = append(fields, dept.FieldDeptCode)
+		fields = append(fields, sysdept.FieldDeptCode)
 	}
 	if m.leader != nil {
-		fields = append(fields, dept.FieldLeader)
+		fields = append(fields, sysdept.FieldLeader)
 	}
 	if m.phone != nil {
-		fields = append(fields, dept.FieldPhone)
+		fields = append(fields, sysdept.FieldPhone)
 	}
 	if m.email != nil {
-		fields = append(fields, dept.FieldEmail)
+		fields = append(fields, sysdept.FieldEmail)
 	}
 	return fields
 }
@@ -680,21 +623,21 @@ func (m *DeptMutation) Fields() []string {
 // Field returns the value of a field with the given name. The second boolean
 // return value indicates that this field was not set, or was not defined in the
 // schema.
-func (m *DeptMutation) Field(name string) (ent.Value, bool) {
+func (m *SysDeptMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case dept.FieldParentID:
+	case sysdept.FieldParentID:
 		return m.ParentID()
-	case dept.FieldAncestors:
+	case sysdept.FieldAncestors:
 		return m.Ancestors()
-	case dept.FieldDeptName:
+	case sysdept.FieldDeptName:
 		return m.DeptName()
-	case dept.FieldDeptCode:
+	case sysdept.FieldDeptCode:
 		return m.DeptCode()
-	case dept.FieldLeader:
+	case sysdept.FieldLeader:
 		return m.Leader()
-	case dept.FieldPhone:
+	case sysdept.FieldPhone:
 		return m.Phone()
-	case dept.FieldEmail:
+	case sysdept.FieldEmail:
 		return m.Email()
 	}
 	return nil, false
@@ -703,74 +646,74 @@ func (m *DeptMutation) Field(name string) (ent.Value, bool) {
 // OldField returns the old value of the field from the database. An error is
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
-func (m *DeptMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+func (m *SysDeptMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case dept.FieldParentID:
+	case sysdept.FieldParentID:
 		return m.OldParentID(ctx)
-	case dept.FieldAncestors:
+	case sysdept.FieldAncestors:
 		return m.OldAncestors(ctx)
-	case dept.FieldDeptName:
+	case sysdept.FieldDeptName:
 		return m.OldDeptName(ctx)
-	case dept.FieldDeptCode:
+	case sysdept.FieldDeptCode:
 		return m.OldDeptCode(ctx)
-	case dept.FieldLeader:
+	case sysdept.FieldLeader:
 		return m.OldLeader(ctx)
-	case dept.FieldPhone:
+	case sysdept.FieldPhone:
 		return m.OldPhone(ctx)
-	case dept.FieldEmail:
+	case sysdept.FieldEmail:
 		return m.OldEmail(ctx)
 	}
-	return nil, fmt.Errorf("unknown Dept field %s", name)
+	return nil, fmt.Errorf("unknown SysDept field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *DeptMutation) SetField(name string, value ent.Value) error {
+func (m *SysDeptMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case dept.FieldParentID:
+	case sysdept.FieldParentID:
 		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetParentID(v)
 		return nil
-	case dept.FieldAncestors:
+	case sysdept.FieldAncestors:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAncestors(v)
 		return nil
-	case dept.FieldDeptName:
+	case sysdept.FieldDeptName:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDeptName(v)
 		return nil
-	case dept.FieldDeptCode:
+	case sysdept.FieldDeptCode:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDeptCode(v)
 		return nil
-	case dept.FieldLeader:
+	case sysdept.FieldLeader:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetLeader(v)
 		return nil
-	case dept.FieldPhone:
+	case sysdept.FieldPhone:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPhone(v)
 		return nil
-	case dept.FieldEmail:
+	case sysdept.FieldEmail:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
@@ -778,15 +721,15 @@ func (m *DeptMutation) SetField(name string, value ent.Value) error {
 		m.SetEmail(v)
 		return nil
 	}
-	return fmt.Errorf("unknown Dept field %s", name)
+	return fmt.Errorf("unknown SysDept field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
-func (m *DeptMutation) AddedFields() []string {
+func (m *SysDeptMutation) AddedFields() []string {
 	var fields []string
 	if m.addparent_id != nil {
-		fields = append(fields, dept.FieldParentID)
+		fields = append(fields, sysdept.FieldParentID)
 	}
 	return fields
 }
@@ -794,9 +737,9 @@ func (m *DeptMutation) AddedFields() []string {
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
-func (m *DeptMutation) AddedField(name string) (ent.Value, bool) {
+func (m *SysDeptMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case dept.FieldParentID:
+	case sysdept.FieldParentID:
 		return m.AddedParentID()
 	}
 	return nil, false
@@ -805,9 +748,9 @@ func (m *DeptMutation) AddedField(name string) (ent.Value, bool) {
 // AddField adds the value to the field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *DeptMutation) AddField(name string, value ent.Value) error {
+func (m *SysDeptMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case dept.FieldParentID:
+	case sysdept.FieldParentID:
 		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
@@ -815,121 +758,112 @@ func (m *DeptMutation) AddField(name string, value ent.Value) error {
 		m.AddParentID(v)
 		return nil
 	}
-	return fmt.Errorf("unknown Dept numeric field %s", name)
+	return fmt.Errorf("unknown SysDept numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
-func (m *DeptMutation) ClearedFields() []string {
+func (m *SysDeptMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(dept.FieldAncestors) {
-		fields = append(fields, dept.FieldAncestors)
+	if m.FieldCleared(sysdept.FieldAncestors) {
+		fields = append(fields, sysdept.FieldAncestors)
 	}
-	if m.FieldCleared(dept.FieldDeptName) {
-		fields = append(fields, dept.FieldDeptName)
+	if m.FieldCleared(sysdept.FieldDeptName) {
+		fields = append(fields, sysdept.FieldDeptName)
 	}
-	if m.FieldCleared(dept.FieldDeptCode) {
-		fields = append(fields, dept.FieldDeptCode)
+	if m.FieldCleared(sysdept.FieldDeptCode) {
+		fields = append(fields, sysdept.FieldDeptCode)
 	}
-	if m.FieldCleared(dept.FieldLeader) {
-		fields = append(fields, dept.FieldLeader)
+	if m.FieldCleared(sysdept.FieldLeader) {
+		fields = append(fields, sysdept.FieldLeader)
 	}
-	if m.FieldCleared(dept.FieldPhone) {
-		fields = append(fields, dept.FieldPhone)
+	if m.FieldCleared(sysdept.FieldPhone) {
+		fields = append(fields, sysdept.FieldPhone)
 	}
-	if m.FieldCleared(dept.FieldEmail) {
-		fields = append(fields, dept.FieldEmail)
+	if m.FieldCleared(sysdept.FieldEmail) {
+		fields = append(fields, sysdept.FieldEmail)
 	}
 	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
 // cleared in this mutation.
-func (m *DeptMutation) FieldCleared(name string) bool {
+func (m *SysDeptMutation) FieldCleared(name string) bool {
 	_, ok := m.clearedFields[name]
 	return ok
 }
 
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
-func (m *DeptMutation) ClearField(name string) error {
+func (m *SysDeptMutation) ClearField(name string) error {
 	switch name {
-	case dept.FieldAncestors:
+	case sysdept.FieldAncestors:
 		m.ClearAncestors()
 		return nil
-	case dept.FieldDeptName:
+	case sysdept.FieldDeptName:
 		m.ClearDeptName()
 		return nil
-	case dept.FieldDeptCode:
+	case sysdept.FieldDeptCode:
 		m.ClearDeptCode()
 		return nil
-	case dept.FieldLeader:
+	case sysdept.FieldLeader:
 		m.ClearLeader()
 		return nil
-	case dept.FieldPhone:
+	case sysdept.FieldPhone:
 		m.ClearPhone()
 		return nil
-	case dept.FieldEmail:
+	case sysdept.FieldEmail:
 		m.ClearEmail()
 		return nil
 	}
-	return fmt.Errorf("unknown Dept nullable field %s", name)
+	return fmt.Errorf("unknown SysDept nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
-func (m *DeptMutation) ResetField(name string) error {
+func (m *SysDeptMutation) ResetField(name string) error {
 	switch name {
-	case dept.FieldParentID:
+	case sysdept.FieldParentID:
 		m.ResetParentID()
 		return nil
-	case dept.FieldAncestors:
+	case sysdept.FieldAncestors:
 		m.ResetAncestors()
 		return nil
-	case dept.FieldDeptName:
+	case sysdept.FieldDeptName:
 		m.ResetDeptName()
 		return nil
-	case dept.FieldDeptCode:
+	case sysdept.FieldDeptCode:
 		m.ResetDeptCode()
 		return nil
-	case dept.FieldLeader:
+	case sysdept.FieldLeader:
 		m.ResetLeader()
 		return nil
-	case dept.FieldPhone:
+	case sysdept.FieldPhone:
 		m.ResetPhone()
 		return nil
-	case dept.FieldEmail:
+	case sysdept.FieldEmail:
 		m.ResetEmail()
 		return nil
 	}
-	return fmt.Errorf("unknown Dept field %s", name)
+	return fmt.Errorf("unknown SysDept field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
-func (m *DeptMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
-	if m.users != nil {
-		edges = append(edges, dept.EdgeUsers)
-	}
-	if m.roles != nil {
-		edges = append(edges, dept.EdgeRoles)
+func (m *SysDeptMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.sys_users != nil {
+		edges = append(edges, sysdept.EdgeSysUsers)
 	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
-func (m *DeptMutation) AddedIDs(name string) []ent.Value {
+func (m *SysDeptMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case dept.EdgeUsers:
-		ids := make([]ent.Value, 0, len(m.users))
-		for id := range m.users {
-			ids = append(ids, id)
-		}
-		return ids
-	case dept.EdgeRoles:
-		ids := make([]ent.Value, 0, len(m.roles))
-		for id := range m.roles {
+	case sysdept.EdgeSysUsers:
+		ids := make([]ent.Value, 0, len(m.sys_users))
+		for id := range m.sys_users {
 			ids = append(ids, id)
 		}
 		return ids
@@ -938,30 +872,21 @@ func (m *DeptMutation) AddedIDs(name string) []ent.Value {
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
-func (m *DeptMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
-	if m.removedusers != nil {
-		edges = append(edges, dept.EdgeUsers)
-	}
-	if m.removedroles != nil {
-		edges = append(edges, dept.EdgeRoles)
+func (m *SysDeptMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.removedsys_users != nil {
+		edges = append(edges, sysdept.EdgeSysUsers)
 	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
-func (m *DeptMutation) RemovedIDs(name string) []ent.Value {
+func (m *SysDeptMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case dept.EdgeUsers:
-		ids := make([]ent.Value, 0, len(m.removedusers))
-		for id := range m.removedusers {
-			ids = append(ids, id)
-		}
-		return ids
-	case dept.EdgeRoles:
-		ids := make([]ent.Value, 0, len(m.removedroles))
-		for id := range m.removedroles {
+	case sysdept.EdgeSysUsers:
+		ids := make([]ent.Value, 0, len(m.removedsys_users))
+		for id := range m.removedsys_users {
 			ids = append(ids, id)
 		}
 		return ids
@@ -970,82 +895,71 @@ func (m *DeptMutation) RemovedIDs(name string) []ent.Value {
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *DeptMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
-	if m.clearedusers {
-		edges = append(edges, dept.EdgeUsers)
-	}
-	if m.clearedroles {
-		edges = append(edges, dept.EdgeRoles)
+func (m *SysDeptMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedsys_users {
+		edges = append(edges, sysdept.EdgeSysUsers)
 	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
-func (m *DeptMutation) EdgeCleared(name string) bool {
+func (m *SysDeptMutation) EdgeCleared(name string) bool {
 	switch name {
-	case dept.EdgeUsers:
-		return m.clearedusers
-	case dept.EdgeRoles:
-		return m.clearedroles
+	case sysdept.EdgeSysUsers:
+		return m.clearedsys_users
 	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
-func (m *DeptMutation) ClearEdge(name string) error {
+func (m *SysDeptMutation) ClearEdge(name string) error {
 	switch name {
 	}
-	return fmt.Errorf("unknown Dept unique edge %s", name)
+	return fmt.Errorf("unknown SysDept unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
-func (m *DeptMutation) ResetEdge(name string) error {
+func (m *SysDeptMutation) ResetEdge(name string) error {
 	switch name {
-	case dept.EdgeUsers:
-		m.ResetUsers()
-		return nil
-	case dept.EdgeRoles:
-		m.ResetRoles()
+	case sysdept.EdgeSysUsers:
+		m.ResetSysUsers()
 		return nil
 	}
-	return fmt.Errorf("unknown Dept edge %s", name)
+	return fmt.Errorf("unknown SysDept edge %s", name)
 }
 
-// RoleMutation represents an operation that mutates the Role nodes in the graph.
-type RoleMutation struct {
+// SysRoleMutation represents an operation that mutates the SysRole nodes in the graph.
+type SysRoleMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int64
-	role_name     *string
-	role_code     *string
-	clearedFields map[string]struct{}
-	depts         map[int64]struct{}
-	removeddepts  map[int64]struct{}
-	cleareddepts  bool
-	users         map[int64]struct{}
-	removedusers  map[int64]struct{}
-	clearedusers  bool
-	done          bool
-	oldValue      func(context.Context) (*Role, error)
-	predicates    []predicate.Role
+	op               Op
+	typ              string
+	id               *int64
+	role_name        *string
+	role_code        *string
+	clearedFields    map[string]struct{}
+	sys_users        map[int64]struct{}
+	removedsys_users map[int64]struct{}
+	clearedsys_users bool
+	done             bool
+	oldValue         func(context.Context) (*SysRole, error)
+	predicates       []predicate.SysRole
 }
 
-var _ ent.Mutation = (*RoleMutation)(nil)
+var _ ent.Mutation = (*SysRoleMutation)(nil)
 
-// roleOption allows management of the mutation configuration using functional options.
-type roleOption func(*RoleMutation)
+// sysroleOption allows management of the mutation configuration using functional options.
+type sysroleOption func(*SysRoleMutation)
 
-// newRoleMutation creates new mutation for the Role entity.
-func newRoleMutation(c config, op Op, opts ...roleOption) *RoleMutation {
-	m := &RoleMutation{
+// newSysRoleMutation creates new mutation for the SysRole entity.
+func newSysRoleMutation(c config, op Op, opts ...sysroleOption) *SysRoleMutation {
+	m := &SysRoleMutation{
 		config:        c,
 		op:            op,
-		typ:           TypeRole,
+		typ:           TypeSysRole,
 		clearedFields: make(map[string]struct{}),
 	}
 	for _, opt := range opts {
@@ -1054,20 +968,20 @@ func newRoleMutation(c config, op Op, opts ...roleOption) *RoleMutation {
 	return m
 }
 
-// withRoleID sets the ID field of the mutation.
-func withRoleID(id int64) roleOption {
-	return func(m *RoleMutation) {
+// withSysRoleID sets the ID field of the mutation.
+func withSysRoleID(id int64) sysroleOption {
+	return func(m *SysRoleMutation) {
 		var (
 			err   error
 			once  sync.Once
-			value *Role
+			value *SysRole
 		)
-		m.oldValue = func(ctx context.Context) (*Role, error) {
+		m.oldValue = func(ctx context.Context) (*SysRole, error) {
 			once.Do(func() {
 				if m.done {
 					err = errors.New("querying old values post mutation is not allowed")
 				} else {
-					value, err = m.Client().Role.Get(ctx, id)
+					value, err = m.Client().SysRole.Get(ctx, id)
 				}
 			})
 			return value, err
@@ -1076,10 +990,10 @@ func withRoleID(id int64) roleOption {
 	}
 }
 
-// withRole sets the old Role of the mutation.
-func withRole(node *Role) roleOption {
-	return func(m *RoleMutation) {
-		m.oldValue = func(context.Context) (*Role, error) {
+// withSysRole sets the old SysRole of the mutation.
+func withSysRole(node *SysRole) sysroleOption {
+	return func(m *SysRoleMutation) {
+		m.oldValue = func(context.Context) (*SysRole, error) {
 			return node, nil
 		}
 		m.id = &node.ID
@@ -1088,7 +1002,7 @@ func withRole(node *Role) roleOption {
 
 // Client returns a new `ent.Client` from the mutation. If the mutation was
 // executed in a transaction (ent.Tx), a transactional client is returned.
-func (m RoleMutation) Client() *Client {
+func (m SysRoleMutation) Client() *Client {
 	client := &Client{config: m.config}
 	client.init()
 	return client
@@ -1096,7 +1010,7 @@ func (m RoleMutation) Client() *Client {
 
 // Tx returns an `ent.Tx` for mutations that were executed in transactions;
 // it returns an error otherwise.
-func (m RoleMutation) Tx() (*Tx, error) {
+func (m SysRoleMutation) Tx() (*Tx, error) {
 	if _, ok := m.driver.(*txDriver); !ok {
 		return nil, errors.New("ent: mutation is not running in a transaction")
 	}
@@ -1106,14 +1020,14 @@ func (m RoleMutation) Tx() (*Tx, error) {
 }
 
 // SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of Role entities.
-func (m *RoleMutation) SetID(id int64) {
+// operation is only accepted on creation of SysRole entities.
+func (m *SysRoleMutation) SetID(id int64) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *RoleMutation) ID() (id int64, exists bool) {
+func (m *SysRoleMutation) ID() (id int64, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -1124,7 +1038,7 @@ func (m *RoleMutation) ID() (id int64, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *RoleMutation) IDs(ctx context.Context) ([]int64, error) {
+func (m *SysRoleMutation) IDs(ctx context.Context) ([]int64, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
@@ -1133,19 +1047,19 @@ func (m *RoleMutation) IDs(ctx context.Context) ([]int64, error) {
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().Role.Query().Where(m.predicates...).IDs(ctx)
+		return m.Client().SysRole.Query().Where(m.predicates...).IDs(ctx)
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
 }
 
 // SetRoleName sets the "role_name" field.
-func (m *RoleMutation) SetRoleName(s string) {
+func (m *SysRoleMutation) SetRoleName(s string) {
 	m.role_name = &s
 }
 
 // RoleName returns the value of the "role_name" field in the mutation.
-func (m *RoleMutation) RoleName() (r string, exists bool) {
+func (m *SysRoleMutation) RoleName() (r string, exists bool) {
 	v := m.role_name
 	if v == nil {
 		return
@@ -1153,10 +1067,10 @@ func (m *RoleMutation) RoleName() (r string, exists bool) {
 	return *v, true
 }
 
-// OldRoleName returns the old "role_name" field's value of the Role entity.
-// If the Role object wasn't provided to the builder, the object is fetched from the database.
+// OldRoleName returns the old "role_name" field's value of the SysRole entity.
+// If the SysRole object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RoleMutation) OldRoleName(ctx context.Context) (v string, err error) {
+func (m *SysRoleMutation) OldRoleName(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRoleName is only allowed on UpdateOne operations")
 	}
@@ -1171,30 +1085,30 @@ func (m *RoleMutation) OldRoleName(ctx context.Context) (v string, err error) {
 }
 
 // ClearRoleName clears the value of the "role_name" field.
-func (m *RoleMutation) ClearRoleName() {
+func (m *SysRoleMutation) ClearRoleName() {
 	m.role_name = nil
-	m.clearedFields[role.FieldRoleName] = struct{}{}
+	m.clearedFields[sysrole.FieldRoleName] = struct{}{}
 }
 
 // RoleNameCleared returns if the "role_name" field was cleared in this mutation.
-func (m *RoleMutation) RoleNameCleared() bool {
-	_, ok := m.clearedFields[role.FieldRoleName]
+func (m *SysRoleMutation) RoleNameCleared() bool {
+	_, ok := m.clearedFields[sysrole.FieldRoleName]
 	return ok
 }
 
 // ResetRoleName resets all changes to the "role_name" field.
-func (m *RoleMutation) ResetRoleName() {
+func (m *SysRoleMutation) ResetRoleName() {
 	m.role_name = nil
-	delete(m.clearedFields, role.FieldRoleName)
+	delete(m.clearedFields, sysrole.FieldRoleName)
 }
 
 // SetRoleCode sets the "role_code" field.
-func (m *RoleMutation) SetRoleCode(s string) {
+func (m *SysRoleMutation) SetRoleCode(s string) {
 	m.role_code = &s
 }
 
 // RoleCode returns the value of the "role_code" field in the mutation.
-func (m *RoleMutation) RoleCode() (r string, exists bool) {
+func (m *SysRoleMutation) RoleCode() (r string, exists bool) {
 	v := m.role_code
 	if v == nil {
 		return
@@ -1202,10 +1116,10 @@ func (m *RoleMutation) RoleCode() (r string, exists bool) {
 	return *v, true
 }
 
-// OldRoleCode returns the old "role_code" field's value of the Role entity.
-// If the Role object wasn't provided to the builder, the object is fetched from the database.
+// OldRoleCode returns the old "role_code" field's value of the SysRole entity.
+// If the SysRole object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RoleMutation) OldRoleCode(ctx context.Context) (v string, err error) {
+func (m *SysRoleMutation) OldRoleCode(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRoleCode is only allowed on UpdateOne operations")
 	}
@@ -1220,140 +1134,86 @@ func (m *RoleMutation) OldRoleCode(ctx context.Context) (v string, err error) {
 }
 
 // ClearRoleCode clears the value of the "role_code" field.
-func (m *RoleMutation) ClearRoleCode() {
+func (m *SysRoleMutation) ClearRoleCode() {
 	m.role_code = nil
-	m.clearedFields[role.FieldRoleCode] = struct{}{}
+	m.clearedFields[sysrole.FieldRoleCode] = struct{}{}
 }
 
 // RoleCodeCleared returns if the "role_code" field was cleared in this mutation.
-func (m *RoleMutation) RoleCodeCleared() bool {
-	_, ok := m.clearedFields[role.FieldRoleCode]
+func (m *SysRoleMutation) RoleCodeCleared() bool {
+	_, ok := m.clearedFields[sysrole.FieldRoleCode]
 	return ok
 }
 
 // ResetRoleCode resets all changes to the "role_code" field.
-func (m *RoleMutation) ResetRoleCode() {
+func (m *SysRoleMutation) ResetRoleCode() {
 	m.role_code = nil
-	delete(m.clearedFields, role.FieldRoleCode)
+	delete(m.clearedFields, sysrole.FieldRoleCode)
 }
 
-// AddDeptIDs adds the "depts" edge to the Dept entity by ids.
-func (m *RoleMutation) AddDeptIDs(ids ...int64) {
-	if m.depts == nil {
-		m.depts = make(map[int64]struct{})
+// AddSysUserIDs adds the "sys_users" edge to the SysUser entity by ids.
+func (m *SysRoleMutation) AddSysUserIDs(ids ...int64) {
+	if m.sys_users == nil {
+		m.sys_users = make(map[int64]struct{})
 	}
 	for i := range ids {
-		m.depts[ids[i]] = struct{}{}
+		m.sys_users[ids[i]] = struct{}{}
 	}
 }
 
-// ClearDepts clears the "depts" edge to the Dept entity.
-func (m *RoleMutation) ClearDepts() {
-	m.cleareddepts = true
+// ClearSysUsers clears the "sys_users" edge to the SysUser entity.
+func (m *SysRoleMutation) ClearSysUsers() {
+	m.clearedsys_users = true
 }
 
-// DeptsCleared reports if the "depts" edge to the Dept entity was cleared.
-func (m *RoleMutation) DeptsCleared() bool {
-	return m.cleareddepts
+// SysUsersCleared reports if the "sys_users" edge to the SysUser entity was cleared.
+func (m *SysRoleMutation) SysUsersCleared() bool {
+	return m.clearedsys_users
 }
 
-// RemoveDeptIDs removes the "depts" edge to the Dept entity by IDs.
-func (m *RoleMutation) RemoveDeptIDs(ids ...int64) {
-	if m.removeddepts == nil {
-		m.removeddepts = make(map[int64]struct{})
+// RemoveSysUserIDs removes the "sys_users" edge to the SysUser entity by IDs.
+func (m *SysRoleMutation) RemoveSysUserIDs(ids ...int64) {
+	if m.removedsys_users == nil {
+		m.removedsys_users = make(map[int64]struct{})
 	}
 	for i := range ids {
-		delete(m.depts, ids[i])
-		m.removeddepts[ids[i]] = struct{}{}
+		delete(m.sys_users, ids[i])
+		m.removedsys_users[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedDepts returns the removed IDs of the "depts" edge to the Dept entity.
-func (m *RoleMutation) RemovedDeptsIDs() (ids []int64) {
-	for id := range m.removeddepts {
+// RemovedSysUsers returns the removed IDs of the "sys_users" edge to the SysUser entity.
+func (m *SysRoleMutation) RemovedSysUsersIDs() (ids []int64) {
+	for id := range m.removedsys_users {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// DeptsIDs returns the "depts" edge IDs in the mutation.
-func (m *RoleMutation) DeptsIDs() (ids []int64) {
-	for id := range m.depts {
+// SysUsersIDs returns the "sys_users" edge IDs in the mutation.
+func (m *SysRoleMutation) SysUsersIDs() (ids []int64) {
+	for id := range m.sys_users {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetDepts resets all changes to the "depts" edge.
-func (m *RoleMutation) ResetDepts() {
-	m.depts = nil
-	m.cleareddepts = false
-	m.removeddepts = nil
+// ResetSysUsers resets all changes to the "sys_users" edge.
+func (m *SysRoleMutation) ResetSysUsers() {
+	m.sys_users = nil
+	m.clearedsys_users = false
+	m.removedsys_users = nil
 }
 
-// AddUserIDs adds the "users" edge to the User entity by ids.
-func (m *RoleMutation) AddUserIDs(ids ...int64) {
-	if m.users == nil {
-		m.users = make(map[int64]struct{})
-	}
-	for i := range ids {
-		m.users[ids[i]] = struct{}{}
-	}
-}
-
-// ClearUsers clears the "users" edge to the User entity.
-func (m *RoleMutation) ClearUsers() {
-	m.clearedusers = true
-}
-
-// UsersCleared reports if the "users" edge to the User entity was cleared.
-func (m *RoleMutation) UsersCleared() bool {
-	return m.clearedusers
-}
-
-// RemoveUserIDs removes the "users" edge to the User entity by IDs.
-func (m *RoleMutation) RemoveUserIDs(ids ...int64) {
-	if m.removedusers == nil {
-		m.removedusers = make(map[int64]struct{})
-	}
-	for i := range ids {
-		delete(m.users, ids[i])
-		m.removedusers[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedUsers returns the removed IDs of the "users" edge to the User entity.
-func (m *RoleMutation) RemovedUsersIDs() (ids []int64) {
-	for id := range m.removedusers {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// UsersIDs returns the "users" edge IDs in the mutation.
-func (m *RoleMutation) UsersIDs() (ids []int64) {
-	for id := range m.users {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetUsers resets all changes to the "users" edge.
-func (m *RoleMutation) ResetUsers() {
-	m.users = nil
-	m.clearedusers = false
-	m.removedusers = nil
-}
-
-// Where appends a list predicates to the RoleMutation builder.
-func (m *RoleMutation) Where(ps ...predicate.Role) {
+// Where appends a list predicates to the SysRoleMutation builder.
+func (m *SysRoleMutation) Where(ps ...predicate.SysRole) {
 	m.predicates = append(m.predicates, ps...)
 }
 
-// WhereP appends storage-level predicates to the RoleMutation builder. Using this method,
+// WhereP appends storage-level predicates to the SysRoleMutation builder. Using this method,
 // users can use type-assertion to append predicates that do not depend on any generated package.
-func (m *RoleMutation) WhereP(ps ...func(*sql.Selector)) {
-	p := make([]predicate.Role, len(ps))
+func (m *SysRoleMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.SysRole, len(ps))
 	for i := range ps {
 		p[i] = ps[i]
 	}
@@ -1361,30 +1221,30 @@ func (m *RoleMutation) WhereP(ps ...func(*sql.Selector)) {
 }
 
 // Op returns the operation name.
-func (m *RoleMutation) Op() Op {
+func (m *SysRoleMutation) Op() Op {
 	return m.op
 }
 
 // SetOp allows setting the mutation operation.
-func (m *RoleMutation) SetOp(op Op) {
+func (m *SysRoleMutation) SetOp(op Op) {
 	m.op = op
 }
 
-// Type returns the node type of this mutation (Role).
-func (m *RoleMutation) Type() string {
+// Type returns the node type of this mutation (SysRole).
+func (m *SysRoleMutation) Type() string {
 	return m.typ
 }
 
 // Fields returns all fields that were changed during this mutation. Note that in
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
-func (m *RoleMutation) Fields() []string {
+func (m *SysRoleMutation) Fields() []string {
 	fields := make([]string, 0, 2)
 	if m.role_name != nil {
-		fields = append(fields, role.FieldRoleName)
+		fields = append(fields, sysrole.FieldRoleName)
 	}
 	if m.role_code != nil {
-		fields = append(fields, role.FieldRoleCode)
+		fields = append(fields, sysrole.FieldRoleCode)
 	}
 	return fields
 }
@@ -1392,11 +1252,11 @@ func (m *RoleMutation) Fields() []string {
 // Field returns the value of a field with the given name. The second boolean
 // return value indicates that this field was not set, or was not defined in the
 // schema.
-func (m *RoleMutation) Field(name string) (ent.Value, bool) {
+func (m *SysRoleMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case role.FieldRoleName:
+	case sysrole.FieldRoleName:
 		return m.RoleName()
-	case role.FieldRoleCode:
+	case sysrole.FieldRoleCode:
 		return m.RoleCode()
 	}
 	return nil, false
@@ -1405,29 +1265,29 @@ func (m *RoleMutation) Field(name string) (ent.Value, bool) {
 // OldField returns the old value of the field from the database. An error is
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
-func (m *RoleMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+func (m *SysRoleMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case role.FieldRoleName:
+	case sysrole.FieldRoleName:
 		return m.OldRoleName(ctx)
-	case role.FieldRoleCode:
+	case sysrole.FieldRoleCode:
 		return m.OldRoleCode(ctx)
 	}
-	return nil, fmt.Errorf("unknown Role field %s", name)
+	return nil, fmt.Errorf("unknown SysRole field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *RoleMutation) SetField(name string, value ent.Value) error {
+func (m *SysRoleMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case role.FieldRoleName:
+	case sysrole.FieldRoleName:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRoleName(v)
 		return nil
-	case role.FieldRoleCode:
+	case sysrole.FieldRoleCode:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
@@ -1435,104 +1295,95 @@ func (m *RoleMutation) SetField(name string, value ent.Value) error {
 		m.SetRoleCode(v)
 		return nil
 	}
-	return fmt.Errorf("unknown Role field %s", name)
+	return fmt.Errorf("unknown SysRole field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
-func (m *RoleMutation) AddedFields() []string {
+func (m *SysRoleMutation) AddedFields() []string {
 	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
-func (m *RoleMutation) AddedField(name string) (ent.Value, bool) {
+func (m *SysRoleMutation) AddedField(name string) (ent.Value, bool) {
 	return nil, false
 }
 
 // AddField adds the value to the field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *RoleMutation) AddField(name string, value ent.Value) error {
+func (m *SysRoleMutation) AddField(name string, value ent.Value) error {
 	switch name {
 	}
-	return fmt.Errorf("unknown Role numeric field %s", name)
+	return fmt.Errorf("unknown SysRole numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
-func (m *RoleMutation) ClearedFields() []string {
+func (m *SysRoleMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(role.FieldRoleName) {
-		fields = append(fields, role.FieldRoleName)
+	if m.FieldCleared(sysrole.FieldRoleName) {
+		fields = append(fields, sysrole.FieldRoleName)
 	}
-	if m.FieldCleared(role.FieldRoleCode) {
-		fields = append(fields, role.FieldRoleCode)
+	if m.FieldCleared(sysrole.FieldRoleCode) {
+		fields = append(fields, sysrole.FieldRoleCode)
 	}
 	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
 // cleared in this mutation.
-func (m *RoleMutation) FieldCleared(name string) bool {
+func (m *SysRoleMutation) FieldCleared(name string) bool {
 	_, ok := m.clearedFields[name]
 	return ok
 }
 
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
-func (m *RoleMutation) ClearField(name string) error {
+func (m *SysRoleMutation) ClearField(name string) error {
 	switch name {
-	case role.FieldRoleName:
+	case sysrole.FieldRoleName:
 		m.ClearRoleName()
 		return nil
-	case role.FieldRoleCode:
+	case sysrole.FieldRoleCode:
 		m.ClearRoleCode()
 		return nil
 	}
-	return fmt.Errorf("unknown Role nullable field %s", name)
+	return fmt.Errorf("unknown SysRole nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
-func (m *RoleMutation) ResetField(name string) error {
+func (m *SysRoleMutation) ResetField(name string) error {
 	switch name {
-	case role.FieldRoleName:
+	case sysrole.FieldRoleName:
 		m.ResetRoleName()
 		return nil
-	case role.FieldRoleCode:
+	case sysrole.FieldRoleCode:
 		m.ResetRoleCode()
 		return nil
 	}
-	return fmt.Errorf("unknown Role field %s", name)
+	return fmt.Errorf("unknown SysRole field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
-func (m *RoleMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
-	if m.depts != nil {
-		edges = append(edges, role.EdgeDepts)
-	}
-	if m.users != nil {
-		edges = append(edges, role.EdgeUsers)
+func (m *SysRoleMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.sys_users != nil {
+		edges = append(edges, sysrole.EdgeSysUsers)
 	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
-func (m *RoleMutation) AddedIDs(name string) []ent.Value {
+func (m *SysRoleMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case role.EdgeDepts:
-		ids := make([]ent.Value, 0, len(m.depts))
-		for id := range m.depts {
-			ids = append(ids, id)
-		}
-		return ids
-	case role.EdgeUsers:
-		ids := make([]ent.Value, 0, len(m.users))
-		for id := range m.users {
+	case sysrole.EdgeSysUsers:
+		ids := make([]ent.Value, 0, len(m.sys_users))
+		for id := range m.sys_users {
 			ids = append(ids, id)
 		}
 		return ids
@@ -1541,30 +1392,21 @@ func (m *RoleMutation) AddedIDs(name string) []ent.Value {
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
-func (m *RoleMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
-	if m.removeddepts != nil {
-		edges = append(edges, role.EdgeDepts)
-	}
-	if m.removedusers != nil {
-		edges = append(edges, role.EdgeUsers)
+func (m *SysRoleMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.removedsys_users != nil {
+		edges = append(edges, sysrole.EdgeSysUsers)
 	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
-func (m *RoleMutation) RemovedIDs(name string) []ent.Value {
+func (m *SysRoleMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case role.EdgeDepts:
-		ids := make([]ent.Value, 0, len(m.removeddepts))
-		for id := range m.removeddepts {
-			ids = append(ids, id)
-		}
-		return ids
-	case role.EdgeUsers:
-		ids := make([]ent.Value, 0, len(m.removedusers))
-		for id := range m.removedusers {
+	case sysrole.EdgeSysUsers:
+		ids := make([]ent.Value, 0, len(m.removedsys_users))
+		for id := range m.removedsys_users {
 			ids = append(ids, id)
 		}
 		return ids
@@ -1573,86 +1415,78 @@ func (m *RoleMutation) RemovedIDs(name string) []ent.Value {
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *RoleMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
-	if m.cleareddepts {
-		edges = append(edges, role.EdgeDepts)
-	}
-	if m.clearedusers {
-		edges = append(edges, role.EdgeUsers)
+func (m *SysRoleMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedsys_users {
+		edges = append(edges, sysrole.EdgeSysUsers)
 	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
-func (m *RoleMutation) EdgeCleared(name string) bool {
+func (m *SysRoleMutation) EdgeCleared(name string) bool {
 	switch name {
-	case role.EdgeDepts:
-		return m.cleareddepts
-	case role.EdgeUsers:
-		return m.clearedusers
+	case sysrole.EdgeSysUsers:
+		return m.clearedsys_users
 	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
-func (m *RoleMutation) ClearEdge(name string) error {
+func (m *SysRoleMutation) ClearEdge(name string) error {
 	switch name {
 	}
-	return fmt.Errorf("unknown Role unique edge %s", name)
+	return fmt.Errorf("unknown SysRole unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
-func (m *RoleMutation) ResetEdge(name string) error {
+func (m *SysRoleMutation) ResetEdge(name string) error {
 	switch name {
-	case role.EdgeDepts:
-		m.ResetDepts()
-		return nil
-	case role.EdgeUsers:
-		m.ResetUsers()
+	case sysrole.EdgeSysUsers:
+		m.ResetSysUsers()
 		return nil
 	}
-	return fmt.Errorf("unknown Role edge %s", name)
+	return fmt.Errorf("unknown SysRole edge %s", name)
 }
 
-// UserMutation represents an operation that mutates the User nodes in the graph.
-type UserMutation struct {
+// SysUserMutation represents an operation that mutates the SysUser nodes in the graph.
+type SysUserMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int64
-	user_name     *string
-	nick_name     *string
-	mobile        *string
-	password      *string
-	email         *string
-	sex           *int8
-	addsex        *int8
-	clearedFields map[string]struct{}
-	dept          *int64
-	cleareddept   bool
-	roles         map[int64]struct{}
-	removedroles  map[int64]struct{}
-	clearedroles  bool
-	done          bool
-	oldValue      func(context.Context) (*User, error)
-	predicates    []predicate.User
+	op               Op
+	typ              string
+	id               *int64
+	user_name        *string
+	nick_name        *string
+	mobile           *string
+	password         *string
+	email            *string
+	sex              *int8
+	addsex           *int8
+	clearedFields    map[string]struct{}
+	sys_dept         *int64
+	clearedsys_dept  bool
+	sys_roles        map[int64]struct{}
+	removedsys_roles map[int64]struct{}
+	clearedsys_roles bool
+	done             bool
+	oldValue         func(context.Context) (*SysUser, error)
+	predicates       []predicate.SysUser
 }
 
-var _ ent.Mutation = (*UserMutation)(nil)
+var _ ent.Mutation = (*SysUserMutation)(nil)
 
-// userOption allows management of the mutation configuration using functional options.
-type userOption func(*UserMutation)
+// sysuserOption allows management of the mutation configuration using functional options.
+type sysuserOption func(*SysUserMutation)
 
-// newUserMutation creates new mutation for the User entity.
-func newUserMutation(c config, op Op, opts ...userOption) *UserMutation {
-	m := &UserMutation{
+// newSysUserMutation creates new mutation for the SysUser entity.
+func newSysUserMutation(c config, op Op, opts ...sysuserOption) *SysUserMutation {
+	m := &SysUserMutation{
 		config:        c,
 		op:            op,
-		typ:           TypeUser,
+		typ:           TypeSysUser,
 		clearedFields: make(map[string]struct{}),
 	}
 	for _, opt := range opts {
@@ -1661,20 +1495,20 @@ func newUserMutation(c config, op Op, opts ...userOption) *UserMutation {
 	return m
 }
 
-// withUserID sets the ID field of the mutation.
-func withUserID(id int64) userOption {
-	return func(m *UserMutation) {
+// withSysUserID sets the ID field of the mutation.
+func withSysUserID(id int64) sysuserOption {
+	return func(m *SysUserMutation) {
 		var (
 			err   error
 			once  sync.Once
-			value *User
+			value *SysUser
 		)
-		m.oldValue = func(ctx context.Context) (*User, error) {
+		m.oldValue = func(ctx context.Context) (*SysUser, error) {
 			once.Do(func() {
 				if m.done {
 					err = errors.New("querying old values post mutation is not allowed")
 				} else {
-					value, err = m.Client().User.Get(ctx, id)
+					value, err = m.Client().SysUser.Get(ctx, id)
 				}
 			})
 			return value, err
@@ -1683,10 +1517,10 @@ func withUserID(id int64) userOption {
 	}
 }
 
-// withUser sets the old User of the mutation.
-func withUser(node *User) userOption {
-	return func(m *UserMutation) {
-		m.oldValue = func(context.Context) (*User, error) {
+// withSysUser sets the old SysUser of the mutation.
+func withSysUser(node *SysUser) sysuserOption {
+	return func(m *SysUserMutation) {
+		m.oldValue = func(context.Context) (*SysUser, error) {
 			return node, nil
 		}
 		m.id = &node.ID
@@ -1695,7 +1529,7 @@ func withUser(node *User) userOption {
 
 // Client returns a new `ent.Client` from the mutation. If the mutation was
 // executed in a transaction (ent.Tx), a transactional client is returned.
-func (m UserMutation) Client() *Client {
+func (m SysUserMutation) Client() *Client {
 	client := &Client{config: m.config}
 	client.init()
 	return client
@@ -1703,7 +1537,7 @@ func (m UserMutation) Client() *Client {
 
 // Tx returns an `ent.Tx` for mutations that were executed in transactions;
 // it returns an error otherwise.
-func (m UserMutation) Tx() (*Tx, error) {
+func (m SysUserMutation) Tx() (*Tx, error) {
 	if _, ok := m.driver.(*txDriver); !ok {
 		return nil, errors.New("ent: mutation is not running in a transaction")
 	}
@@ -1713,14 +1547,14 @@ func (m UserMutation) Tx() (*Tx, error) {
 }
 
 // SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of User entities.
-func (m *UserMutation) SetID(id int64) {
+// operation is only accepted on creation of SysUser entities.
+func (m *SysUserMutation) SetID(id int64) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *UserMutation) ID() (id int64, exists bool) {
+func (m *SysUserMutation) ID() (id int64, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -1731,7 +1565,7 @@ func (m *UserMutation) ID() (id int64, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *UserMutation) IDs(ctx context.Context) ([]int64, error) {
+func (m *SysUserMutation) IDs(ctx context.Context) ([]int64, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
@@ -1740,19 +1574,19 @@ func (m *UserMutation) IDs(ctx context.Context) ([]int64, error) {
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().User.Query().Where(m.predicates...).IDs(ctx)
+		return m.Client().SysUser.Query().Where(m.predicates...).IDs(ctx)
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
 }
 
 // SetUserName sets the "user_name" field.
-func (m *UserMutation) SetUserName(s string) {
+func (m *SysUserMutation) SetUserName(s string) {
 	m.user_name = &s
 }
 
 // UserName returns the value of the "user_name" field in the mutation.
-func (m *UserMutation) UserName() (r string, exists bool) {
+func (m *SysUserMutation) UserName() (r string, exists bool) {
 	v := m.user_name
 	if v == nil {
 		return
@@ -1760,10 +1594,10 @@ func (m *UserMutation) UserName() (r string, exists bool) {
 	return *v, true
 }
 
-// OldUserName returns the old "user_name" field's value of the User entity.
-// If the User object wasn't provided to the builder, the object is fetched from the database.
+// OldUserName returns the old "user_name" field's value of the SysUser entity.
+// If the SysUser object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldUserName(ctx context.Context) (v string, err error) {
+func (m *SysUserMutation) OldUserName(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldUserName is only allowed on UpdateOne operations")
 	}
@@ -1778,17 +1612,17 @@ func (m *UserMutation) OldUserName(ctx context.Context) (v string, err error) {
 }
 
 // ResetUserName resets all changes to the "user_name" field.
-func (m *UserMutation) ResetUserName() {
+func (m *SysUserMutation) ResetUserName() {
 	m.user_name = nil
 }
 
 // SetNickName sets the "nick_name" field.
-func (m *UserMutation) SetNickName(s string) {
+func (m *SysUserMutation) SetNickName(s string) {
 	m.nick_name = &s
 }
 
 // NickName returns the value of the "nick_name" field in the mutation.
-func (m *UserMutation) NickName() (r string, exists bool) {
+func (m *SysUserMutation) NickName() (r string, exists bool) {
 	v := m.nick_name
 	if v == nil {
 		return
@@ -1796,10 +1630,10 @@ func (m *UserMutation) NickName() (r string, exists bool) {
 	return *v, true
 }
 
-// OldNickName returns the old "nick_name" field's value of the User entity.
-// If the User object wasn't provided to the builder, the object is fetched from the database.
+// OldNickName returns the old "nick_name" field's value of the SysUser entity.
+// If the SysUser object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldNickName(ctx context.Context) (v string, err error) {
+func (m *SysUserMutation) OldNickName(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldNickName is only allowed on UpdateOne operations")
 	}
@@ -1814,30 +1648,30 @@ func (m *UserMutation) OldNickName(ctx context.Context) (v string, err error) {
 }
 
 // ClearNickName clears the value of the "nick_name" field.
-func (m *UserMutation) ClearNickName() {
+func (m *SysUserMutation) ClearNickName() {
 	m.nick_name = nil
-	m.clearedFields[user.FieldNickName] = struct{}{}
+	m.clearedFields[sysuser.FieldNickName] = struct{}{}
 }
 
 // NickNameCleared returns if the "nick_name" field was cleared in this mutation.
-func (m *UserMutation) NickNameCleared() bool {
-	_, ok := m.clearedFields[user.FieldNickName]
+func (m *SysUserMutation) NickNameCleared() bool {
+	_, ok := m.clearedFields[sysuser.FieldNickName]
 	return ok
 }
 
 // ResetNickName resets all changes to the "nick_name" field.
-func (m *UserMutation) ResetNickName() {
+func (m *SysUserMutation) ResetNickName() {
 	m.nick_name = nil
-	delete(m.clearedFields, user.FieldNickName)
+	delete(m.clearedFields, sysuser.FieldNickName)
 }
 
 // SetMobile sets the "mobile" field.
-func (m *UserMutation) SetMobile(s string) {
+func (m *SysUserMutation) SetMobile(s string) {
 	m.mobile = &s
 }
 
 // Mobile returns the value of the "mobile" field in the mutation.
-func (m *UserMutation) Mobile() (r string, exists bool) {
+func (m *SysUserMutation) Mobile() (r string, exists bool) {
 	v := m.mobile
 	if v == nil {
 		return
@@ -1845,10 +1679,10 @@ func (m *UserMutation) Mobile() (r string, exists bool) {
 	return *v, true
 }
 
-// OldMobile returns the old "mobile" field's value of the User entity.
-// If the User object wasn't provided to the builder, the object is fetched from the database.
+// OldMobile returns the old "mobile" field's value of the SysUser entity.
+// If the SysUser object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldMobile(ctx context.Context) (v string, err error) {
+func (m *SysUserMutation) OldMobile(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldMobile is only allowed on UpdateOne operations")
 	}
@@ -1863,30 +1697,30 @@ func (m *UserMutation) OldMobile(ctx context.Context) (v string, err error) {
 }
 
 // ClearMobile clears the value of the "mobile" field.
-func (m *UserMutation) ClearMobile() {
+func (m *SysUserMutation) ClearMobile() {
 	m.mobile = nil
-	m.clearedFields[user.FieldMobile] = struct{}{}
+	m.clearedFields[sysuser.FieldMobile] = struct{}{}
 }
 
 // MobileCleared returns if the "mobile" field was cleared in this mutation.
-func (m *UserMutation) MobileCleared() bool {
-	_, ok := m.clearedFields[user.FieldMobile]
+func (m *SysUserMutation) MobileCleared() bool {
+	_, ok := m.clearedFields[sysuser.FieldMobile]
 	return ok
 }
 
 // ResetMobile resets all changes to the "mobile" field.
-func (m *UserMutation) ResetMobile() {
+func (m *SysUserMutation) ResetMobile() {
 	m.mobile = nil
-	delete(m.clearedFields, user.FieldMobile)
+	delete(m.clearedFields, sysuser.FieldMobile)
 }
 
 // SetPassword sets the "password" field.
-func (m *UserMutation) SetPassword(s string) {
+func (m *SysUserMutation) SetPassword(s string) {
 	m.password = &s
 }
 
 // Password returns the value of the "password" field in the mutation.
-func (m *UserMutation) Password() (r string, exists bool) {
+func (m *SysUserMutation) Password() (r string, exists bool) {
 	v := m.password
 	if v == nil {
 		return
@@ -1894,10 +1728,10 @@ func (m *UserMutation) Password() (r string, exists bool) {
 	return *v, true
 }
 
-// OldPassword returns the old "password" field's value of the User entity.
-// If the User object wasn't provided to the builder, the object is fetched from the database.
+// OldPassword returns the old "password" field's value of the SysUser entity.
+// If the SysUser object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldPassword(ctx context.Context) (v string, err error) {
+func (m *SysUserMutation) OldPassword(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldPassword is only allowed on UpdateOne operations")
 	}
@@ -1912,30 +1746,30 @@ func (m *UserMutation) OldPassword(ctx context.Context) (v string, err error) {
 }
 
 // ClearPassword clears the value of the "password" field.
-func (m *UserMutation) ClearPassword() {
+func (m *SysUserMutation) ClearPassword() {
 	m.password = nil
-	m.clearedFields[user.FieldPassword] = struct{}{}
+	m.clearedFields[sysuser.FieldPassword] = struct{}{}
 }
 
 // PasswordCleared returns if the "password" field was cleared in this mutation.
-func (m *UserMutation) PasswordCleared() bool {
-	_, ok := m.clearedFields[user.FieldPassword]
+func (m *SysUserMutation) PasswordCleared() bool {
+	_, ok := m.clearedFields[sysuser.FieldPassword]
 	return ok
 }
 
 // ResetPassword resets all changes to the "password" field.
-func (m *UserMutation) ResetPassword() {
+func (m *SysUserMutation) ResetPassword() {
 	m.password = nil
-	delete(m.clearedFields, user.FieldPassword)
+	delete(m.clearedFields, sysuser.FieldPassword)
 }
 
 // SetEmail sets the "email" field.
-func (m *UserMutation) SetEmail(s string) {
+func (m *SysUserMutation) SetEmail(s string) {
 	m.email = &s
 }
 
 // Email returns the value of the "email" field in the mutation.
-func (m *UserMutation) Email() (r string, exists bool) {
+func (m *SysUserMutation) Email() (r string, exists bool) {
 	v := m.email
 	if v == nil {
 		return
@@ -1943,10 +1777,10 @@ func (m *UserMutation) Email() (r string, exists bool) {
 	return *v, true
 }
 
-// OldEmail returns the old "email" field's value of the User entity.
-// If the User object wasn't provided to the builder, the object is fetched from the database.
+// OldEmail returns the old "email" field's value of the SysUser entity.
+// If the SysUser object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldEmail(ctx context.Context) (v string, err error) {
+func (m *SysUserMutation) OldEmail(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldEmail is only allowed on UpdateOne operations")
 	}
@@ -1961,31 +1795,31 @@ func (m *UserMutation) OldEmail(ctx context.Context) (v string, err error) {
 }
 
 // ClearEmail clears the value of the "email" field.
-func (m *UserMutation) ClearEmail() {
+func (m *SysUserMutation) ClearEmail() {
 	m.email = nil
-	m.clearedFields[user.FieldEmail] = struct{}{}
+	m.clearedFields[sysuser.FieldEmail] = struct{}{}
 }
 
 // EmailCleared returns if the "email" field was cleared in this mutation.
-func (m *UserMutation) EmailCleared() bool {
-	_, ok := m.clearedFields[user.FieldEmail]
+func (m *SysUserMutation) EmailCleared() bool {
+	_, ok := m.clearedFields[sysuser.FieldEmail]
 	return ok
 }
 
 // ResetEmail resets all changes to the "email" field.
-func (m *UserMutation) ResetEmail() {
+func (m *SysUserMutation) ResetEmail() {
 	m.email = nil
-	delete(m.clearedFields, user.FieldEmail)
+	delete(m.clearedFields, sysuser.FieldEmail)
 }
 
 // SetSex sets the "sex" field.
-func (m *UserMutation) SetSex(i int8) {
+func (m *SysUserMutation) SetSex(i int8) {
 	m.sex = &i
 	m.addsex = nil
 }
 
 // Sex returns the value of the "sex" field in the mutation.
-func (m *UserMutation) Sex() (r int8, exists bool) {
+func (m *SysUserMutation) Sex() (r int8, exists bool) {
 	v := m.sex
 	if v == nil {
 		return
@@ -1993,10 +1827,10 @@ func (m *UserMutation) Sex() (r int8, exists bool) {
 	return *v, true
 }
 
-// OldSex returns the old "sex" field's value of the User entity.
-// If the User object wasn't provided to the builder, the object is fetched from the database.
+// OldSex returns the old "sex" field's value of the SysUser entity.
+// If the SysUser object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldSex(ctx context.Context) (v int8, err error) {
+func (m *SysUserMutation) OldSex(ctx context.Context) (v int8, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldSex is only allowed on UpdateOne operations")
 	}
@@ -2011,7 +1845,7 @@ func (m *UserMutation) OldSex(ctx context.Context) (v int8, err error) {
 }
 
 // AddSex adds i to the "sex" field.
-func (m *UserMutation) AddSex(i int8) {
+func (m *SysUserMutation) AddSex(i int8) {
 	if m.addsex != nil {
 		*m.addsex += i
 	} else {
@@ -2020,7 +1854,7 @@ func (m *UserMutation) AddSex(i int8) {
 }
 
 // AddedSex returns the value that was added to the "sex" field in this mutation.
-func (m *UserMutation) AddedSex() (r int8, exists bool) {
+func (m *SysUserMutation) AddedSex() (r int8, exists bool) {
 	v := m.addsex
 	if v == nil {
 		return
@@ -2029,43 +1863,43 @@ func (m *UserMutation) AddedSex() (r int8, exists bool) {
 }
 
 // ClearSex clears the value of the "sex" field.
-func (m *UserMutation) ClearSex() {
+func (m *SysUserMutation) ClearSex() {
 	m.sex = nil
 	m.addsex = nil
-	m.clearedFields[user.FieldSex] = struct{}{}
+	m.clearedFields[sysuser.FieldSex] = struct{}{}
 }
 
 // SexCleared returns if the "sex" field was cleared in this mutation.
-func (m *UserMutation) SexCleared() bool {
-	_, ok := m.clearedFields[user.FieldSex]
+func (m *SysUserMutation) SexCleared() bool {
+	_, ok := m.clearedFields[sysuser.FieldSex]
 	return ok
 }
 
 // ResetSex resets all changes to the "sex" field.
-func (m *UserMutation) ResetSex() {
+func (m *SysUserMutation) ResetSex() {
 	m.sex = nil
 	m.addsex = nil
-	delete(m.clearedFields, user.FieldSex)
+	delete(m.clearedFields, sysuser.FieldSex)
 }
 
 // SetDeptID sets the "dept_id" field.
-func (m *UserMutation) SetDeptID(i int64) {
-	m.dept = &i
+func (m *SysUserMutation) SetDeptID(i int64) {
+	m.sys_dept = &i
 }
 
 // DeptID returns the value of the "dept_id" field in the mutation.
-func (m *UserMutation) DeptID() (r int64, exists bool) {
-	v := m.dept
+func (m *SysUserMutation) DeptID() (r int64, exists bool) {
+	v := m.sys_dept
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldDeptID returns the old "dept_id" field's value of the User entity.
-// If the User object wasn't provided to the builder, the object is fetched from the database.
+// OldDeptID returns the old "dept_id" field's value of the SysUser entity.
+// If the SysUser object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldDeptID(ctx context.Context) (v int64, err error) {
+func (m *SysUserMutation) OldDeptID(ctx context.Context) (v int64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDeptID is only allowed on UpdateOne operations")
 	}
@@ -2080,113 +1914,126 @@ func (m *UserMutation) OldDeptID(ctx context.Context) (v int64, err error) {
 }
 
 // ClearDeptID clears the value of the "dept_id" field.
-func (m *UserMutation) ClearDeptID() {
-	m.dept = nil
-	m.clearedFields[user.FieldDeptID] = struct{}{}
+func (m *SysUserMutation) ClearDeptID() {
+	m.sys_dept = nil
+	m.clearedFields[sysuser.FieldDeptID] = struct{}{}
 }
 
 // DeptIDCleared returns if the "dept_id" field was cleared in this mutation.
-func (m *UserMutation) DeptIDCleared() bool {
-	_, ok := m.clearedFields[user.FieldDeptID]
+func (m *SysUserMutation) DeptIDCleared() bool {
+	_, ok := m.clearedFields[sysuser.FieldDeptID]
 	return ok
 }
 
 // ResetDeptID resets all changes to the "dept_id" field.
-func (m *UserMutation) ResetDeptID() {
-	m.dept = nil
-	delete(m.clearedFields, user.FieldDeptID)
+func (m *SysUserMutation) ResetDeptID() {
+	m.sys_dept = nil
+	delete(m.clearedFields, sysuser.FieldDeptID)
 }
 
-// ClearDept clears the "dept" edge to the Dept entity.
-func (m *UserMutation) ClearDept() {
-	m.cleareddept = true
-	m.clearedFields[user.FieldDeptID] = struct{}{}
+// SetSysDeptID sets the "sys_dept" edge to the SysDept entity by id.
+func (m *SysUserMutation) SetSysDeptID(id int64) {
+	m.sys_dept = &id
 }
 
-// DeptCleared reports if the "dept" edge to the Dept entity was cleared.
-func (m *UserMutation) DeptCleared() bool {
-	return m.DeptIDCleared() || m.cleareddept
+// ClearSysDept clears the "sys_dept" edge to the SysDept entity.
+func (m *SysUserMutation) ClearSysDept() {
+	m.clearedsys_dept = true
+	m.clearedFields[sysuser.FieldDeptID] = struct{}{}
 }
 
-// DeptIDs returns the "dept" edge IDs in the mutation.
+// SysDeptCleared reports if the "sys_dept" edge to the SysDept entity was cleared.
+func (m *SysUserMutation) SysDeptCleared() bool {
+	return m.DeptIDCleared() || m.clearedsys_dept
+}
+
+// SysDeptID returns the "sys_dept" edge ID in the mutation.
+func (m *SysUserMutation) SysDeptID() (id int64, exists bool) {
+	if m.sys_dept != nil {
+		return *m.sys_dept, true
+	}
+	return
+}
+
+// SysDeptIDs returns the "sys_dept" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// DeptID instead. It exists only for internal usage by the builders.
-func (m *UserMutation) DeptIDs() (ids []int64) {
-	if id := m.dept; id != nil {
+// SysDeptID instead. It exists only for internal usage by the builders.
+func (m *SysUserMutation) SysDeptIDs() (ids []int64) {
+	if id := m.sys_dept; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetDept resets all changes to the "dept" edge.
-func (m *UserMutation) ResetDept() {
-	m.dept = nil
-	m.cleareddept = false
+// ResetSysDept resets all changes to the "sys_dept" edge.
+func (m *SysUserMutation) ResetSysDept() {
+	m.sys_dept = nil
+	m.clearedsys_dept = false
 }
 
-// AddRoleIDs adds the "roles" edge to the Role entity by ids.
-func (m *UserMutation) AddRoleIDs(ids ...int64) {
-	if m.roles == nil {
-		m.roles = make(map[int64]struct{})
+// AddSysRoleIDs adds the "sys_roles" edge to the SysRole entity by ids.
+func (m *SysUserMutation) AddSysRoleIDs(ids ...int64) {
+	if m.sys_roles == nil {
+		m.sys_roles = make(map[int64]struct{})
 	}
 	for i := range ids {
-		m.roles[ids[i]] = struct{}{}
+		m.sys_roles[ids[i]] = struct{}{}
 	}
 }
 
-// ClearRoles clears the "roles" edge to the Role entity.
-func (m *UserMutation) ClearRoles() {
-	m.clearedroles = true
+// ClearSysRoles clears the "sys_roles" edge to the SysRole entity.
+func (m *SysUserMutation) ClearSysRoles() {
+	m.clearedsys_roles = true
 }
 
-// RolesCleared reports if the "roles" edge to the Role entity was cleared.
-func (m *UserMutation) RolesCleared() bool {
-	return m.clearedroles
+// SysRolesCleared reports if the "sys_roles" edge to the SysRole entity was cleared.
+func (m *SysUserMutation) SysRolesCleared() bool {
+	return m.clearedsys_roles
 }
 
-// RemoveRoleIDs removes the "roles" edge to the Role entity by IDs.
-func (m *UserMutation) RemoveRoleIDs(ids ...int64) {
-	if m.removedroles == nil {
-		m.removedroles = make(map[int64]struct{})
+// RemoveSysRoleIDs removes the "sys_roles" edge to the SysRole entity by IDs.
+func (m *SysUserMutation) RemoveSysRoleIDs(ids ...int64) {
+	if m.removedsys_roles == nil {
+		m.removedsys_roles = make(map[int64]struct{})
 	}
 	for i := range ids {
-		delete(m.roles, ids[i])
-		m.removedroles[ids[i]] = struct{}{}
+		delete(m.sys_roles, ids[i])
+		m.removedsys_roles[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedRoles returns the removed IDs of the "roles" edge to the Role entity.
-func (m *UserMutation) RemovedRolesIDs() (ids []int64) {
-	for id := range m.removedroles {
+// RemovedSysRoles returns the removed IDs of the "sys_roles" edge to the SysRole entity.
+func (m *SysUserMutation) RemovedSysRolesIDs() (ids []int64) {
+	for id := range m.removedsys_roles {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// RolesIDs returns the "roles" edge IDs in the mutation.
-func (m *UserMutation) RolesIDs() (ids []int64) {
-	for id := range m.roles {
+// SysRolesIDs returns the "sys_roles" edge IDs in the mutation.
+func (m *SysUserMutation) SysRolesIDs() (ids []int64) {
+	for id := range m.sys_roles {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetRoles resets all changes to the "roles" edge.
-func (m *UserMutation) ResetRoles() {
-	m.roles = nil
-	m.clearedroles = false
-	m.removedroles = nil
+// ResetSysRoles resets all changes to the "sys_roles" edge.
+func (m *SysUserMutation) ResetSysRoles() {
+	m.sys_roles = nil
+	m.clearedsys_roles = false
+	m.removedsys_roles = nil
 }
 
-// Where appends a list predicates to the UserMutation builder.
-func (m *UserMutation) Where(ps ...predicate.User) {
+// Where appends a list predicates to the SysUserMutation builder.
+func (m *SysUserMutation) Where(ps ...predicate.SysUser) {
 	m.predicates = append(m.predicates, ps...)
 }
 
-// WhereP appends storage-level predicates to the UserMutation builder. Using this method,
+// WhereP appends storage-level predicates to the SysUserMutation builder. Using this method,
 // users can use type-assertion to append predicates that do not depend on any generated package.
-func (m *UserMutation) WhereP(ps ...func(*sql.Selector)) {
-	p := make([]predicate.User, len(ps))
+func (m *SysUserMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.SysUser, len(ps))
 	for i := range ps {
 		p[i] = ps[i]
 	}
@@ -2194,45 +2041,45 @@ func (m *UserMutation) WhereP(ps ...func(*sql.Selector)) {
 }
 
 // Op returns the operation name.
-func (m *UserMutation) Op() Op {
+func (m *SysUserMutation) Op() Op {
 	return m.op
 }
 
 // SetOp allows setting the mutation operation.
-func (m *UserMutation) SetOp(op Op) {
+func (m *SysUserMutation) SetOp(op Op) {
 	m.op = op
 }
 
-// Type returns the node type of this mutation (User).
-func (m *UserMutation) Type() string {
+// Type returns the node type of this mutation (SysUser).
+func (m *SysUserMutation) Type() string {
 	return m.typ
 }
 
 // Fields returns all fields that were changed during this mutation. Note that in
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
-func (m *UserMutation) Fields() []string {
+func (m *SysUserMutation) Fields() []string {
 	fields := make([]string, 0, 7)
 	if m.user_name != nil {
-		fields = append(fields, user.FieldUserName)
+		fields = append(fields, sysuser.FieldUserName)
 	}
 	if m.nick_name != nil {
-		fields = append(fields, user.FieldNickName)
+		fields = append(fields, sysuser.FieldNickName)
 	}
 	if m.mobile != nil {
-		fields = append(fields, user.FieldMobile)
+		fields = append(fields, sysuser.FieldMobile)
 	}
 	if m.password != nil {
-		fields = append(fields, user.FieldPassword)
+		fields = append(fields, sysuser.FieldPassword)
 	}
 	if m.email != nil {
-		fields = append(fields, user.FieldEmail)
+		fields = append(fields, sysuser.FieldEmail)
 	}
 	if m.sex != nil {
-		fields = append(fields, user.FieldSex)
+		fields = append(fields, sysuser.FieldSex)
 	}
-	if m.dept != nil {
-		fields = append(fields, user.FieldDeptID)
+	if m.sys_dept != nil {
+		fields = append(fields, sysuser.FieldDeptID)
 	}
 	return fields
 }
@@ -2240,21 +2087,21 @@ func (m *UserMutation) Fields() []string {
 // Field returns the value of a field with the given name. The second boolean
 // return value indicates that this field was not set, or was not defined in the
 // schema.
-func (m *UserMutation) Field(name string) (ent.Value, bool) {
+func (m *SysUserMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case user.FieldUserName:
+	case sysuser.FieldUserName:
 		return m.UserName()
-	case user.FieldNickName:
+	case sysuser.FieldNickName:
 		return m.NickName()
-	case user.FieldMobile:
+	case sysuser.FieldMobile:
 		return m.Mobile()
-	case user.FieldPassword:
+	case sysuser.FieldPassword:
 		return m.Password()
-	case user.FieldEmail:
+	case sysuser.FieldEmail:
 		return m.Email()
-	case user.FieldSex:
+	case sysuser.FieldSex:
 		return m.Sex()
-	case user.FieldDeptID:
+	case sysuser.FieldDeptID:
 		return m.DeptID()
 	}
 	return nil, false
@@ -2263,74 +2110,74 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 // OldField returns the old value of the field from the database. An error is
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
-func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+func (m *SysUserMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case user.FieldUserName:
+	case sysuser.FieldUserName:
 		return m.OldUserName(ctx)
-	case user.FieldNickName:
+	case sysuser.FieldNickName:
 		return m.OldNickName(ctx)
-	case user.FieldMobile:
+	case sysuser.FieldMobile:
 		return m.OldMobile(ctx)
-	case user.FieldPassword:
+	case sysuser.FieldPassword:
 		return m.OldPassword(ctx)
-	case user.FieldEmail:
+	case sysuser.FieldEmail:
 		return m.OldEmail(ctx)
-	case user.FieldSex:
+	case sysuser.FieldSex:
 		return m.OldSex(ctx)
-	case user.FieldDeptID:
+	case sysuser.FieldDeptID:
 		return m.OldDeptID(ctx)
 	}
-	return nil, fmt.Errorf("unknown User field %s", name)
+	return nil, fmt.Errorf("unknown SysUser field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *UserMutation) SetField(name string, value ent.Value) error {
+func (m *SysUserMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case user.FieldUserName:
+	case sysuser.FieldUserName:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUserName(v)
 		return nil
-	case user.FieldNickName:
+	case sysuser.FieldNickName:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetNickName(v)
 		return nil
-	case user.FieldMobile:
+	case sysuser.FieldMobile:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetMobile(v)
 		return nil
-	case user.FieldPassword:
+	case sysuser.FieldPassword:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPassword(v)
 		return nil
-	case user.FieldEmail:
+	case sysuser.FieldEmail:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEmail(v)
 		return nil
-	case user.FieldSex:
+	case sysuser.FieldSex:
 		v, ok := value.(int8)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSex(v)
 		return nil
-	case user.FieldDeptID:
+	case sysuser.FieldDeptID:
 		v, ok := value.(int64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
@@ -2338,15 +2185,15 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		m.SetDeptID(v)
 		return nil
 	}
-	return fmt.Errorf("unknown User field %s", name)
+	return fmt.Errorf("unknown SysUser field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
-func (m *UserMutation) AddedFields() []string {
+func (m *SysUserMutation) AddedFields() []string {
 	var fields []string
 	if m.addsex != nil {
-		fields = append(fields, user.FieldSex)
+		fields = append(fields, sysuser.FieldSex)
 	}
 	return fields
 }
@@ -2354,9 +2201,9 @@ func (m *UserMutation) AddedFields() []string {
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
-func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
+func (m *SysUserMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case user.FieldSex:
+	case sysuser.FieldSex:
 		return m.AddedSex()
 	}
 	return nil, false
@@ -2365,9 +2212,9 @@ func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
 // AddField adds the value to the field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *UserMutation) AddField(name string, value ent.Value) error {
+func (m *SysUserMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case user.FieldSex:
+	case sysuser.FieldSex:
 		v, ok := value.(int8)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
@@ -2375,119 +2222,119 @@ func (m *UserMutation) AddField(name string, value ent.Value) error {
 		m.AddSex(v)
 		return nil
 	}
-	return fmt.Errorf("unknown User numeric field %s", name)
+	return fmt.Errorf("unknown SysUser numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
-func (m *UserMutation) ClearedFields() []string {
+func (m *SysUserMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(user.FieldNickName) {
-		fields = append(fields, user.FieldNickName)
+	if m.FieldCleared(sysuser.FieldNickName) {
+		fields = append(fields, sysuser.FieldNickName)
 	}
-	if m.FieldCleared(user.FieldMobile) {
-		fields = append(fields, user.FieldMobile)
+	if m.FieldCleared(sysuser.FieldMobile) {
+		fields = append(fields, sysuser.FieldMobile)
 	}
-	if m.FieldCleared(user.FieldPassword) {
-		fields = append(fields, user.FieldPassword)
+	if m.FieldCleared(sysuser.FieldPassword) {
+		fields = append(fields, sysuser.FieldPassword)
 	}
-	if m.FieldCleared(user.FieldEmail) {
-		fields = append(fields, user.FieldEmail)
+	if m.FieldCleared(sysuser.FieldEmail) {
+		fields = append(fields, sysuser.FieldEmail)
 	}
-	if m.FieldCleared(user.FieldSex) {
-		fields = append(fields, user.FieldSex)
+	if m.FieldCleared(sysuser.FieldSex) {
+		fields = append(fields, sysuser.FieldSex)
 	}
-	if m.FieldCleared(user.FieldDeptID) {
-		fields = append(fields, user.FieldDeptID)
+	if m.FieldCleared(sysuser.FieldDeptID) {
+		fields = append(fields, sysuser.FieldDeptID)
 	}
 	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
 // cleared in this mutation.
-func (m *UserMutation) FieldCleared(name string) bool {
+func (m *SysUserMutation) FieldCleared(name string) bool {
 	_, ok := m.clearedFields[name]
 	return ok
 }
 
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
-func (m *UserMutation) ClearField(name string) error {
+func (m *SysUserMutation) ClearField(name string) error {
 	switch name {
-	case user.FieldNickName:
+	case sysuser.FieldNickName:
 		m.ClearNickName()
 		return nil
-	case user.FieldMobile:
+	case sysuser.FieldMobile:
 		m.ClearMobile()
 		return nil
-	case user.FieldPassword:
+	case sysuser.FieldPassword:
 		m.ClearPassword()
 		return nil
-	case user.FieldEmail:
+	case sysuser.FieldEmail:
 		m.ClearEmail()
 		return nil
-	case user.FieldSex:
+	case sysuser.FieldSex:
 		m.ClearSex()
 		return nil
-	case user.FieldDeptID:
+	case sysuser.FieldDeptID:
 		m.ClearDeptID()
 		return nil
 	}
-	return fmt.Errorf("unknown User nullable field %s", name)
+	return fmt.Errorf("unknown SysUser nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
-func (m *UserMutation) ResetField(name string) error {
+func (m *SysUserMutation) ResetField(name string) error {
 	switch name {
-	case user.FieldUserName:
+	case sysuser.FieldUserName:
 		m.ResetUserName()
 		return nil
-	case user.FieldNickName:
+	case sysuser.FieldNickName:
 		m.ResetNickName()
 		return nil
-	case user.FieldMobile:
+	case sysuser.FieldMobile:
 		m.ResetMobile()
 		return nil
-	case user.FieldPassword:
+	case sysuser.FieldPassword:
 		m.ResetPassword()
 		return nil
-	case user.FieldEmail:
+	case sysuser.FieldEmail:
 		m.ResetEmail()
 		return nil
-	case user.FieldSex:
+	case sysuser.FieldSex:
 		m.ResetSex()
 		return nil
-	case user.FieldDeptID:
+	case sysuser.FieldDeptID:
 		m.ResetDeptID()
 		return nil
 	}
-	return fmt.Errorf("unknown User field %s", name)
+	return fmt.Errorf("unknown SysUser field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
-func (m *UserMutation) AddedEdges() []string {
+func (m *SysUserMutation) AddedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.dept != nil {
-		edges = append(edges, user.EdgeDept)
+	if m.sys_dept != nil {
+		edges = append(edges, sysuser.EdgeSysDept)
 	}
-	if m.roles != nil {
-		edges = append(edges, user.EdgeRoles)
+	if m.sys_roles != nil {
+		edges = append(edges, sysuser.EdgeSysRoles)
 	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
-func (m *UserMutation) AddedIDs(name string) []ent.Value {
+func (m *SysUserMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case user.EdgeDept:
-		if id := m.dept; id != nil {
+	case sysuser.EdgeSysDept:
+		if id := m.sys_dept; id != nil {
 			return []ent.Value{*id}
 		}
-	case user.EdgeRoles:
-		ids := make([]ent.Value, 0, len(m.roles))
-		for id := range m.roles {
+	case sysuser.EdgeSysRoles:
+		ids := make([]ent.Value, 0, len(m.sys_roles))
+		for id := range m.sys_roles {
 			ids = append(ids, id)
 		}
 		return ids
@@ -2496,21 +2343,21 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
-func (m *UserMutation) RemovedEdges() []string {
+func (m *SysUserMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.removedroles != nil {
-		edges = append(edges, user.EdgeRoles)
+	if m.removedsys_roles != nil {
+		edges = append(edges, sysuser.EdgeSysRoles)
 	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
-func (m *UserMutation) RemovedIDs(name string) []ent.Value {
+func (m *SysUserMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case user.EdgeRoles:
-		ids := make([]ent.Value, 0, len(m.removedroles))
-		for id := range m.removedroles {
+	case sysuser.EdgeSysRoles:
+		ids := make([]ent.Value, 0, len(m.removedsys_roles))
+		for id := range m.removedsys_roles {
 			ids = append(ids, id)
 		}
 		return ids
@@ -2519,50 +2366,50 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *UserMutation) ClearedEdges() []string {
+func (m *SysUserMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.cleareddept {
-		edges = append(edges, user.EdgeDept)
+	if m.clearedsys_dept {
+		edges = append(edges, sysuser.EdgeSysDept)
 	}
-	if m.clearedroles {
-		edges = append(edges, user.EdgeRoles)
+	if m.clearedsys_roles {
+		edges = append(edges, sysuser.EdgeSysRoles)
 	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
-func (m *UserMutation) EdgeCleared(name string) bool {
+func (m *SysUserMutation) EdgeCleared(name string) bool {
 	switch name {
-	case user.EdgeDept:
-		return m.cleareddept
-	case user.EdgeRoles:
-		return m.clearedroles
+	case sysuser.EdgeSysDept:
+		return m.clearedsys_dept
+	case sysuser.EdgeSysRoles:
+		return m.clearedsys_roles
 	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
-func (m *UserMutation) ClearEdge(name string) error {
+func (m *SysUserMutation) ClearEdge(name string) error {
 	switch name {
-	case user.EdgeDept:
-		m.ClearDept()
+	case sysuser.EdgeSysDept:
+		m.ClearSysDept()
 		return nil
 	}
-	return fmt.Errorf("unknown User unique edge %s", name)
+	return fmt.Errorf("unknown SysUser unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
-func (m *UserMutation) ResetEdge(name string) error {
+func (m *SysUserMutation) ResetEdge(name string) error {
 	switch name {
-	case user.EdgeDept:
-		m.ResetDept()
+	case sysuser.EdgeSysDept:
+		m.ResetSysDept()
 		return nil
-	case user.EdgeRoles:
-		m.ResetRoles()
+	case sysuser.EdgeSysRoles:
+		m.ResetSysRoles()
 		return nil
 	}
-	return fmt.Errorf("unknown User edge %s", name)
+	return fmt.Errorf("unknown SysUser edge %s", name)
 }

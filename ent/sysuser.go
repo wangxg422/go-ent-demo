@@ -4,8 +4,8 @@ package ent
 
 import (
 	"fmt"
-	"go-ent-demo/ent/dept"
-	"go-ent-demo/ent/user"
+	"go-ent-demo/ent/sysdept"
+	"go-ent-demo/ent/sysuser"
 	"strings"
 
 	"entgo.io/ent"
@@ -13,7 +13,7 @@ import (
 )
 
 // 系统用户表
-type User struct {
+type SysUser struct {
 	config `json:"-"`
 	// ID of the ent.
 	// 用户id
@@ -33,50 +33,50 @@ type User struct {
 	// 用户所属部门
 	DeptID int64 `json:"deptId,string"`
 	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the UserQuery when eager-loading is set.
-	Edges        UserEdges `json:"edges"`
+	// The values are being populated by the SysUserQuery when eager-loading is set.
+	Edges        SysUserEdges `json:"edges"`
 	selectValues sql.SelectValues
 }
 
-// UserEdges holds the relations/edges for other nodes in the graph.
-type UserEdges struct {
-	// Dept holds the value of the dept edge.
-	Dept *Dept `json:"dept,omitempty"`
-	// Roles holds the value of the roles edge.
-	Roles []*Role `json:"roles,omitempty"`
+// SysUserEdges holds the relations/edges for other nodes in the graph.
+type SysUserEdges struct {
+	// SysDept holds the value of the sys_dept edge.
+	SysDept *SysDept `json:"sys_dept,omitempty"`
+	// SysRoles holds the value of the sys_roles edge.
+	SysRoles []*SysRole `json:"sys_roles,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
 }
 
-// DeptOrErr returns the Dept value or an error if the edge
+// SysDeptOrErr returns the SysDept value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e UserEdges) DeptOrErr() (*Dept, error) {
-	if e.Dept != nil {
-		return e.Dept, nil
+func (e SysUserEdges) SysDeptOrErr() (*SysDept, error) {
+	if e.SysDept != nil {
+		return e.SysDept, nil
 	} else if e.loadedTypes[0] {
-		return nil, &NotFoundError{label: dept.Label}
+		return nil, &NotFoundError{label: sysdept.Label}
 	}
-	return nil, &NotLoadedError{edge: "dept"}
+	return nil, &NotLoadedError{edge: "sys_dept"}
 }
 
-// RolesOrErr returns the Roles value or an error if the edge
+// SysRolesOrErr returns the SysRoles value or an error if the edge
 // was not loaded in eager-loading.
-func (e UserEdges) RolesOrErr() ([]*Role, error) {
+func (e SysUserEdges) SysRolesOrErr() ([]*SysRole, error) {
 	if e.loadedTypes[1] {
-		return e.Roles, nil
+		return e.SysRoles, nil
 	}
-	return nil, &NotLoadedError{edge: "roles"}
+	return nil, &NotLoadedError{edge: "sys_roles"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*User) scanValues(columns []string) ([]any, error) {
+func (*SysUser) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldID, user.FieldSex, user.FieldDeptID:
+		case sysuser.FieldID, sysuser.FieldSex, sysuser.FieldDeptID:
 			values[i] = new(sql.NullInt64)
-		case user.FieldUserName, user.FieldNickName, user.FieldMobile, user.FieldPassword, user.FieldEmail:
+		case sysuser.FieldUserName, sysuser.FieldNickName, sysuser.FieldMobile, sysuser.FieldPassword, sysuser.FieldEmail:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -86,56 +86,56 @@ func (*User) scanValues(columns []string) ([]any, error) {
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the User fields.
-func (_m *User) assignValues(columns []string, values []any) error {
+// to the SysUser fields.
+func (_m *SysUser) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldID:
+		case sysuser.FieldID:
 			value, ok := values[i].(*sql.NullInt64)
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			_m.ID = int64(value.Int64)
-		case user.FieldUserName:
+		case sysuser.FieldUserName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field user_name", values[i])
 			} else if value.Valid {
 				_m.UserName = value.String
 			}
-		case user.FieldNickName:
+		case sysuser.FieldNickName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field nick_name", values[i])
 			} else if value.Valid {
 				_m.NickName = value.String
 			}
-		case user.FieldMobile:
+		case sysuser.FieldMobile:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field mobile", values[i])
 			} else if value.Valid {
 				_m.Mobile = value.String
 			}
-		case user.FieldPassword:
+		case sysuser.FieldPassword:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field password", values[i])
 			} else if value.Valid {
 				_m.Password = value.String
 			}
-		case user.FieldEmail:
+		case sysuser.FieldEmail:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field email", values[i])
 			} else if value.Valid {
 				_m.Email = value.String
 			}
-		case user.FieldSex:
+		case sysuser.FieldSex:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field sex", values[i])
 			} else if value.Valid {
 				_m.Sex = int8(value.Int64)
 			}
-		case user.FieldDeptID:
+		case sysuser.FieldDeptID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field dept_id", values[i])
 			} else if value.Valid {
@@ -148,44 +148,44 @@ func (_m *User) assignValues(columns []string, values []any) error {
 	return nil
 }
 
-// Value returns the ent.Value that was dynamically selected and assigned to the User.
+// Value returns the ent.Value that was dynamically selected and assigned to the SysUser.
 // This includes values selected through modifiers, order, etc.
-func (_m *User) Value(name string) (ent.Value, error) {
+func (_m *SysUser) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
 }
 
-// QueryDept queries the "dept" edge of the User entity.
-func (_m *User) QueryDept() *DeptQuery {
-	return NewUserClient(_m.config).QueryDept(_m)
+// QuerySysDept queries the "sys_dept" edge of the SysUser entity.
+func (_m *SysUser) QuerySysDept() *SysDeptQuery {
+	return NewSysUserClient(_m.config).QuerySysDept(_m)
 }
 
-// QueryRoles queries the "roles" edge of the User entity.
-func (_m *User) QueryRoles() *RoleQuery {
-	return NewUserClient(_m.config).QueryRoles(_m)
+// QuerySysRoles queries the "sys_roles" edge of the SysUser entity.
+func (_m *SysUser) QuerySysRoles() *SysRoleQuery {
+	return NewSysUserClient(_m.config).QuerySysRoles(_m)
 }
 
-// Update returns a builder for updating this User.
-// Note that you need to call User.Unwrap() before calling this method if this User
+// Update returns a builder for updating this SysUser.
+// Note that you need to call SysUser.Unwrap() before calling this method if this SysUser
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (_m *User) Update() *UserUpdateOne {
-	return NewUserClient(_m.config).UpdateOne(_m)
+func (_m *SysUser) Update() *SysUserUpdateOne {
+	return NewSysUserClient(_m.config).UpdateOne(_m)
 }
 
-// Unwrap unwraps the User entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the SysUser entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (_m *User) Unwrap() *User {
+func (_m *SysUser) Unwrap() *SysUser {
 	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: User is not a transactional entity")
+		panic("ent: SysUser is not a transactional entity")
 	}
 	_m.config.driver = _tx.drv
 	return _m
 }
 
 // String implements the fmt.Stringer.
-func (_m *User) String() string {
+func (_m *SysUser) String() string {
 	var builder strings.Builder
-	builder.WriteString("User(")
+	builder.WriteString("SysUser(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("user_name=")
 	builder.WriteString(_m.UserName)
@@ -211,5 +211,5 @@ func (_m *User) String() string {
 	return builder.String()
 }
 
-// Users is a parsable slice of User.
-type Users []*User
+// SysUsers is a parsable slice of SysUser.
+type SysUsers []*SysUser

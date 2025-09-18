@@ -11,9 +11,9 @@ import (
 
 	"go-ent-demo/ent/migrate"
 
-	"go-ent-demo/ent/dept"
-	"go-ent-demo/ent/role"
-	"go-ent-demo/ent/user"
+	"go-ent-demo/ent/sysdept"
+	"go-ent-demo/ent/sysrole"
+	"go-ent-demo/ent/sysuser"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
@@ -26,12 +26,12 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
-	// Dept is the client for interacting with the Dept builders.
-	Dept *DeptClient
-	// Role is the client for interacting with the Role builders.
-	Role *RoleClient
-	// User is the client for interacting with the User builders.
-	User *UserClient
+	// SysDept is the client for interacting with the SysDept builders.
+	SysDept *SysDeptClient
+	// SysRole is the client for interacting with the SysRole builders.
+	SysRole *SysRoleClient
+	// SysUser is the client for interacting with the SysUser builders.
+	SysUser *SysUserClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -43,9 +43,9 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
-	c.Dept = NewDeptClient(c.config)
-	c.Role = NewRoleClient(c.config)
-	c.User = NewUserClient(c.config)
+	c.SysDept = NewSysDeptClient(c.config)
+	c.SysRole = NewSysRoleClient(c.config)
+	c.SysUser = NewSysUserClient(c.config)
 }
 
 type (
@@ -136,11 +136,11 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:    ctx,
-		config: cfg,
-		Dept:   NewDeptClient(cfg),
-		Role:   NewRoleClient(cfg),
-		User:   NewUserClient(cfg),
+		ctx:     ctx,
+		config:  cfg,
+		SysDept: NewSysDeptClient(cfg),
+		SysRole: NewSysRoleClient(cfg),
+		SysUser: NewSysUserClient(cfg),
 	}, nil
 }
 
@@ -158,18 +158,18 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:    ctx,
-		config: cfg,
-		Dept:   NewDeptClient(cfg),
-		Role:   NewRoleClient(cfg),
-		User:   NewUserClient(cfg),
+		ctx:     ctx,
+		config:  cfg,
+		SysDept: NewSysDeptClient(cfg),
+		SysRole: NewSysRoleClient(cfg),
+		SysUser: NewSysUserClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Dept.
+//		SysDept.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -191,134 +191,134 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.Dept.Use(hooks...)
-	c.Role.Use(hooks...)
-	c.User.Use(hooks...)
+	c.SysDept.Use(hooks...)
+	c.SysRole.Use(hooks...)
+	c.SysUser.Use(hooks...)
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
-	c.Dept.Intercept(interceptors...)
-	c.Role.Intercept(interceptors...)
-	c.User.Intercept(interceptors...)
+	c.SysDept.Intercept(interceptors...)
+	c.SysRole.Intercept(interceptors...)
+	c.SysUser.Intercept(interceptors...)
 }
 
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
-	case *DeptMutation:
-		return c.Dept.mutate(ctx, m)
-	case *RoleMutation:
-		return c.Role.mutate(ctx, m)
-	case *UserMutation:
-		return c.User.mutate(ctx, m)
+	case *SysDeptMutation:
+		return c.SysDept.mutate(ctx, m)
+	case *SysRoleMutation:
+		return c.SysRole.mutate(ctx, m)
+	case *SysUserMutation:
+		return c.SysUser.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
 	}
 }
 
-// DeptClient is a client for the Dept schema.
-type DeptClient struct {
+// SysDeptClient is a client for the SysDept schema.
+type SysDeptClient struct {
 	config
 }
 
-// NewDeptClient returns a client for the Dept from the given config.
-func NewDeptClient(c config) *DeptClient {
-	return &DeptClient{config: c}
+// NewSysDeptClient returns a client for the SysDept from the given config.
+func NewSysDeptClient(c config) *SysDeptClient {
+	return &SysDeptClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `dept.Hooks(f(g(h())))`.
-func (c *DeptClient) Use(hooks ...Hook) {
-	c.hooks.Dept = append(c.hooks.Dept, hooks...)
+// A call to `Use(f, g, h)` equals to `sysdept.Hooks(f(g(h())))`.
+func (c *SysDeptClient) Use(hooks ...Hook) {
+	c.hooks.SysDept = append(c.hooks.SysDept, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `dept.Intercept(f(g(h())))`.
-func (c *DeptClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Dept = append(c.inters.Dept, interceptors...)
+// A call to `Intercept(f, g, h)` equals to `sysdept.Intercept(f(g(h())))`.
+func (c *SysDeptClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SysDept = append(c.inters.SysDept, interceptors...)
 }
 
-// Create returns a builder for creating a Dept entity.
-func (c *DeptClient) Create() *DeptCreate {
-	mutation := newDeptMutation(c.config, OpCreate)
-	return &DeptCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a SysDept entity.
+func (c *SysDeptClient) Create() *SysDeptCreate {
+	mutation := newSysDeptMutation(c.config, OpCreate)
+	return &SysDeptCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of Dept entities.
-func (c *DeptClient) CreateBulk(builders ...*DeptCreate) *DeptCreateBulk {
-	return &DeptCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of SysDept entities.
+func (c *SysDeptClient) CreateBulk(builders ...*SysDeptCreate) *SysDeptCreateBulk {
+	return &SysDeptCreateBulk{config: c.config, builders: builders}
 }
 
 // MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
 // a builder and applies setFunc on it.
-func (c *DeptClient) MapCreateBulk(slice any, setFunc func(*DeptCreate, int)) *DeptCreateBulk {
+func (c *SysDeptClient) MapCreateBulk(slice any, setFunc func(*SysDeptCreate, int)) *SysDeptCreateBulk {
 	rv := reflect.ValueOf(slice)
 	if rv.Kind() != reflect.Slice {
-		return &DeptCreateBulk{err: fmt.Errorf("calling to DeptClient.MapCreateBulk with wrong type %T, need slice", slice)}
+		return &SysDeptCreateBulk{err: fmt.Errorf("calling to SysDeptClient.MapCreateBulk with wrong type %T, need slice", slice)}
 	}
-	builders := make([]*DeptCreate, rv.Len())
+	builders := make([]*SysDeptCreate, rv.Len())
 	for i := 0; i < rv.Len(); i++ {
 		builders[i] = c.Create()
 		setFunc(builders[i], i)
 	}
-	return &DeptCreateBulk{config: c.config, builders: builders}
+	return &SysDeptCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for Dept.
-func (c *DeptClient) Update() *DeptUpdate {
-	mutation := newDeptMutation(c.config, OpUpdate)
-	return &DeptUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for SysDept.
+func (c *SysDeptClient) Update() *SysDeptUpdate {
+	mutation := newSysDeptMutation(c.config, OpUpdate)
+	return &SysDeptUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *DeptClient) UpdateOne(_m *Dept) *DeptUpdateOne {
-	mutation := newDeptMutation(c.config, OpUpdateOne, withDept(_m))
-	return &DeptUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *SysDeptClient) UpdateOne(_m *SysDept) *SysDeptUpdateOne {
+	mutation := newSysDeptMutation(c.config, OpUpdateOne, withSysDept(_m))
+	return &SysDeptUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *DeptClient) UpdateOneID(id int64) *DeptUpdateOne {
-	mutation := newDeptMutation(c.config, OpUpdateOne, withDeptID(id))
-	return &DeptUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *SysDeptClient) UpdateOneID(id int64) *SysDeptUpdateOne {
+	mutation := newSysDeptMutation(c.config, OpUpdateOne, withSysDeptID(id))
+	return &SysDeptUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for Dept.
-func (c *DeptClient) Delete() *DeptDelete {
-	mutation := newDeptMutation(c.config, OpDelete)
-	return &DeptDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for SysDept.
+func (c *SysDeptClient) Delete() *SysDeptDelete {
+	mutation := newSysDeptMutation(c.config, OpDelete)
+	return &SysDeptDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *DeptClient) DeleteOne(_m *Dept) *DeptDeleteOne {
+func (c *SysDeptClient) DeleteOne(_m *SysDept) *SysDeptDeleteOne {
 	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *DeptClient) DeleteOneID(id int64) *DeptDeleteOne {
-	builder := c.Delete().Where(dept.ID(id))
+func (c *SysDeptClient) DeleteOneID(id int64) *SysDeptDeleteOne {
+	builder := c.Delete().Where(sysdept.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &DeptDeleteOne{builder}
+	return &SysDeptDeleteOne{builder}
 }
 
-// Query returns a query builder for Dept.
-func (c *DeptClient) Query() *DeptQuery {
-	return &DeptQuery{
+// Query returns a query builder for SysDept.
+func (c *SysDeptClient) Query() *SysDeptQuery {
+	return &SysDeptQuery{
 		config: c.config,
-		ctx:    &QueryContext{Type: TypeDept},
+		ctx:    &QueryContext{Type: TypeSysDept},
 		inters: c.Interceptors(),
 	}
 }
 
-// Get returns a Dept entity by its id.
-func (c *DeptClient) Get(ctx context.Context, id int64) (*Dept, error) {
-	return c.Query().Where(dept.ID(id)).Only(ctx)
+// Get returns a SysDept entity by its id.
+func (c *SysDeptClient) Get(ctx context.Context, id int64) (*SysDept, error) {
+	return c.Query().Where(sysdept.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *DeptClient) GetX(ctx context.Context, id int64) *Dept {
+func (c *SysDeptClient) GetX(ctx context.Context, id int64) *SysDept {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -326,31 +326,15 @@ func (c *DeptClient) GetX(ctx context.Context, id int64) *Dept {
 	return obj
 }
 
-// QueryUsers queries the users edge of a Dept.
-func (c *DeptClient) QueryUsers(_m *Dept) *UserQuery {
-	query := (&UserClient{config: c.config}).Query()
+// QuerySysUsers queries the sys_users edge of a SysDept.
+func (c *SysDeptClient) QuerySysUsers(_m *SysDept) *SysUserQuery {
+	query := (&SysUserClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(dept.Table, dept.FieldID, id),
-			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, dept.UsersTable, dept.UsersColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryRoles queries the roles edge of a Dept.
-func (c *DeptClient) QueryRoles(_m *Dept) *RoleQuery {
-	query := (&RoleClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(dept.Table, dept.FieldID, id),
-			sqlgraph.To(role.Table, role.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, dept.RolesTable, dept.RolesPrimaryKey...),
+			sqlgraph.From(sysdept.Table, sysdept.FieldID, id),
+			sqlgraph.To(sysuser.Table, sysuser.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, sysdept.SysUsersTable, sysdept.SysUsersColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -359,131 +343,131 @@ func (c *DeptClient) QueryRoles(_m *Dept) *RoleQuery {
 }
 
 // Hooks returns the client hooks.
-func (c *DeptClient) Hooks() []Hook {
-	return c.hooks.Dept
+func (c *SysDeptClient) Hooks() []Hook {
+	return c.hooks.SysDept
 }
 
 // Interceptors returns the client interceptors.
-func (c *DeptClient) Interceptors() []Interceptor {
-	return c.inters.Dept
+func (c *SysDeptClient) Interceptors() []Interceptor {
+	return c.inters.SysDept
 }
 
-func (c *DeptClient) mutate(ctx context.Context, m *DeptMutation) (Value, error) {
+func (c *SysDeptClient) mutate(ctx context.Context, m *SysDeptMutation) (Value, error) {
 	switch m.Op() {
 	case OpCreate:
-		return (&DeptCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&SysDeptCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdate:
-		return (&DeptUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&SysDeptUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdateOne:
-		return (&DeptUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&SysDeptUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpDelete, OpDeleteOne:
-		return (&DeptDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+		return (&SysDeptDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown Dept mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown SysDept mutation op: %q", m.Op())
 	}
 }
 
-// RoleClient is a client for the Role schema.
-type RoleClient struct {
+// SysRoleClient is a client for the SysRole schema.
+type SysRoleClient struct {
 	config
 }
 
-// NewRoleClient returns a client for the Role from the given config.
-func NewRoleClient(c config) *RoleClient {
-	return &RoleClient{config: c}
+// NewSysRoleClient returns a client for the SysRole from the given config.
+func NewSysRoleClient(c config) *SysRoleClient {
+	return &SysRoleClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `role.Hooks(f(g(h())))`.
-func (c *RoleClient) Use(hooks ...Hook) {
-	c.hooks.Role = append(c.hooks.Role, hooks...)
+// A call to `Use(f, g, h)` equals to `sysrole.Hooks(f(g(h())))`.
+func (c *SysRoleClient) Use(hooks ...Hook) {
+	c.hooks.SysRole = append(c.hooks.SysRole, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `role.Intercept(f(g(h())))`.
-func (c *RoleClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Role = append(c.inters.Role, interceptors...)
+// A call to `Intercept(f, g, h)` equals to `sysrole.Intercept(f(g(h())))`.
+func (c *SysRoleClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SysRole = append(c.inters.SysRole, interceptors...)
 }
 
-// Create returns a builder for creating a Role entity.
-func (c *RoleClient) Create() *RoleCreate {
-	mutation := newRoleMutation(c.config, OpCreate)
-	return &RoleCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a SysRole entity.
+func (c *SysRoleClient) Create() *SysRoleCreate {
+	mutation := newSysRoleMutation(c.config, OpCreate)
+	return &SysRoleCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of Role entities.
-func (c *RoleClient) CreateBulk(builders ...*RoleCreate) *RoleCreateBulk {
-	return &RoleCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of SysRole entities.
+func (c *SysRoleClient) CreateBulk(builders ...*SysRoleCreate) *SysRoleCreateBulk {
+	return &SysRoleCreateBulk{config: c.config, builders: builders}
 }
 
 // MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
 // a builder and applies setFunc on it.
-func (c *RoleClient) MapCreateBulk(slice any, setFunc func(*RoleCreate, int)) *RoleCreateBulk {
+func (c *SysRoleClient) MapCreateBulk(slice any, setFunc func(*SysRoleCreate, int)) *SysRoleCreateBulk {
 	rv := reflect.ValueOf(slice)
 	if rv.Kind() != reflect.Slice {
-		return &RoleCreateBulk{err: fmt.Errorf("calling to RoleClient.MapCreateBulk with wrong type %T, need slice", slice)}
+		return &SysRoleCreateBulk{err: fmt.Errorf("calling to SysRoleClient.MapCreateBulk with wrong type %T, need slice", slice)}
 	}
-	builders := make([]*RoleCreate, rv.Len())
+	builders := make([]*SysRoleCreate, rv.Len())
 	for i := 0; i < rv.Len(); i++ {
 		builders[i] = c.Create()
 		setFunc(builders[i], i)
 	}
-	return &RoleCreateBulk{config: c.config, builders: builders}
+	return &SysRoleCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for Role.
-func (c *RoleClient) Update() *RoleUpdate {
-	mutation := newRoleMutation(c.config, OpUpdate)
-	return &RoleUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for SysRole.
+func (c *SysRoleClient) Update() *SysRoleUpdate {
+	mutation := newSysRoleMutation(c.config, OpUpdate)
+	return &SysRoleUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *RoleClient) UpdateOne(_m *Role) *RoleUpdateOne {
-	mutation := newRoleMutation(c.config, OpUpdateOne, withRole(_m))
-	return &RoleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *SysRoleClient) UpdateOne(_m *SysRole) *SysRoleUpdateOne {
+	mutation := newSysRoleMutation(c.config, OpUpdateOne, withSysRole(_m))
+	return &SysRoleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *RoleClient) UpdateOneID(id int64) *RoleUpdateOne {
-	mutation := newRoleMutation(c.config, OpUpdateOne, withRoleID(id))
-	return &RoleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *SysRoleClient) UpdateOneID(id int64) *SysRoleUpdateOne {
+	mutation := newSysRoleMutation(c.config, OpUpdateOne, withSysRoleID(id))
+	return &SysRoleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for Role.
-func (c *RoleClient) Delete() *RoleDelete {
-	mutation := newRoleMutation(c.config, OpDelete)
-	return &RoleDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for SysRole.
+func (c *SysRoleClient) Delete() *SysRoleDelete {
+	mutation := newSysRoleMutation(c.config, OpDelete)
+	return &SysRoleDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *RoleClient) DeleteOne(_m *Role) *RoleDeleteOne {
+func (c *SysRoleClient) DeleteOne(_m *SysRole) *SysRoleDeleteOne {
 	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *RoleClient) DeleteOneID(id int64) *RoleDeleteOne {
-	builder := c.Delete().Where(role.ID(id))
+func (c *SysRoleClient) DeleteOneID(id int64) *SysRoleDeleteOne {
+	builder := c.Delete().Where(sysrole.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &RoleDeleteOne{builder}
+	return &SysRoleDeleteOne{builder}
 }
 
-// Query returns a query builder for Role.
-func (c *RoleClient) Query() *RoleQuery {
-	return &RoleQuery{
+// Query returns a query builder for SysRole.
+func (c *SysRoleClient) Query() *SysRoleQuery {
+	return &SysRoleQuery{
 		config: c.config,
-		ctx:    &QueryContext{Type: TypeRole},
+		ctx:    &QueryContext{Type: TypeSysRole},
 		inters: c.Interceptors(),
 	}
 }
 
-// Get returns a Role entity by its id.
-func (c *RoleClient) Get(ctx context.Context, id int64) (*Role, error) {
-	return c.Query().Where(role.ID(id)).Only(ctx)
+// Get returns a SysRole entity by its id.
+func (c *SysRoleClient) Get(ctx context.Context, id int64) (*SysRole, error) {
+	return c.Query().Where(sysrole.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *RoleClient) GetX(ctx context.Context, id int64) *Role {
+func (c *SysRoleClient) GetX(ctx context.Context, id int64) *SysRole {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -491,31 +475,15 @@ func (c *RoleClient) GetX(ctx context.Context, id int64) *Role {
 	return obj
 }
 
-// QueryDepts queries the depts edge of a Role.
-func (c *RoleClient) QueryDepts(_m *Role) *DeptQuery {
-	query := (&DeptClient{config: c.config}).Query()
+// QuerySysUsers queries the sys_users edge of a SysRole.
+func (c *SysRoleClient) QuerySysUsers(_m *SysRole) *SysUserQuery {
+	query := (&SysUserClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(role.Table, role.FieldID, id),
-			sqlgraph.To(dept.Table, dept.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, role.DeptsTable, role.DeptsPrimaryKey...),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryUsers queries the users edge of a Role.
-func (c *RoleClient) QueryUsers(_m *Role) *UserQuery {
-	query := (&UserClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(role.Table, role.FieldID, id),
-			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, role.UsersTable, role.UsersPrimaryKey...),
+			sqlgraph.From(sysrole.Table, sysrole.FieldID, id),
+			sqlgraph.To(sysuser.Table, sysuser.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, sysrole.SysUsersTable, sysrole.SysUsersPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -524,131 +492,131 @@ func (c *RoleClient) QueryUsers(_m *Role) *UserQuery {
 }
 
 // Hooks returns the client hooks.
-func (c *RoleClient) Hooks() []Hook {
-	return c.hooks.Role
+func (c *SysRoleClient) Hooks() []Hook {
+	return c.hooks.SysRole
 }
 
 // Interceptors returns the client interceptors.
-func (c *RoleClient) Interceptors() []Interceptor {
-	return c.inters.Role
+func (c *SysRoleClient) Interceptors() []Interceptor {
+	return c.inters.SysRole
 }
 
-func (c *RoleClient) mutate(ctx context.Context, m *RoleMutation) (Value, error) {
+func (c *SysRoleClient) mutate(ctx context.Context, m *SysRoleMutation) (Value, error) {
 	switch m.Op() {
 	case OpCreate:
-		return (&RoleCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&SysRoleCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdate:
-		return (&RoleUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&SysRoleUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdateOne:
-		return (&RoleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&SysRoleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpDelete, OpDeleteOne:
-		return (&RoleDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+		return (&SysRoleDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown Role mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown SysRole mutation op: %q", m.Op())
 	}
 }
 
-// UserClient is a client for the User schema.
-type UserClient struct {
+// SysUserClient is a client for the SysUser schema.
+type SysUserClient struct {
 	config
 }
 
-// NewUserClient returns a client for the User from the given config.
-func NewUserClient(c config) *UserClient {
-	return &UserClient{config: c}
+// NewSysUserClient returns a client for the SysUser from the given config.
+func NewSysUserClient(c config) *SysUserClient {
+	return &SysUserClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `user.Hooks(f(g(h())))`.
-func (c *UserClient) Use(hooks ...Hook) {
-	c.hooks.User = append(c.hooks.User, hooks...)
+// A call to `Use(f, g, h)` equals to `sysuser.Hooks(f(g(h())))`.
+func (c *SysUserClient) Use(hooks ...Hook) {
+	c.hooks.SysUser = append(c.hooks.SysUser, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `user.Intercept(f(g(h())))`.
-func (c *UserClient) Intercept(interceptors ...Interceptor) {
-	c.inters.User = append(c.inters.User, interceptors...)
+// A call to `Intercept(f, g, h)` equals to `sysuser.Intercept(f(g(h())))`.
+func (c *SysUserClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SysUser = append(c.inters.SysUser, interceptors...)
 }
 
-// Create returns a builder for creating a User entity.
-func (c *UserClient) Create() *UserCreate {
-	mutation := newUserMutation(c.config, OpCreate)
-	return &UserCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a SysUser entity.
+func (c *SysUserClient) Create() *SysUserCreate {
+	mutation := newSysUserMutation(c.config, OpCreate)
+	return &SysUserCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of User entities.
-func (c *UserClient) CreateBulk(builders ...*UserCreate) *UserCreateBulk {
-	return &UserCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of SysUser entities.
+func (c *SysUserClient) CreateBulk(builders ...*SysUserCreate) *SysUserCreateBulk {
+	return &SysUserCreateBulk{config: c.config, builders: builders}
 }
 
 // MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
 // a builder and applies setFunc on it.
-func (c *UserClient) MapCreateBulk(slice any, setFunc func(*UserCreate, int)) *UserCreateBulk {
+func (c *SysUserClient) MapCreateBulk(slice any, setFunc func(*SysUserCreate, int)) *SysUserCreateBulk {
 	rv := reflect.ValueOf(slice)
 	if rv.Kind() != reflect.Slice {
-		return &UserCreateBulk{err: fmt.Errorf("calling to UserClient.MapCreateBulk with wrong type %T, need slice", slice)}
+		return &SysUserCreateBulk{err: fmt.Errorf("calling to SysUserClient.MapCreateBulk with wrong type %T, need slice", slice)}
 	}
-	builders := make([]*UserCreate, rv.Len())
+	builders := make([]*SysUserCreate, rv.Len())
 	for i := 0; i < rv.Len(); i++ {
 		builders[i] = c.Create()
 		setFunc(builders[i], i)
 	}
-	return &UserCreateBulk{config: c.config, builders: builders}
+	return &SysUserCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for User.
-func (c *UserClient) Update() *UserUpdate {
-	mutation := newUserMutation(c.config, OpUpdate)
-	return &UserUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for SysUser.
+func (c *SysUserClient) Update() *SysUserUpdate {
+	mutation := newSysUserMutation(c.config, OpUpdate)
+	return &SysUserUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *UserClient) UpdateOne(_m *User) *UserUpdateOne {
-	mutation := newUserMutation(c.config, OpUpdateOne, withUser(_m))
-	return &UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *SysUserClient) UpdateOne(_m *SysUser) *SysUserUpdateOne {
+	mutation := newSysUserMutation(c.config, OpUpdateOne, withSysUser(_m))
+	return &SysUserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *UserClient) UpdateOneID(id int64) *UserUpdateOne {
-	mutation := newUserMutation(c.config, OpUpdateOne, withUserID(id))
-	return &UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *SysUserClient) UpdateOneID(id int64) *SysUserUpdateOne {
+	mutation := newSysUserMutation(c.config, OpUpdateOne, withSysUserID(id))
+	return &SysUserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for User.
-func (c *UserClient) Delete() *UserDelete {
-	mutation := newUserMutation(c.config, OpDelete)
-	return &UserDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for SysUser.
+func (c *SysUserClient) Delete() *SysUserDelete {
+	mutation := newSysUserMutation(c.config, OpDelete)
+	return &SysUserDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *UserClient) DeleteOne(_m *User) *UserDeleteOne {
+func (c *SysUserClient) DeleteOne(_m *SysUser) *SysUserDeleteOne {
 	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *UserClient) DeleteOneID(id int64) *UserDeleteOne {
-	builder := c.Delete().Where(user.ID(id))
+func (c *SysUserClient) DeleteOneID(id int64) *SysUserDeleteOne {
+	builder := c.Delete().Where(sysuser.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &UserDeleteOne{builder}
+	return &SysUserDeleteOne{builder}
 }
 
-// Query returns a query builder for User.
-func (c *UserClient) Query() *UserQuery {
-	return &UserQuery{
+// Query returns a query builder for SysUser.
+func (c *SysUserClient) Query() *SysUserQuery {
+	return &SysUserQuery{
 		config: c.config,
-		ctx:    &QueryContext{Type: TypeUser},
+		ctx:    &QueryContext{Type: TypeSysUser},
 		inters: c.Interceptors(),
 	}
 }
 
-// Get returns a User entity by its id.
-func (c *UserClient) Get(ctx context.Context, id int64) (*User, error) {
-	return c.Query().Where(user.ID(id)).Only(ctx)
+// Get returns a SysUser entity by its id.
+func (c *SysUserClient) Get(ctx context.Context, id int64) (*SysUser, error) {
+	return c.Query().Where(sysuser.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *UserClient) GetX(ctx context.Context, id int64) *User {
+func (c *SysUserClient) GetX(ctx context.Context, id int64) *SysUser {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -656,15 +624,15 @@ func (c *UserClient) GetX(ctx context.Context, id int64) *User {
 	return obj
 }
 
-// QueryDept queries the dept edge of a User.
-func (c *UserClient) QueryDept(_m *User) *DeptQuery {
-	query := (&DeptClient{config: c.config}).Query()
+// QuerySysDept queries the sys_dept edge of a SysUser.
+func (c *SysUserClient) QuerySysDept(_m *SysUser) *SysDeptQuery {
+	query := (&SysDeptClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, id),
-			sqlgraph.To(dept.Table, dept.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, user.DeptTable, user.DeptColumn),
+			sqlgraph.From(sysuser.Table, sysuser.FieldID, id),
+			sqlgraph.To(sysdept.Table, sysdept.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, sysuser.SysDeptTable, sysuser.SysDeptColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -672,15 +640,15 @@ func (c *UserClient) QueryDept(_m *User) *DeptQuery {
 	return query
 }
 
-// QueryRoles queries the roles edge of a User.
-func (c *UserClient) QueryRoles(_m *User) *RoleQuery {
-	query := (&RoleClient{config: c.config}).Query()
+// QuerySysRoles queries the sys_roles edge of a SysUser.
+func (c *SysUserClient) QuerySysRoles(_m *SysUser) *SysRoleQuery {
+	query := (&SysRoleClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, id),
-			sqlgraph.To(role.Table, role.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, user.RolesTable, user.RolesPrimaryKey...),
+			sqlgraph.From(sysuser.Table, sysuser.FieldID, id),
+			sqlgraph.To(sysrole.Table, sysrole.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, sysuser.SysRolesTable, sysuser.SysRolesPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -689,36 +657,36 @@ func (c *UserClient) QueryRoles(_m *User) *RoleQuery {
 }
 
 // Hooks returns the client hooks.
-func (c *UserClient) Hooks() []Hook {
-	return c.hooks.User
+func (c *SysUserClient) Hooks() []Hook {
+	return c.hooks.SysUser
 }
 
 // Interceptors returns the client interceptors.
-func (c *UserClient) Interceptors() []Interceptor {
-	return c.inters.User
+func (c *SysUserClient) Interceptors() []Interceptor {
+	return c.inters.SysUser
 }
 
-func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error) {
+func (c *SysUserClient) mutate(ctx context.Context, m *SysUserMutation) (Value, error) {
 	switch m.Op() {
 	case OpCreate:
-		return (&UserCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&SysUserCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdate:
-		return (&UserUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&SysUserUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdateOne:
-		return (&UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&SysUserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpDelete, OpDeleteOne:
-		return (&UserDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+		return (&SysUserDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown User mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown SysUser mutation op: %q", m.Op())
 	}
 }
 
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Dept, Role, User []ent.Hook
+		SysDept, SysRole, SysUser []ent.Hook
 	}
 	inters struct {
-		Dept, Role, User []ent.Interceptor
+		SysDept, SysRole, SysUser []ent.Interceptor
 	}
 )

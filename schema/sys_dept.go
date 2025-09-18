@@ -9,12 +9,12 @@ import (
 )
 
 // Dept holds the schema definition for the Dept entity.
-type Dept struct {
+type SysDept struct {
 	ent.Schema
 }
 
 // Fields of the Dept.
-func (Dept) Fields() []ent.Field {
+func (SysDept) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("id").StructTag(`json:"id,string"`).Comment("部门id"),
 		field.Int64("parent_id").StructTag(`json:"parentId,string"`).Comment("父级部门id"),
@@ -28,17 +28,16 @@ func (Dept) Fields() []ent.Field {
 }
 
 // Edges of the Dept.
-func (Dept) Edges() []ent.Edge {
+func (SysDept) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("users", User.Type),
-		edge.From("roles", Role.Type).
-			Ref("depts"),
+		// 部门 -> 用户 (一对多)
+		edge.To("sys_users", SysUser.Type),
 	}
 }
 
-func (Dept) Annotations() []schema.Annotation {
+func (SysDept) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		entsql.Annotation{Table: "dept"},
+		entsql.Annotation{Table: "sys_dept"},
 		entsql.WithComments(true),
 		schema.Comment("系统部门表"),
 	}

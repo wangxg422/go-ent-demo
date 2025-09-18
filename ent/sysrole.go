@@ -4,7 +4,7 @@ package ent
 
 import (
 	"fmt"
-	"go-ent-demo/ent/role"
+	"go-ent-demo/ent/sysrole"
 	"strings"
 
 	"entgo.io/ent"
@@ -12,7 +12,7 @@ import (
 )
 
 // 系统角色表
-type Role struct {
+type SysRole struct {
 	config `json:"-"`
 	// ID of the ent.
 	// 角色id
@@ -22,48 +22,37 @@ type Role struct {
 	// 角色编码
 	RoleCode string `json:"roleCode"`
 	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the RoleQuery when eager-loading is set.
-	Edges        RoleEdges `json:"edges"`
+	// The values are being populated by the SysRoleQuery when eager-loading is set.
+	Edges        SysRoleEdges `json:"edges"`
 	selectValues sql.SelectValues
 }
 
-// RoleEdges holds the relations/edges for other nodes in the graph.
-type RoleEdges struct {
-	// Depts holds the value of the depts edge.
-	Depts []*Dept `json:"depts,omitempty"`
-	// Users holds the value of the users edge.
-	Users []*User `json:"users,omitempty"`
+// SysRoleEdges holds the relations/edges for other nodes in the graph.
+type SysRoleEdges struct {
+	// SysUsers holds the value of the sys_users edge.
+	SysUsers []*SysUser `json:"sys_users,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [1]bool
 }
 
-// DeptsOrErr returns the Depts value or an error if the edge
+// SysUsersOrErr returns the SysUsers value or an error if the edge
 // was not loaded in eager-loading.
-func (e RoleEdges) DeptsOrErr() ([]*Dept, error) {
+func (e SysRoleEdges) SysUsersOrErr() ([]*SysUser, error) {
 	if e.loadedTypes[0] {
-		return e.Depts, nil
+		return e.SysUsers, nil
 	}
-	return nil, &NotLoadedError{edge: "depts"}
-}
-
-// UsersOrErr returns the Users value or an error if the edge
-// was not loaded in eager-loading.
-func (e RoleEdges) UsersOrErr() ([]*User, error) {
-	if e.loadedTypes[1] {
-		return e.Users, nil
-	}
-	return nil, &NotLoadedError{edge: "users"}
+	return nil, &NotLoadedError{edge: "sys_users"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*Role) scanValues(columns []string) ([]any, error) {
+func (*SysRole) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case role.FieldID:
+		case sysrole.FieldID:
 			values[i] = new(sql.NullInt64)
-		case role.FieldRoleName, role.FieldRoleCode:
+		case sysrole.FieldRoleName, sysrole.FieldRoleCode:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -73,26 +62,26 @@ func (*Role) scanValues(columns []string) ([]any, error) {
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the Role fields.
-func (_m *Role) assignValues(columns []string, values []any) error {
+// to the SysRole fields.
+func (_m *SysRole) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case role.FieldID:
+		case sysrole.FieldID:
 			value, ok := values[i].(*sql.NullInt64)
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			_m.ID = int64(value.Int64)
-		case role.FieldRoleName:
+		case sysrole.FieldRoleName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field role_name", values[i])
 			} else if value.Valid {
 				_m.RoleName = value.String
 			}
-		case role.FieldRoleCode:
+		case sysrole.FieldRoleCode:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field role_code", values[i])
 			} else if value.Valid {
@@ -105,44 +94,39 @@ func (_m *Role) assignValues(columns []string, values []any) error {
 	return nil
 }
 
-// Value returns the ent.Value that was dynamically selected and assigned to the Role.
+// Value returns the ent.Value that was dynamically selected and assigned to the SysRole.
 // This includes values selected through modifiers, order, etc.
-func (_m *Role) Value(name string) (ent.Value, error) {
+func (_m *SysRole) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
 }
 
-// QueryDepts queries the "depts" edge of the Role entity.
-func (_m *Role) QueryDepts() *DeptQuery {
-	return NewRoleClient(_m.config).QueryDepts(_m)
+// QuerySysUsers queries the "sys_users" edge of the SysRole entity.
+func (_m *SysRole) QuerySysUsers() *SysUserQuery {
+	return NewSysRoleClient(_m.config).QuerySysUsers(_m)
 }
 
-// QueryUsers queries the "users" edge of the Role entity.
-func (_m *Role) QueryUsers() *UserQuery {
-	return NewRoleClient(_m.config).QueryUsers(_m)
-}
-
-// Update returns a builder for updating this Role.
-// Note that you need to call Role.Unwrap() before calling this method if this Role
+// Update returns a builder for updating this SysRole.
+// Note that you need to call SysRole.Unwrap() before calling this method if this SysRole
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (_m *Role) Update() *RoleUpdateOne {
-	return NewRoleClient(_m.config).UpdateOne(_m)
+func (_m *SysRole) Update() *SysRoleUpdateOne {
+	return NewSysRoleClient(_m.config).UpdateOne(_m)
 }
 
-// Unwrap unwraps the Role entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the SysRole entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (_m *Role) Unwrap() *Role {
+func (_m *SysRole) Unwrap() *SysRole {
 	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Role is not a transactional entity")
+		panic("ent: SysRole is not a transactional entity")
 	}
 	_m.config.driver = _tx.drv
 	return _m
 }
 
 // String implements the fmt.Stringer.
-func (_m *Role) String() string {
+func (_m *SysRole) String() string {
 	var builder strings.Builder
-	builder.WriteString("Role(")
+	builder.WriteString("SysRole(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("role_name=")
 	builder.WriteString(_m.RoleName)
@@ -153,5 +137,5 @@ func (_m *Role) String() string {
 	return builder.String()
 }
 
-// Roles is a parsable slice of Role.
-type Roles []*Role
+// SysRoles is a parsable slice of SysRole.
+type SysRoles []*SysRole

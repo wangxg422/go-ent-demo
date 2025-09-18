@@ -4,7 +4,7 @@ package ent
 
 import (
 	"fmt"
-	"go-ent-demo/ent/dept"
+	"go-ent-demo/ent/sysdept"
 	"strings"
 
 	"entgo.io/ent"
@@ -12,7 +12,7 @@ import (
 )
 
 // 系统部门表
-type Dept struct {
+type SysDept struct {
 	config `json:"-"`
 	// ID of the ent.
 	// 部门id
@@ -32,48 +32,37 @@ type Dept struct {
 	// 部门电子邮箱
 	Email string `json:"email"`
 	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the DeptQuery when eager-loading is set.
-	Edges        DeptEdges `json:"edges"`
+	// The values are being populated by the SysDeptQuery when eager-loading is set.
+	Edges        SysDeptEdges `json:"edges"`
 	selectValues sql.SelectValues
 }
 
-// DeptEdges holds the relations/edges for other nodes in the graph.
-type DeptEdges struct {
-	// Users holds the value of the users edge.
-	Users []*User `json:"users,omitempty"`
-	// Roles holds the value of the roles edge.
-	Roles []*Role `json:"roles,omitempty"`
+// SysDeptEdges holds the relations/edges for other nodes in the graph.
+type SysDeptEdges struct {
+	// SysUsers holds the value of the sys_users edge.
+	SysUsers []*SysUser `json:"sys_users,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [1]bool
 }
 
-// UsersOrErr returns the Users value or an error if the edge
+// SysUsersOrErr returns the SysUsers value or an error if the edge
 // was not loaded in eager-loading.
-func (e DeptEdges) UsersOrErr() ([]*User, error) {
+func (e SysDeptEdges) SysUsersOrErr() ([]*SysUser, error) {
 	if e.loadedTypes[0] {
-		return e.Users, nil
+		return e.SysUsers, nil
 	}
-	return nil, &NotLoadedError{edge: "users"}
-}
-
-// RolesOrErr returns the Roles value or an error if the edge
-// was not loaded in eager-loading.
-func (e DeptEdges) RolesOrErr() ([]*Role, error) {
-	if e.loadedTypes[1] {
-		return e.Roles, nil
-	}
-	return nil, &NotLoadedError{edge: "roles"}
+	return nil, &NotLoadedError{edge: "sys_users"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*Dept) scanValues(columns []string) ([]any, error) {
+func (*SysDept) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case dept.FieldID, dept.FieldParentID:
+		case sysdept.FieldID, sysdept.FieldParentID:
 			values[i] = new(sql.NullInt64)
-		case dept.FieldAncestors, dept.FieldDeptName, dept.FieldDeptCode, dept.FieldLeader, dept.FieldPhone, dept.FieldEmail:
+		case sysdept.FieldAncestors, sysdept.FieldDeptName, sysdept.FieldDeptCode, sysdept.FieldLeader, sysdept.FieldPhone, sysdept.FieldEmail:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -83,56 +72,56 @@ func (*Dept) scanValues(columns []string) ([]any, error) {
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the Dept fields.
-func (_m *Dept) assignValues(columns []string, values []any) error {
+// to the SysDept fields.
+func (_m *SysDept) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case dept.FieldID:
+		case sysdept.FieldID:
 			value, ok := values[i].(*sql.NullInt64)
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			_m.ID = int64(value.Int64)
-		case dept.FieldParentID:
+		case sysdept.FieldParentID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field parent_id", values[i])
 			} else if value.Valid {
 				_m.ParentID = value.Int64
 			}
-		case dept.FieldAncestors:
+		case sysdept.FieldAncestors:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field ancestors", values[i])
 			} else if value.Valid {
 				_m.Ancestors = value.String
 			}
-		case dept.FieldDeptName:
+		case sysdept.FieldDeptName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field dept_name", values[i])
 			} else if value.Valid {
 				_m.DeptName = value.String
 			}
-		case dept.FieldDeptCode:
+		case sysdept.FieldDeptCode:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field dept_code", values[i])
 			} else if value.Valid {
 				_m.DeptCode = value.String
 			}
-		case dept.FieldLeader:
+		case sysdept.FieldLeader:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field leader", values[i])
 			} else if value.Valid {
 				_m.Leader = value.String
 			}
-		case dept.FieldPhone:
+		case sysdept.FieldPhone:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field phone", values[i])
 			} else if value.Valid {
 				_m.Phone = value.String
 			}
-		case dept.FieldEmail:
+		case sysdept.FieldEmail:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field email", values[i])
 			} else if value.Valid {
@@ -145,44 +134,39 @@ func (_m *Dept) assignValues(columns []string, values []any) error {
 	return nil
 }
 
-// Value returns the ent.Value that was dynamically selected and assigned to the Dept.
+// Value returns the ent.Value that was dynamically selected and assigned to the SysDept.
 // This includes values selected through modifiers, order, etc.
-func (_m *Dept) Value(name string) (ent.Value, error) {
+func (_m *SysDept) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
 }
 
-// QueryUsers queries the "users" edge of the Dept entity.
-func (_m *Dept) QueryUsers() *UserQuery {
-	return NewDeptClient(_m.config).QueryUsers(_m)
+// QuerySysUsers queries the "sys_users" edge of the SysDept entity.
+func (_m *SysDept) QuerySysUsers() *SysUserQuery {
+	return NewSysDeptClient(_m.config).QuerySysUsers(_m)
 }
 
-// QueryRoles queries the "roles" edge of the Dept entity.
-func (_m *Dept) QueryRoles() *RoleQuery {
-	return NewDeptClient(_m.config).QueryRoles(_m)
-}
-
-// Update returns a builder for updating this Dept.
-// Note that you need to call Dept.Unwrap() before calling this method if this Dept
+// Update returns a builder for updating this SysDept.
+// Note that you need to call SysDept.Unwrap() before calling this method if this SysDept
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (_m *Dept) Update() *DeptUpdateOne {
-	return NewDeptClient(_m.config).UpdateOne(_m)
+func (_m *SysDept) Update() *SysDeptUpdateOne {
+	return NewSysDeptClient(_m.config).UpdateOne(_m)
 }
 
-// Unwrap unwraps the Dept entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the SysDept entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (_m *Dept) Unwrap() *Dept {
+func (_m *SysDept) Unwrap() *SysDept {
 	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Dept is not a transactional entity")
+		panic("ent: SysDept is not a transactional entity")
 	}
 	_m.config.driver = _tx.drv
 	return _m
 }
 
 // String implements the fmt.Stringer.
-func (_m *Dept) String() string {
+func (_m *SysDept) String() string {
 	var builder strings.Builder
-	builder.WriteString("Dept(")
+	builder.WriteString("SysDept(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("parent_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.ParentID))
@@ -208,5 +192,5 @@ func (_m *Dept) String() string {
 	return builder.String()
 }
 
-// Depts is a parsable slice of Dept.
-type Depts []*Dept
+// SysDepts is a parsable slice of SysDept.
+type SysDepts []*SysDept

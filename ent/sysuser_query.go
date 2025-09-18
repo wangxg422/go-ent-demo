@@ -6,10 +6,10 @@ import (
 	"context"
 	"database/sql/driver"
 	"fmt"
-	"go-ent-demo/ent/dept"
 	"go-ent-demo/ent/predicate"
-	"go-ent-demo/ent/role"
-	"go-ent-demo/ent/user"
+	"go-ent-demo/ent/sysdept"
+	"go-ent-demo/ent/sysrole"
+	"go-ent-demo/ent/sysuser"
 	"math"
 
 	"entgo.io/ent"
@@ -18,54 +18,54 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-// RoleQuery is the builder for querying Role entities.
-type RoleQuery struct {
+// SysUserQuery is the builder for querying SysUser entities.
+type SysUserQuery struct {
 	config
-	ctx        *QueryContext
-	order      []role.OrderOption
-	inters     []Interceptor
-	predicates []predicate.Role
-	withDepts  *DeptQuery
-	withUsers  *UserQuery
+	ctx          *QueryContext
+	order        []sysuser.OrderOption
+	inters       []Interceptor
+	predicates   []predicate.SysUser
+	withSysDept  *SysDeptQuery
+	withSysRoles *SysRoleQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
 }
 
-// Where adds a new predicate for the RoleQuery builder.
-func (_q *RoleQuery) Where(ps ...predicate.Role) *RoleQuery {
+// Where adds a new predicate for the SysUserQuery builder.
+func (_q *SysUserQuery) Where(ps ...predicate.SysUser) *SysUserQuery {
 	_q.predicates = append(_q.predicates, ps...)
 	return _q
 }
 
 // Limit the number of records to be returned by this query.
-func (_q *RoleQuery) Limit(limit int) *RoleQuery {
+func (_q *SysUserQuery) Limit(limit int) *SysUserQuery {
 	_q.ctx.Limit = &limit
 	return _q
 }
 
 // Offset to start from.
-func (_q *RoleQuery) Offset(offset int) *RoleQuery {
+func (_q *SysUserQuery) Offset(offset int) *SysUserQuery {
 	_q.ctx.Offset = &offset
 	return _q
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (_q *RoleQuery) Unique(unique bool) *RoleQuery {
+func (_q *SysUserQuery) Unique(unique bool) *SysUserQuery {
 	_q.ctx.Unique = &unique
 	return _q
 }
 
 // Order specifies how the records should be ordered.
-func (_q *RoleQuery) Order(o ...role.OrderOption) *RoleQuery {
+func (_q *SysUserQuery) Order(o ...sysuser.OrderOption) *SysUserQuery {
 	_q.order = append(_q.order, o...)
 	return _q
 }
 
-// QueryDepts chains the current query on the "depts" edge.
-func (_q *RoleQuery) QueryDepts() *DeptQuery {
-	query := (&DeptClient{config: _q.config}).Query()
+// QuerySysDept chains the current query on the "sys_dept" edge.
+func (_q *SysUserQuery) QuerySysDept() *SysDeptQuery {
+	query := (&SysDeptClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -75,9 +75,9 @@ func (_q *RoleQuery) QueryDepts() *DeptQuery {
 			return nil, err
 		}
 		step := sqlgraph.NewStep(
-			sqlgraph.From(role.Table, role.FieldID, selector),
-			sqlgraph.To(dept.Table, dept.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, role.DeptsTable, role.DeptsPrimaryKey...),
+			sqlgraph.From(sysuser.Table, sysuser.FieldID, selector),
+			sqlgraph.To(sysdept.Table, sysdept.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, sysuser.SysDeptTable, sysuser.SysDeptColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -85,9 +85,9 @@ func (_q *RoleQuery) QueryDepts() *DeptQuery {
 	return query
 }
 
-// QueryUsers chains the current query on the "users" edge.
-func (_q *RoleQuery) QueryUsers() *UserQuery {
-	query := (&UserClient{config: _q.config}).Query()
+// QuerySysRoles chains the current query on the "sys_roles" edge.
+func (_q *SysUserQuery) QuerySysRoles() *SysRoleQuery {
+	query := (&SysRoleClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -97,9 +97,9 @@ func (_q *RoleQuery) QueryUsers() *UserQuery {
 			return nil, err
 		}
 		step := sqlgraph.NewStep(
-			sqlgraph.From(role.Table, role.FieldID, selector),
-			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, role.UsersTable, role.UsersPrimaryKey...),
+			sqlgraph.From(sysuser.Table, sysuser.FieldID, selector),
+			sqlgraph.To(sysrole.Table, sysrole.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, sysuser.SysRolesTable, sysuser.SysRolesPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -107,21 +107,21 @@ func (_q *RoleQuery) QueryUsers() *UserQuery {
 	return query
 }
 
-// First returns the first Role entity from the query.
-// Returns a *NotFoundError when no Role was found.
-func (_q *RoleQuery) First(ctx context.Context) (*Role, error) {
+// First returns the first SysUser entity from the query.
+// Returns a *NotFoundError when no SysUser was found.
+func (_q *SysUserQuery) First(ctx context.Context) (*SysUser, error) {
 	nodes, err := _q.Limit(1).All(setContextOp(ctx, _q.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
-		return nil, &NotFoundError{role.Label}
+		return nil, &NotFoundError{sysuser.Label}
 	}
 	return nodes[0], nil
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (_q *RoleQuery) FirstX(ctx context.Context) *Role {
+func (_q *SysUserQuery) FirstX(ctx context.Context) *SysUser {
 	node, err := _q.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -129,22 +129,22 @@ func (_q *RoleQuery) FirstX(ctx context.Context) *Role {
 	return node
 }
 
-// FirstID returns the first Role ID from the query.
-// Returns a *NotFoundError when no Role ID was found.
-func (_q *RoleQuery) FirstID(ctx context.Context) (id int64, err error) {
+// FirstID returns the first SysUser ID from the query.
+// Returns a *NotFoundError when no SysUser ID was found.
+func (_q *SysUserQuery) FirstID(ctx context.Context) (id int64, err error) {
 	var ids []int64
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
-		err = &NotFoundError{role.Label}
+		err = &NotFoundError{sysuser.Label}
 		return
 	}
 	return ids[0], nil
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *RoleQuery) FirstIDX(ctx context.Context) int64 {
+func (_q *SysUserQuery) FirstIDX(ctx context.Context) int64 {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -152,10 +152,10 @@ func (_q *RoleQuery) FirstIDX(ctx context.Context) int64 {
 	return id
 }
 
-// Only returns a single Role entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when more than one Role entity is found.
-// Returns a *NotFoundError when no Role entities are found.
-func (_q *RoleQuery) Only(ctx context.Context) (*Role, error) {
+// Only returns a single SysUser entity found by the query, ensuring it only returns one.
+// Returns a *NotSingularError when more than one SysUser entity is found.
+// Returns a *NotFoundError when no SysUser entities are found.
+func (_q *SysUserQuery) Only(ctx context.Context) (*SysUser, error) {
 	nodes, err := _q.Limit(2).All(setContextOp(ctx, _q.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
@@ -164,14 +164,14 @@ func (_q *RoleQuery) Only(ctx context.Context) (*Role, error) {
 	case 1:
 		return nodes[0], nil
 	case 0:
-		return nil, &NotFoundError{role.Label}
+		return nil, &NotFoundError{sysuser.Label}
 	default:
-		return nil, &NotSingularError{role.Label}
+		return nil, &NotSingularError{sysuser.Label}
 	}
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (_q *RoleQuery) OnlyX(ctx context.Context) *Role {
+func (_q *SysUserQuery) OnlyX(ctx context.Context) *SysUser {
 	node, err := _q.Only(ctx)
 	if err != nil {
 		panic(err)
@@ -179,10 +179,10 @@ func (_q *RoleQuery) OnlyX(ctx context.Context) *Role {
 	return node
 }
 
-// OnlyID is like Only, but returns the only Role ID in the query.
-// Returns a *NotSingularError when more than one Role ID is found.
+// OnlyID is like Only, but returns the only SysUser ID in the query.
+// Returns a *NotSingularError when more than one SysUser ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *RoleQuery) OnlyID(ctx context.Context) (id int64, err error) {
+func (_q *SysUserQuery) OnlyID(ctx context.Context) (id int64, err error) {
 	var ids []int64
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
@@ -191,15 +191,15 @@ func (_q *RoleQuery) OnlyID(ctx context.Context) (id int64, err error) {
 	case 1:
 		id = ids[0]
 	case 0:
-		err = &NotFoundError{role.Label}
+		err = &NotFoundError{sysuser.Label}
 	default:
-		err = &NotSingularError{role.Label}
+		err = &NotSingularError{sysuser.Label}
 	}
 	return
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *RoleQuery) OnlyIDX(ctx context.Context) int64 {
+func (_q *SysUserQuery) OnlyIDX(ctx context.Context) int64 {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -207,18 +207,18 @@ func (_q *RoleQuery) OnlyIDX(ctx context.Context) int64 {
 	return id
 }
 
-// All executes the query and returns a list of Roles.
-func (_q *RoleQuery) All(ctx context.Context) ([]*Role, error) {
+// All executes the query and returns a list of SysUsers.
+func (_q *SysUserQuery) All(ctx context.Context) ([]*SysUser, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryAll)
 	if err := _q.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	qr := querierAll[[]*Role, *RoleQuery]()
-	return withInterceptors[[]*Role](ctx, _q, qr, _q.inters)
+	qr := querierAll[[]*SysUser, *SysUserQuery]()
+	return withInterceptors[[]*SysUser](ctx, _q, qr, _q.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
-func (_q *RoleQuery) AllX(ctx context.Context) []*Role {
+func (_q *SysUserQuery) AllX(ctx context.Context) []*SysUser {
 	nodes, err := _q.All(ctx)
 	if err != nil {
 		panic(err)
@@ -226,20 +226,20 @@ func (_q *RoleQuery) AllX(ctx context.Context) []*Role {
 	return nodes
 }
 
-// IDs executes the query and returns a list of Role IDs.
-func (_q *RoleQuery) IDs(ctx context.Context) (ids []int64, err error) {
+// IDs executes the query and returns a list of SysUser IDs.
+func (_q *SysUserQuery) IDs(ctx context.Context) (ids []int64, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryIDs)
-	if err = _q.Select(role.FieldID).Scan(ctx, &ids); err != nil {
+	if err = _q.Select(sysuser.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *RoleQuery) IDsX(ctx context.Context) []int64 {
+func (_q *SysUserQuery) IDsX(ctx context.Context) []int64 {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -248,16 +248,16 @@ func (_q *RoleQuery) IDsX(ctx context.Context) []int64 {
 }
 
 // Count returns the count of the given query.
-func (_q *RoleQuery) Count(ctx context.Context) (int, error) {
+func (_q *SysUserQuery) Count(ctx context.Context) (int, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryCount)
 	if err := _q.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return withInterceptors[int](ctx, _q, querierCount[*RoleQuery](), _q.inters)
+	return withInterceptors[int](ctx, _q, querierCount[*SysUserQuery](), _q.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (_q *RoleQuery) CountX(ctx context.Context) int {
+func (_q *SysUserQuery) CountX(ctx context.Context) int {
 	count, err := _q.Count(ctx)
 	if err != nil {
 		panic(err)
@@ -266,7 +266,7 @@ func (_q *RoleQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (_q *RoleQuery) Exist(ctx context.Context) (bool, error) {
+func (_q *SysUserQuery) Exist(ctx context.Context) (bool, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryExist)
 	switch _, err := _q.FirstID(ctx); {
 	case IsNotFound(err):
@@ -279,7 +279,7 @@ func (_q *RoleQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (_q *RoleQuery) ExistX(ctx context.Context) bool {
+func (_q *SysUserQuery) ExistX(ctx context.Context) bool {
 	exist, err := _q.Exist(ctx)
 	if err != nil {
 		panic(err)
@@ -287,45 +287,45 @@ func (_q *RoleQuery) ExistX(ctx context.Context) bool {
 	return exist
 }
 
-// Clone returns a duplicate of the RoleQuery builder, including all associated steps. It can be
+// Clone returns a duplicate of the SysUserQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (_q *RoleQuery) Clone() *RoleQuery {
+func (_q *SysUserQuery) Clone() *SysUserQuery {
 	if _q == nil {
 		return nil
 	}
-	return &RoleQuery{
-		config:     _q.config,
-		ctx:        _q.ctx.Clone(),
-		order:      append([]role.OrderOption{}, _q.order...),
-		inters:     append([]Interceptor{}, _q.inters...),
-		predicates: append([]predicate.Role{}, _q.predicates...),
-		withDepts:  _q.withDepts.Clone(),
-		withUsers:  _q.withUsers.Clone(),
+	return &SysUserQuery{
+		config:       _q.config,
+		ctx:          _q.ctx.Clone(),
+		order:        append([]sysuser.OrderOption{}, _q.order...),
+		inters:       append([]Interceptor{}, _q.inters...),
+		predicates:   append([]predicate.SysUser{}, _q.predicates...),
+		withSysDept:  _q.withSysDept.Clone(),
+		withSysRoles: _q.withSysRoles.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
 	}
 }
 
-// WithDepts tells the query-builder to eager-load the nodes that are connected to
-// the "depts" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *RoleQuery) WithDepts(opts ...func(*DeptQuery)) *RoleQuery {
-	query := (&DeptClient{config: _q.config}).Query()
+// WithSysDept tells the query-builder to eager-load the nodes that are connected to
+// the "sys_dept" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *SysUserQuery) WithSysDept(opts ...func(*SysDeptQuery)) *SysUserQuery {
+	query := (&SysDeptClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withDepts = query
+	_q.withSysDept = query
 	return _q
 }
 
-// WithUsers tells the query-builder to eager-load the nodes that are connected to
-// the "users" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *RoleQuery) WithUsers(opts ...func(*UserQuery)) *RoleQuery {
-	query := (&UserClient{config: _q.config}).Query()
+// WithSysRoles tells the query-builder to eager-load the nodes that are connected to
+// the "sys_roles" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *SysUserQuery) WithSysRoles(opts ...func(*SysRoleQuery)) *SysUserQuery {
+	query := (&SysRoleClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withUsers = query
+	_q.withSysRoles = query
 	return _q
 }
 
@@ -335,19 +335,19 @@ func (_q *RoleQuery) WithUsers(opts ...func(*UserQuery)) *RoleQuery {
 // Example:
 //
 //	var v []struct {
-//		RoleName string `json:"roleName"`
+//		UserName string `json:"userName"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
-//	client.Role.Query().
-//		GroupBy(role.FieldRoleName).
+//	client.SysUser.Query().
+//		GroupBy(sysuser.FieldUserName).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-func (_q *RoleQuery) GroupBy(field string, fields ...string) *RoleGroupBy {
+func (_q *SysUserQuery) GroupBy(field string, fields ...string) *SysUserGroupBy {
 	_q.ctx.Fields = append([]string{field}, fields...)
-	grbuild := &RoleGroupBy{build: _q}
+	grbuild := &SysUserGroupBy{build: _q}
 	grbuild.flds = &_q.ctx.Fields
-	grbuild.label = role.Label
+	grbuild.label = sysuser.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
 }
@@ -358,26 +358,26 @@ func (_q *RoleQuery) GroupBy(field string, fields ...string) *RoleGroupBy {
 // Example:
 //
 //	var v []struct {
-//		RoleName string `json:"roleName"`
+//		UserName string `json:"userName"`
 //	}
 //
-//	client.Role.Query().
-//		Select(role.FieldRoleName).
+//	client.SysUser.Query().
+//		Select(sysuser.FieldUserName).
 //		Scan(ctx, &v)
-func (_q *RoleQuery) Select(fields ...string) *RoleSelect {
+func (_q *SysUserQuery) Select(fields ...string) *SysUserSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
-	sbuild := &RoleSelect{RoleQuery: _q}
-	sbuild.label = role.Label
+	sbuild := &SysUserSelect{SysUserQuery: _q}
+	sbuild.label = sysuser.Label
 	sbuild.flds, sbuild.scan = &_q.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
-// Aggregate returns a RoleSelect configured with the given aggregations.
-func (_q *RoleQuery) Aggregate(fns ...AggregateFunc) *RoleSelect {
+// Aggregate returns a SysUserSelect configured with the given aggregations.
+func (_q *SysUserQuery) Aggregate(fns ...AggregateFunc) *SysUserSelect {
 	return _q.Select().Aggregate(fns...)
 }
 
-func (_q *RoleQuery) prepareQuery(ctx context.Context) error {
+func (_q *SysUserQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range _q.inters {
 		if inter == nil {
 			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
@@ -389,7 +389,7 @@ func (_q *RoleQuery) prepareQuery(ctx context.Context) error {
 		}
 	}
 	for _, f := range _q.ctx.Fields {
-		if !role.ValidColumn(f) {
+		if !sysuser.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
@@ -403,20 +403,20 @@ func (_q *RoleQuery) prepareQuery(ctx context.Context) error {
 	return nil
 }
 
-func (_q *RoleQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Role, error) {
+func (_q *SysUserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*SysUser, error) {
 	var (
-		nodes       = []*Role{}
+		nodes       = []*SysUser{}
 		_spec       = _q.querySpec()
 		loadedTypes = [2]bool{
-			_q.withDepts != nil,
-			_q.withUsers != nil,
+			_q.withSysDept != nil,
+			_q.withSysRoles != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
-		return (*Role).scanValues(nil, columns)
+		return (*SysUser).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
-		node := &Role{config: _q.config}
+		node := &SysUser{config: _q.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
@@ -430,88 +430,55 @@ func (_q *RoleQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Role, e
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := _q.withDepts; query != nil {
-		if err := _q.loadDepts(ctx, query, nodes,
-			func(n *Role) { n.Edges.Depts = []*Dept{} },
-			func(n *Role, e *Dept) { n.Edges.Depts = append(n.Edges.Depts, e) }); err != nil {
+	if query := _q.withSysDept; query != nil {
+		if err := _q.loadSysDept(ctx, query, nodes, nil,
+			func(n *SysUser, e *SysDept) { n.Edges.SysDept = e }); err != nil {
 			return nil, err
 		}
 	}
-	if query := _q.withUsers; query != nil {
-		if err := _q.loadUsers(ctx, query, nodes,
-			func(n *Role) { n.Edges.Users = []*User{} },
-			func(n *Role, e *User) { n.Edges.Users = append(n.Edges.Users, e) }); err != nil {
+	if query := _q.withSysRoles; query != nil {
+		if err := _q.loadSysRoles(ctx, query, nodes,
+			func(n *SysUser) { n.Edges.SysRoles = []*SysRole{} },
+			func(n *SysUser, e *SysRole) { n.Edges.SysRoles = append(n.Edges.SysRoles, e) }); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
 }
 
-func (_q *RoleQuery) loadDepts(ctx context.Context, query *DeptQuery, nodes []*Role, init func(*Role), assign func(*Role, *Dept)) error {
-	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[int64]*Role)
-	nids := make(map[int64]map[*Role]struct{})
-	for i, node := range nodes {
-		edgeIDs[i] = node.ID
-		byID[node.ID] = node
-		if init != nil {
-			init(node)
+func (_q *SysUserQuery) loadSysDept(ctx context.Context, query *SysDeptQuery, nodes []*SysUser, init func(*SysUser), assign func(*SysUser, *SysDept)) error {
+	ids := make([]int64, 0, len(nodes))
+	nodeids := make(map[int64][]*SysUser)
+	for i := range nodes {
+		fk := nodes[i].DeptID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
 		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
-	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(role.DeptsTable)
-		s.Join(joinT).On(s.C(dept.FieldID), joinT.C(role.DeptsPrimaryKey[1]))
-		s.Where(sql.InValues(joinT.C(role.DeptsPrimaryKey[0]), edgeIDs...))
-		columns := s.SelectedColumns()
-		s.Select(joinT.C(role.DeptsPrimaryKey[0]))
-		s.AppendSelect(columns...)
-		s.SetDistinct(false)
-	})
-	if err := query.prepareQuery(ctx); err != nil {
-		return err
+	if len(ids) == 0 {
+		return nil
 	}
-	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
-		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
-			assign := spec.Assign
-			values := spec.ScanValues
-			spec.ScanValues = func(columns []string) ([]any, error) {
-				values, err := values(columns[1:])
-				if err != nil {
-					return nil, err
-				}
-				return append([]any{new(sql.NullInt64)}, values...), nil
-			}
-			spec.Assign = func(columns []string, values []any) error {
-				outValue := values[0].(*sql.NullInt64).Int64
-				inValue := values[1].(*sql.NullInt64).Int64
-				if nids[inValue] == nil {
-					nids[inValue] = map[*Role]struct{}{byID[outValue]: {}}
-					return assign(columns[1:], values[1:])
-				}
-				nids[inValue][byID[outValue]] = struct{}{}
-				return nil
-			}
-		})
-	})
-	neighbors, err := withInterceptors[[]*Dept](ctx, query, qr, query.inters)
+	query.Where(sysdept.IDIn(ids...))
+	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		nodes, ok := nids[n.ID]
+		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected "depts" node returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "dept_id" returned %v`, n.ID)
 		}
-		for kn := range nodes {
-			assign(kn, n)
+		for i := range nodes {
+			assign(nodes[i], n)
 		}
 	}
 	return nil
 }
-func (_q *RoleQuery) loadUsers(ctx context.Context, query *UserQuery, nodes []*Role, init func(*Role), assign func(*Role, *User)) error {
+func (_q *SysUserQuery) loadSysRoles(ctx context.Context, query *SysRoleQuery, nodes []*SysUser, init func(*SysUser), assign func(*SysUser, *SysRole)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[int64]*Role)
-	nids := make(map[int64]map[*Role]struct{})
+	byID := make(map[int64]*SysUser)
+	nids := make(map[int64]map[*SysUser]struct{})
 	for i, node := range nodes {
 		edgeIDs[i] = node.ID
 		byID[node.ID] = node
@@ -520,11 +487,11 @@ func (_q *RoleQuery) loadUsers(ctx context.Context, query *UserQuery, nodes []*R
 		}
 	}
 	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(role.UsersTable)
-		s.Join(joinT).On(s.C(user.FieldID), joinT.C(role.UsersPrimaryKey[0]))
-		s.Where(sql.InValues(joinT.C(role.UsersPrimaryKey[1]), edgeIDs...))
+		joinT := sql.Table(sysuser.SysRolesTable)
+		s.Join(joinT).On(s.C(sysrole.FieldID), joinT.C(sysuser.SysRolesPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(sysuser.SysRolesPrimaryKey[0]), edgeIDs...))
 		columns := s.SelectedColumns()
-		s.Select(joinT.C(role.UsersPrimaryKey[1]))
+		s.Select(joinT.C(sysuser.SysRolesPrimaryKey[0]))
 		s.AppendSelect(columns...)
 		s.SetDistinct(false)
 	})
@@ -546,7 +513,7 @@ func (_q *RoleQuery) loadUsers(ctx context.Context, query *UserQuery, nodes []*R
 				outValue := values[0].(*sql.NullInt64).Int64
 				inValue := values[1].(*sql.NullInt64).Int64
 				if nids[inValue] == nil {
-					nids[inValue] = map[*Role]struct{}{byID[outValue]: {}}
+					nids[inValue] = map[*SysUser]struct{}{byID[outValue]: {}}
 					return assign(columns[1:], values[1:])
 				}
 				nids[inValue][byID[outValue]] = struct{}{}
@@ -554,14 +521,14 @@ func (_q *RoleQuery) loadUsers(ctx context.Context, query *UserQuery, nodes []*R
 			}
 		})
 	})
-	neighbors, err := withInterceptors[[]*User](ctx, query, qr, query.inters)
+	neighbors, err := withInterceptors[[]*SysRole](ctx, query, qr, query.inters)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
 		nodes, ok := nids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected "users" node returned %v`, n.ID)
+			return fmt.Errorf(`unexpected "sys_roles" node returned %v`, n.ID)
 		}
 		for kn := range nodes {
 			assign(kn, n)
@@ -570,7 +537,7 @@ func (_q *RoleQuery) loadUsers(ctx context.Context, query *UserQuery, nodes []*R
 	return nil
 }
 
-func (_q *RoleQuery) sqlCount(ctx context.Context) (int, error) {
+func (_q *SysUserQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := _q.querySpec()
 	_spec.Node.Columns = _q.ctx.Fields
 	if len(_q.ctx.Fields) > 0 {
@@ -579,8 +546,8 @@ func (_q *RoleQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, _q.driver, _spec)
 }
 
-func (_q *RoleQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(role.Table, role.Columns, sqlgraph.NewFieldSpec(role.FieldID, field.TypeInt64))
+func (_q *SysUserQuery) querySpec() *sqlgraph.QuerySpec {
+	_spec := sqlgraph.NewQuerySpec(sysuser.Table, sysuser.Columns, sqlgraph.NewFieldSpec(sysuser.FieldID, field.TypeInt64))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
@@ -589,11 +556,14 @@ func (_q *RoleQuery) querySpec() *sqlgraph.QuerySpec {
 	}
 	if fields := _q.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
-		_spec.Node.Columns = append(_spec.Node.Columns, role.FieldID)
+		_spec.Node.Columns = append(_spec.Node.Columns, sysuser.FieldID)
 		for i := range fields {
-			if fields[i] != role.FieldID {
+			if fields[i] != sysuser.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if _q.withSysDept != nil {
+			_spec.Node.AddColumnOnce(sysuser.FieldDeptID)
 		}
 	}
 	if ps := _q.predicates; len(ps) > 0 {
@@ -619,12 +589,12 @@ func (_q *RoleQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (_q *RoleQuery) sqlQuery(ctx context.Context) *sql.Selector {
+func (_q *SysUserQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(_q.driver.Dialect())
-	t1 := builder.Table(role.Table)
+	t1 := builder.Table(sysuser.Table)
 	columns := _q.ctx.Fields
 	if len(columns) == 0 {
-		columns = role.Columns
+		columns = sysuser.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
 	if _q.sql != nil {
@@ -651,28 +621,28 @@ func (_q *RoleQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	return selector
 }
 
-// RoleGroupBy is the group-by builder for Role entities.
-type RoleGroupBy struct {
+// SysUserGroupBy is the group-by builder for SysUser entities.
+type SysUserGroupBy struct {
 	selector
-	build *RoleQuery
+	build *SysUserQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (_g *RoleGroupBy) Aggregate(fns ...AggregateFunc) *RoleGroupBy {
+func (_g *SysUserGroupBy) Aggregate(fns ...AggregateFunc) *SysUserGroupBy {
 	_g.fns = append(_g.fns, fns...)
 	return _g
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (_g *RoleGroupBy) Scan(ctx context.Context, v any) error {
+func (_g *SysUserGroupBy) Scan(ctx context.Context, v any) error {
 	ctx = setContextOp(ctx, _g.build.ctx, ent.OpQueryGroupBy)
 	if err := _g.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*RoleQuery, *RoleGroupBy](ctx, _g.build, _g, _g.build.inters, v)
+	return scanWithInterceptors[*SysUserQuery, *SysUserGroupBy](ctx, _g.build, _g, _g.build.inters, v)
 }
 
-func (_g *RoleGroupBy) sqlScan(ctx context.Context, root *RoleQuery, v any) error {
+func (_g *SysUserGroupBy) sqlScan(ctx context.Context, root *SysUserQuery, v any) error {
 	selector := root.sqlQuery(ctx).Select()
 	aggregation := make([]string, 0, len(_g.fns))
 	for _, fn := range _g.fns {
@@ -699,28 +669,28 @@ func (_g *RoleGroupBy) sqlScan(ctx context.Context, root *RoleQuery, v any) erro
 	return sql.ScanSlice(rows, v)
 }
 
-// RoleSelect is the builder for selecting fields of Role entities.
-type RoleSelect struct {
-	*RoleQuery
+// SysUserSelect is the builder for selecting fields of SysUser entities.
+type SysUserSelect struct {
+	*SysUserQuery
 	selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
-func (_s *RoleSelect) Aggregate(fns ...AggregateFunc) *RoleSelect {
+func (_s *SysUserSelect) Aggregate(fns ...AggregateFunc) *SysUserSelect {
 	_s.fns = append(_s.fns, fns...)
 	return _s
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (_s *RoleSelect) Scan(ctx context.Context, v any) error {
+func (_s *SysUserSelect) Scan(ctx context.Context, v any) error {
 	ctx = setContextOp(ctx, _s.ctx, ent.OpQuerySelect)
 	if err := _s.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*RoleQuery, *RoleSelect](ctx, _s.RoleQuery, _s, _s.inters, v)
+	return scanWithInterceptors[*SysUserQuery, *SysUserSelect](ctx, _s.SysUserQuery, _s, _s.inters, v)
 }
 
-func (_s *RoleSelect) sqlScan(ctx context.Context, root *RoleQuery, v any) error {
+func (_s *SysUserSelect) sqlScan(ctx context.Context, root *SysUserQuery, v any) error {
 	selector := root.sqlQuery(ctx)
 	aggregation := make([]string, 0, len(_s.fns))
 	for _, fn := range _s.fns {
