@@ -84,7 +84,7 @@ func (*Dept) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Dept fields.
-func (d *Dept) assignValues(columns []string, values []any) error {
+func (_m *Dept) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -95,51 +95,51 @@ func (d *Dept) assignValues(columns []string, values []any) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			d.ID = int64(value.Int64)
+			_m.ID = int64(value.Int64)
 		case dept.FieldParentID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field parent_id", values[i])
 			} else if value.Valid {
-				d.ParentID = value.Int64
+				_m.ParentID = value.Int64
 			}
 		case dept.FieldAncestors:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field ancestors", values[i])
 			} else if value.Valid {
-				d.Ancestors = value.String
+				_m.Ancestors = value.String
 			}
 		case dept.FieldDeptName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field dept_name", values[i])
 			} else if value.Valid {
-				d.DeptName = value.String
+				_m.DeptName = value.String
 			}
 		case dept.FieldDeptCode:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field dept_code", values[i])
 			} else if value.Valid {
-				d.DeptCode = value.String
+				_m.DeptCode = value.String
 			}
 		case dept.FieldLeader:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field leader", values[i])
 			} else if value.Valid {
-				d.Leader = value.String
+				_m.Leader = value.String
 			}
 		case dept.FieldPhone:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field phone", values[i])
 			} else if value.Valid {
-				d.Phone = value.String
+				_m.Phone = value.String
 			}
 		case dept.FieldEmail:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field email", values[i])
 			} else if value.Valid {
-				d.Email = value.String
+				_m.Email = value.String
 			}
 		default:
-			d.selectValues.Set(columns[i], values[i])
+			_m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -147,63 +147,63 @@ func (d *Dept) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the Dept.
 // This includes values selected through modifiers, order, etc.
-func (d *Dept) Value(name string) (ent.Value, error) {
-	return d.selectValues.Get(name)
+func (_m *Dept) Value(name string) (ent.Value, error) {
+	return _m.selectValues.Get(name)
 }
 
 // QueryUsers queries the "users" edge of the Dept entity.
-func (d *Dept) QueryUsers() *UserQuery {
-	return NewDeptClient(d.config).QueryUsers(d)
+func (_m *Dept) QueryUsers() *UserQuery {
+	return NewDeptClient(_m.config).QueryUsers(_m)
 }
 
 // QueryRoles queries the "roles" edge of the Dept entity.
-func (d *Dept) QueryRoles() *RoleQuery {
-	return NewDeptClient(d.config).QueryRoles(d)
+func (_m *Dept) QueryRoles() *RoleQuery {
+	return NewDeptClient(_m.config).QueryRoles(_m)
 }
 
 // Update returns a builder for updating this Dept.
 // Note that you need to call Dept.Unwrap() before calling this method if this Dept
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (d *Dept) Update() *DeptUpdateOne {
-	return NewDeptClient(d.config).UpdateOne(d)
+func (_m *Dept) Update() *DeptUpdateOne {
+	return NewDeptClient(_m.config).UpdateOne(_m)
 }
 
 // Unwrap unwraps the Dept entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (d *Dept) Unwrap() *Dept {
-	_tx, ok := d.config.driver.(*txDriver)
+func (_m *Dept) Unwrap() *Dept {
+	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: Dept is not a transactional entity")
 	}
-	d.config.driver = _tx.drv
-	return d
+	_m.config.driver = _tx.drv
+	return _m
 }
 
 // String implements the fmt.Stringer.
-func (d *Dept) String() string {
+func (_m *Dept) String() string {
 	var builder strings.Builder
 	builder.WriteString("Dept(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", d.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("parent_id=")
-	builder.WriteString(fmt.Sprintf("%v", d.ParentID))
+	builder.WriteString(fmt.Sprintf("%v", _m.ParentID))
 	builder.WriteString(", ")
 	builder.WriteString("ancestors=")
-	builder.WriteString(d.Ancestors)
+	builder.WriteString(_m.Ancestors)
 	builder.WriteString(", ")
 	builder.WriteString("dept_name=")
-	builder.WriteString(d.DeptName)
+	builder.WriteString(_m.DeptName)
 	builder.WriteString(", ")
 	builder.WriteString("dept_code=")
-	builder.WriteString(d.DeptCode)
+	builder.WriteString(_m.DeptCode)
 	builder.WriteString(", ")
 	builder.WriteString("leader=")
-	builder.WriteString(d.Leader)
+	builder.WriteString(_m.Leader)
 	builder.WriteString(", ")
 	builder.WriteString("phone=")
-	builder.WriteString(d.Phone)
+	builder.WriteString(_m.Phone)
 	builder.WriteString(", ")
 	builder.WriteString("email=")
-	builder.WriteString(d.Email)
+	builder.WriteString(_m.Email)
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -24,237 +24,237 @@ type DeptUpdate struct {
 }
 
 // Where appends a list predicates to the DeptUpdate builder.
-func (du *DeptUpdate) Where(ps ...predicate.Dept) *DeptUpdate {
-	du.mutation.Where(ps...)
-	return du
+func (_u *DeptUpdate) Where(ps ...predicate.Dept) *DeptUpdate {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // SetParentID sets the "parent_id" field.
-func (du *DeptUpdate) SetParentID(i int64) *DeptUpdate {
-	du.mutation.ResetParentID()
-	du.mutation.SetParentID(i)
-	return du
+func (_u *DeptUpdate) SetParentID(v int64) *DeptUpdate {
+	_u.mutation.ResetParentID()
+	_u.mutation.SetParentID(v)
+	return _u
 }
 
 // SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (du *DeptUpdate) SetNillableParentID(i *int64) *DeptUpdate {
-	if i != nil {
-		du.SetParentID(*i)
+func (_u *DeptUpdate) SetNillableParentID(v *int64) *DeptUpdate {
+	if v != nil {
+		_u.SetParentID(*v)
 	}
-	return du
+	return _u
 }
 
-// AddParentID adds i to the "parent_id" field.
-func (du *DeptUpdate) AddParentID(i int64) *DeptUpdate {
-	du.mutation.AddParentID(i)
-	return du
+// AddParentID adds value to the "parent_id" field.
+func (_u *DeptUpdate) AddParentID(v int64) *DeptUpdate {
+	_u.mutation.AddParentID(v)
+	return _u
 }
 
 // SetAncestors sets the "ancestors" field.
-func (du *DeptUpdate) SetAncestors(s string) *DeptUpdate {
-	du.mutation.SetAncestors(s)
-	return du
+func (_u *DeptUpdate) SetAncestors(v string) *DeptUpdate {
+	_u.mutation.SetAncestors(v)
+	return _u
 }
 
 // SetNillableAncestors sets the "ancestors" field if the given value is not nil.
-func (du *DeptUpdate) SetNillableAncestors(s *string) *DeptUpdate {
-	if s != nil {
-		du.SetAncestors(*s)
+func (_u *DeptUpdate) SetNillableAncestors(v *string) *DeptUpdate {
+	if v != nil {
+		_u.SetAncestors(*v)
 	}
-	return du
+	return _u
 }
 
 // ClearAncestors clears the value of the "ancestors" field.
-func (du *DeptUpdate) ClearAncestors() *DeptUpdate {
-	du.mutation.ClearAncestors()
-	return du
+func (_u *DeptUpdate) ClearAncestors() *DeptUpdate {
+	_u.mutation.ClearAncestors()
+	return _u
 }
 
 // SetDeptName sets the "dept_name" field.
-func (du *DeptUpdate) SetDeptName(s string) *DeptUpdate {
-	du.mutation.SetDeptName(s)
-	return du
+func (_u *DeptUpdate) SetDeptName(v string) *DeptUpdate {
+	_u.mutation.SetDeptName(v)
+	return _u
 }
 
 // SetNillableDeptName sets the "dept_name" field if the given value is not nil.
-func (du *DeptUpdate) SetNillableDeptName(s *string) *DeptUpdate {
-	if s != nil {
-		du.SetDeptName(*s)
+func (_u *DeptUpdate) SetNillableDeptName(v *string) *DeptUpdate {
+	if v != nil {
+		_u.SetDeptName(*v)
 	}
-	return du
+	return _u
 }
 
 // ClearDeptName clears the value of the "dept_name" field.
-func (du *DeptUpdate) ClearDeptName() *DeptUpdate {
-	du.mutation.ClearDeptName()
-	return du
+func (_u *DeptUpdate) ClearDeptName() *DeptUpdate {
+	_u.mutation.ClearDeptName()
+	return _u
 }
 
 // SetDeptCode sets the "dept_code" field.
-func (du *DeptUpdate) SetDeptCode(s string) *DeptUpdate {
-	du.mutation.SetDeptCode(s)
-	return du
+func (_u *DeptUpdate) SetDeptCode(v string) *DeptUpdate {
+	_u.mutation.SetDeptCode(v)
+	return _u
 }
 
 // SetNillableDeptCode sets the "dept_code" field if the given value is not nil.
-func (du *DeptUpdate) SetNillableDeptCode(s *string) *DeptUpdate {
-	if s != nil {
-		du.SetDeptCode(*s)
+func (_u *DeptUpdate) SetNillableDeptCode(v *string) *DeptUpdate {
+	if v != nil {
+		_u.SetDeptCode(*v)
 	}
-	return du
+	return _u
 }
 
 // ClearDeptCode clears the value of the "dept_code" field.
-func (du *DeptUpdate) ClearDeptCode() *DeptUpdate {
-	du.mutation.ClearDeptCode()
-	return du
+func (_u *DeptUpdate) ClearDeptCode() *DeptUpdate {
+	_u.mutation.ClearDeptCode()
+	return _u
 }
 
 // SetLeader sets the "leader" field.
-func (du *DeptUpdate) SetLeader(s string) *DeptUpdate {
-	du.mutation.SetLeader(s)
-	return du
+func (_u *DeptUpdate) SetLeader(v string) *DeptUpdate {
+	_u.mutation.SetLeader(v)
+	return _u
 }
 
 // SetNillableLeader sets the "leader" field if the given value is not nil.
-func (du *DeptUpdate) SetNillableLeader(s *string) *DeptUpdate {
-	if s != nil {
-		du.SetLeader(*s)
+func (_u *DeptUpdate) SetNillableLeader(v *string) *DeptUpdate {
+	if v != nil {
+		_u.SetLeader(*v)
 	}
-	return du
+	return _u
 }
 
 // ClearLeader clears the value of the "leader" field.
-func (du *DeptUpdate) ClearLeader() *DeptUpdate {
-	du.mutation.ClearLeader()
-	return du
+func (_u *DeptUpdate) ClearLeader() *DeptUpdate {
+	_u.mutation.ClearLeader()
+	return _u
 }
 
 // SetPhone sets the "phone" field.
-func (du *DeptUpdate) SetPhone(s string) *DeptUpdate {
-	du.mutation.SetPhone(s)
-	return du
+func (_u *DeptUpdate) SetPhone(v string) *DeptUpdate {
+	_u.mutation.SetPhone(v)
+	return _u
 }
 
 // SetNillablePhone sets the "phone" field if the given value is not nil.
-func (du *DeptUpdate) SetNillablePhone(s *string) *DeptUpdate {
-	if s != nil {
-		du.SetPhone(*s)
+func (_u *DeptUpdate) SetNillablePhone(v *string) *DeptUpdate {
+	if v != nil {
+		_u.SetPhone(*v)
 	}
-	return du
+	return _u
 }
 
 // ClearPhone clears the value of the "phone" field.
-func (du *DeptUpdate) ClearPhone() *DeptUpdate {
-	du.mutation.ClearPhone()
-	return du
+func (_u *DeptUpdate) ClearPhone() *DeptUpdate {
+	_u.mutation.ClearPhone()
+	return _u
 }
 
 // SetEmail sets the "email" field.
-func (du *DeptUpdate) SetEmail(s string) *DeptUpdate {
-	du.mutation.SetEmail(s)
-	return du
+func (_u *DeptUpdate) SetEmail(v string) *DeptUpdate {
+	_u.mutation.SetEmail(v)
+	return _u
 }
 
 // SetNillableEmail sets the "email" field if the given value is not nil.
-func (du *DeptUpdate) SetNillableEmail(s *string) *DeptUpdate {
-	if s != nil {
-		du.SetEmail(*s)
+func (_u *DeptUpdate) SetNillableEmail(v *string) *DeptUpdate {
+	if v != nil {
+		_u.SetEmail(*v)
 	}
-	return du
+	return _u
 }
 
 // ClearEmail clears the value of the "email" field.
-func (du *DeptUpdate) ClearEmail() *DeptUpdate {
-	du.mutation.ClearEmail()
-	return du
+func (_u *DeptUpdate) ClearEmail() *DeptUpdate {
+	_u.mutation.ClearEmail()
+	return _u
 }
 
 // AddUserIDs adds the "users" edge to the User entity by IDs.
-func (du *DeptUpdate) AddUserIDs(ids ...int64) *DeptUpdate {
-	du.mutation.AddUserIDs(ids...)
-	return du
+func (_u *DeptUpdate) AddUserIDs(ids ...int64) *DeptUpdate {
+	_u.mutation.AddUserIDs(ids...)
+	return _u
 }
 
 // AddUsers adds the "users" edges to the User entity.
-func (du *DeptUpdate) AddUsers(u ...*User) *DeptUpdate {
-	ids := make([]int64, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
+func (_u *DeptUpdate) AddUsers(v ...*User) *DeptUpdate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return du.AddUserIDs(ids...)
+	return _u.AddUserIDs(ids...)
 }
 
 // AddRoleIDs adds the "roles" edge to the Role entity by IDs.
-func (du *DeptUpdate) AddRoleIDs(ids ...int64) *DeptUpdate {
-	du.mutation.AddRoleIDs(ids...)
-	return du
+func (_u *DeptUpdate) AddRoleIDs(ids ...int64) *DeptUpdate {
+	_u.mutation.AddRoleIDs(ids...)
+	return _u
 }
 
 // AddRoles adds the "roles" edges to the Role entity.
-func (du *DeptUpdate) AddRoles(r ...*Role) *DeptUpdate {
-	ids := make([]int64, len(r))
-	for i := range r {
-		ids[i] = r[i].ID
+func (_u *DeptUpdate) AddRoles(v ...*Role) *DeptUpdate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return du.AddRoleIDs(ids...)
+	return _u.AddRoleIDs(ids...)
 }
 
 // Mutation returns the DeptMutation object of the builder.
-func (du *DeptUpdate) Mutation() *DeptMutation {
-	return du.mutation
+func (_u *DeptUpdate) Mutation() *DeptMutation {
+	return _u.mutation
 }
 
 // ClearUsers clears all "users" edges to the User entity.
-func (du *DeptUpdate) ClearUsers() *DeptUpdate {
-	du.mutation.ClearUsers()
-	return du
+func (_u *DeptUpdate) ClearUsers() *DeptUpdate {
+	_u.mutation.ClearUsers()
+	return _u
 }
 
 // RemoveUserIDs removes the "users" edge to User entities by IDs.
-func (du *DeptUpdate) RemoveUserIDs(ids ...int64) *DeptUpdate {
-	du.mutation.RemoveUserIDs(ids...)
-	return du
+func (_u *DeptUpdate) RemoveUserIDs(ids ...int64) *DeptUpdate {
+	_u.mutation.RemoveUserIDs(ids...)
+	return _u
 }
 
 // RemoveUsers removes "users" edges to User entities.
-func (du *DeptUpdate) RemoveUsers(u ...*User) *DeptUpdate {
-	ids := make([]int64, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
+func (_u *DeptUpdate) RemoveUsers(v ...*User) *DeptUpdate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return du.RemoveUserIDs(ids...)
+	return _u.RemoveUserIDs(ids...)
 }
 
 // ClearRoles clears all "roles" edges to the Role entity.
-func (du *DeptUpdate) ClearRoles() *DeptUpdate {
-	du.mutation.ClearRoles()
-	return du
+func (_u *DeptUpdate) ClearRoles() *DeptUpdate {
+	_u.mutation.ClearRoles()
+	return _u
 }
 
 // RemoveRoleIDs removes the "roles" edge to Role entities by IDs.
-func (du *DeptUpdate) RemoveRoleIDs(ids ...int64) *DeptUpdate {
-	du.mutation.RemoveRoleIDs(ids...)
-	return du
+func (_u *DeptUpdate) RemoveRoleIDs(ids ...int64) *DeptUpdate {
+	_u.mutation.RemoveRoleIDs(ids...)
+	return _u
 }
 
 // RemoveRoles removes "roles" edges to Role entities.
-func (du *DeptUpdate) RemoveRoles(r ...*Role) *DeptUpdate {
-	ids := make([]int64, len(r))
-	for i := range r {
-		ids[i] = r[i].ID
+func (_u *DeptUpdate) RemoveRoles(v ...*Role) *DeptUpdate {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return du.RemoveRoleIDs(ids...)
+	return _u.RemoveRoleIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (du *DeptUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks(ctx, du.sqlSave, du.mutation, du.hooks)
+func (_u *DeptUpdate) Save(ctx context.Context) (int, error) {
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (du *DeptUpdate) SaveX(ctx context.Context) int {
-	affected, err := du.Save(ctx)
+func (_u *DeptUpdate) SaveX(ctx context.Context) int {
+	affected, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -262,70 +262,70 @@ func (du *DeptUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (du *DeptUpdate) Exec(ctx context.Context) error {
-	_, err := du.Save(ctx)
+func (_u *DeptUpdate) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (du *DeptUpdate) ExecX(ctx context.Context) {
-	if err := du.Exec(ctx); err != nil {
+func (_u *DeptUpdate) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
-func (du *DeptUpdate) sqlSave(ctx context.Context) (n int, err error) {
+func (_u *DeptUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	_spec := sqlgraph.NewUpdateSpec(dept.Table, dept.Columns, sqlgraph.NewFieldSpec(dept.FieldID, field.TypeInt64))
-	if ps := du.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := du.mutation.ParentID(); ok {
+	if value, ok := _u.mutation.ParentID(); ok {
 		_spec.SetField(dept.FieldParentID, field.TypeInt64, value)
 	}
-	if value, ok := du.mutation.AddedParentID(); ok {
+	if value, ok := _u.mutation.AddedParentID(); ok {
 		_spec.AddField(dept.FieldParentID, field.TypeInt64, value)
 	}
-	if value, ok := du.mutation.Ancestors(); ok {
+	if value, ok := _u.mutation.Ancestors(); ok {
 		_spec.SetField(dept.FieldAncestors, field.TypeString, value)
 	}
-	if du.mutation.AncestorsCleared() {
+	if _u.mutation.AncestorsCleared() {
 		_spec.ClearField(dept.FieldAncestors, field.TypeString)
 	}
-	if value, ok := du.mutation.DeptName(); ok {
+	if value, ok := _u.mutation.DeptName(); ok {
 		_spec.SetField(dept.FieldDeptName, field.TypeString, value)
 	}
-	if du.mutation.DeptNameCleared() {
+	if _u.mutation.DeptNameCleared() {
 		_spec.ClearField(dept.FieldDeptName, field.TypeString)
 	}
-	if value, ok := du.mutation.DeptCode(); ok {
+	if value, ok := _u.mutation.DeptCode(); ok {
 		_spec.SetField(dept.FieldDeptCode, field.TypeString, value)
 	}
-	if du.mutation.DeptCodeCleared() {
+	if _u.mutation.DeptCodeCleared() {
 		_spec.ClearField(dept.FieldDeptCode, field.TypeString)
 	}
-	if value, ok := du.mutation.Leader(); ok {
+	if value, ok := _u.mutation.Leader(); ok {
 		_spec.SetField(dept.FieldLeader, field.TypeString, value)
 	}
-	if du.mutation.LeaderCleared() {
+	if _u.mutation.LeaderCleared() {
 		_spec.ClearField(dept.FieldLeader, field.TypeString)
 	}
-	if value, ok := du.mutation.Phone(); ok {
+	if value, ok := _u.mutation.Phone(); ok {
 		_spec.SetField(dept.FieldPhone, field.TypeString, value)
 	}
-	if du.mutation.PhoneCleared() {
+	if _u.mutation.PhoneCleared() {
 		_spec.ClearField(dept.FieldPhone, field.TypeString)
 	}
-	if value, ok := du.mutation.Email(); ok {
+	if value, ok := _u.mutation.Email(); ok {
 		_spec.SetField(dept.FieldEmail, field.TypeString, value)
 	}
-	if du.mutation.EmailCleared() {
+	if _u.mutation.EmailCleared() {
 		_spec.ClearField(dept.FieldEmail, field.TypeString)
 	}
-	if du.mutation.UsersCleared() {
+	if _u.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -338,7 +338,7 @@ func (du *DeptUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := du.mutation.RemovedUsersIDs(); len(nodes) > 0 && !du.mutation.UsersCleared() {
+	if nodes := _u.mutation.RemovedUsersIDs(); len(nodes) > 0 && !_u.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -354,7 +354,7 @@ func (du *DeptUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := du.mutation.UsersIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.UsersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -370,7 +370,7 @@ func (du *DeptUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if du.mutation.RolesCleared() {
+	if _u.mutation.RolesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
@@ -383,7 +383,7 @@ func (du *DeptUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := du.mutation.RemovedRolesIDs(); len(nodes) > 0 && !du.mutation.RolesCleared() {
+	if nodes := _u.mutation.RemovedRolesIDs(); len(nodes) > 0 && !_u.mutation.RolesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
@@ -399,7 +399,7 @@ func (du *DeptUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := du.mutation.RolesIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.RolesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
@@ -415,7 +415,7 @@ func (du *DeptUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, du.driver, _spec); err != nil {
+	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{dept.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -423,8 +423,8 @@ func (du *DeptUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
-	du.mutation.done = true
-	return n, nil
+	_u.mutation.done = true
+	return _node, nil
 }
 
 // DeptUpdateOne is the builder for updating a single Dept entity.
@@ -436,244 +436,244 @@ type DeptUpdateOne struct {
 }
 
 // SetParentID sets the "parent_id" field.
-func (duo *DeptUpdateOne) SetParentID(i int64) *DeptUpdateOne {
-	duo.mutation.ResetParentID()
-	duo.mutation.SetParentID(i)
-	return duo
+func (_u *DeptUpdateOne) SetParentID(v int64) *DeptUpdateOne {
+	_u.mutation.ResetParentID()
+	_u.mutation.SetParentID(v)
+	return _u
 }
 
 // SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (duo *DeptUpdateOne) SetNillableParentID(i *int64) *DeptUpdateOne {
-	if i != nil {
-		duo.SetParentID(*i)
+func (_u *DeptUpdateOne) SetNillableParentID(v *int64) *DeptUpdateOne {
+	if v != nil {
+		_u.SetParentID(*v)
 	}
-	return duo
+	return _u
 }
 
-// AddParentID adds i to the "parent_id" field.
-func (duo *DeptUpdateOne) AddParentID(i int64) *DeptUpdateOne {
-	duo.mutation.AddParentID(i)
-	return duo
+// AddParentID adds value to the "parent_id" field.
+func (_u *DeptUpdateOne) AddParentID(v int64) *DeptUpdateOne {
+	_u.mutation.AddParentID(v)
+	return _u
 }
 
 // SetAncestors sets the "ancestors" field.
-func (duo *DeptUpdateOne) SetAncestors(s string) *DeptUpdateOne {
-	duo.mutation.SetAncestors(s)
-	return duo
+func (_u *DeptUpdateOne) SetAncestors(v string) *DeptUpdateOne {
+	_u.mutation.SetAncestors(v)
+	return _u
 }
 
 // SetNillableAncestors sets the "ancestors" field if the given value is not nil.
-func (duo *DeptUpdateOne) SetNillableAncestors(s *string) *DeptUpdateOne {
-	if s != nil {
-		duo.SetAncestors(*s)
+func (_u *DeptUpdateOne) SetNillableAncestors(v *string) *DeptUpdateOne {
+	if v != nil {
+		_u.SetAncestors(*v)
 	}
-	return duo
+	return _u
 }
 
 // ClearAncestors clears the value of the "ancestors" field.
-func (duo *DeptUpdateOne) ClearAncestors() *DeptUpdateOne {
-	duo.mutation.ClearAncestors()
-	return duo
+func (_u *DeptUpdateOne) ClearAncestors() *DeptUpdateOne {
+	_u.mutation.ClearAncestors()
+	return _u
 }
 
 // SetDeptName sets the "dept_name" field.
-func (duo *DeptUpdateOne) SetDeptName(s string) *DeptUpdateOne {
-	duo.mutation.SetDeptName(s)
-	return duo
+func (_u *DeptUpdateOne) SetDeptName(v string) *DeptUpdateOne {
+	_u.mutation.SetDeptName(v)
+	return _u
 }
 
 // SetNillableDeptName sets the "dept_name" field if the given value is not nil.
-func (duo *DeptUpdateOne) SetNillableDeptName(s *string) *DeptUpdateOne {
-	if s != nil {
-		duo.SetDeptName(*s)
+func (_u *DeptUpdateOne) SetNillableDeptName(v *string) *DeptUpdateOne {
+	if v != nil {
+		_u.SetDeptName(*v)
 	}
-	return duo
+	return _u
 }
 
 // ClearDeptName clears the value of the "dept_name" field.
-func (duo *DeptUpdateOne) ClearDeptName() *DeptUpdateOne {
-	duo.mutation.ClearDeptName()
-	return duo
+func (_u *DeptUpdateOne) ClearDeptName() *DeptUpdateOne {
+	_u.mutation.ClearDeptName()
+	return _u
 }
 
 // SetDeptCode sets the "dept_code" field.
-func (duo *DeptUpdateOne) SetDeptCode(s string) *DeptUpdateOne {
-	duo.mutation.SetDeptCode(s)
-	return duo
+func (_u *DeptUpdateOne) SetDeptCode(v string) *DeptUpdateOne {
+	_u.mutation.SetDeptCode(v)
+	return _u
 }
 
 // SetNillableDeptCode sets the "dept_code" field if the given value is not nil.
-func (duo *DeptUpdateOne) SetNillableDeptCode(s *string) *DeptUpdateOne {
-	if s != nil {
-		duo.SetDeptCode(*s)
+func (_u *DeptUpdateOne) SetNillableDeptCode(v *string) *DeptUpdateOne {
+	if v != nil {
+		_u.SetDeptCode(*v)
 	}
-	return duo
+	return _u
 }
 
 // ClearDeptCode clears the value of the "dept_code" field.
-func (duo *DeptUpdateOne) ClearDeptCode() *DeptUpdateOne {
-	duo.mutation.ClearDeptCode()
-	return duo
+func (_u *DeptUpdateOne) ClearDeptCode() *DeptUpdateOne {
+	_u.mutation.ClearDeptCode()
+	return _u
 }
 
 // SetLeader sets the "leader" field.
-func (duo *DeptUpdateOne) SetLeader(s string) *DeptUpdateOne {
-	duo.mutation.SetLeader(s)
-	return duo
+func (_u *DeptUpdateOne) SetLeader(v string) *DeptUpdateOne {
+	_u.mutation.SetLeader(v)
+	return _u
 }
 
 // SetNillableLeader sets the "leader" field if the given value is not nil.
-func (duo *DeptUpdateOne) SetNillableLeader(s *string) *DeptUpdateOne {
-	if s != nil {
-		duo.SetLeader(*s)
+func (_u *DeptUpdateOne) SetNillableLeader(v *string) *DeptUpdateOne {
+	if v != nil {
+		_u.SetLeader(*v)
 	}
-	return duo
+	return _u
 }
 
 // ClearLeader clears the value of the "leader" field.
-func (duo *DeptUpdateOne) ClearLeader() *DeptUpdateOne {
-	duo.mutation.ClearLeader()
-	return duo
+func (_u *DeptUpdateOne) ClearLeader() *DeptUpdateOne {
+	_u.mutation.ClearLeader()
+	return _u
 }
 
 // SetPhone sets the "phone" field.
-func (duo *DeptUpdateOne) SetPhone(s string) *DeptUpdateOne {
-	duo.mutation.SetPhone(s)
-	return duo
+func (_u *DeptUpdateOne) SetPhone(v string) *DeptUpdateOne {
+	_u.mutation.SetPhone(v)
+	return _u
 }
 
 // SetNillablePhone sets the "phone" field if the given value is not nil.
-func (duo *DeptUpdateOne) SetNillablePhone(s *string) *DeptUpdateOne {
-	if s != nil {
-		duo.SetPhone(*s)
+func (_u *DeptUpdateOne) SetNillablePhone(v *string) *DeptUpdateOne {
+	if v != nil {
+		_u.SetPhone(*v)
 	}
-	return duo
+	return _u
 }
 
 // ClearPhone clears the value of the "phone" field.
-func (duo *DeptUpdateOne) ClearPhone() *DeptUpdateOne {
-	duo.mutation.ClearPhone()
-	return duo
+func (_u *DeptUpdateOne) ClearPhone() *DeptUpdateOne {
+	_u.mutation.ClearPhone()
+	return _u
 }
 
 // SetEmail sets the "email" field.
-func (duo *DeptUpdateOne) SetEmail(s string) *DeptUpdateOne {
-	duo.mutation.SetEmail(s)
-	return duo
+func (_u *DeptUpdateOne) SetEmail(v string) *DeptUpdateOne {
+	_u.mutation.SetEmail(v)
+	return _u
 }
 
 // SetNillableEmail sets the "email" field if the given value is not nil.
-func (duo *DeptUpdateOne) SetNillableEmail(s *string) *DeptUpdateOne {
-	if s != nil {
-		duo.SetEmail(*s)
+func (_u *DeptUpdateOne) SetNillableEmail(v *string) *DeptUpdateOne {
+	if v != nil {
+		_u.SetEmail(*v)
 	}
-	return duo
+	return _u
 }
 
 // ClearEmail clears the value of the "email" field.
-func (duo *DeptUpdateOne) ClearEmail() *DeptUpdateOne {
-	duo.mutation.ClearEmail()
-	return duo
+func (_u *DeptUpdateOne) ClearEmail() *DeptUpdateOne {
+	_u.mutation.ClearEmail()
+	return _u
 }
 
 // AddUserIDs adds the "users" edge to the User entity by IDs.
-func (duo *DeptUpdateOne) AddUserIDs(ids ...int64) *DeptUpdateOne {
-	duo.mutation.AddUserIDs(ids...)
-	return duo
+func (_u *DeptUpdateOne) AddUserIDs(ids ...int64) *DeptUpdateOne {
+	_u.mutation.AddUserIDs(ids...)
+	return _u
 }
 
 // AddUsers adds the "users" edges to the User entity.
-func (duo *DeptUpdateOne) AddUsers(u ...*User) *DeptUpdateOne {
-	ids := make([]int64, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
+func (_u *DeptUpdateOne) AddUsers(v ...*User) *DeptUpdateOne {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return duo.AddUserIDs(ids...)
+	return _u.AddUserIDs(ids...)
 }
 
 // AddRoleIDs adds the "roles" edge to the Role entity by IDs.
-func (duo *DeptUpdateOne) AddRoleIDs(ids ...int64) *DeptUpdateOne {
-	duo.mutation.AddRoleIDs(ids...)
-	return duo
+func (_u *DeptUpdateOne) AddRoleIDs(ids ...int64) *DeptUpdateOne {
+	_u.mutation.AddRoleIDs(ids...)
+	return _u
 }
 
 // AddRoles adds the "roles" edges to the Role entity.
-func (duo *DeptUpdateOne) AddRoles(r ...*Role) *DeptUpdateOne {
-	ids := make([]int64, len(r))
-	for i := range r {
-		ids[i] = r[i].ID
+func (_u *DeptUpdateOne) AddRoles(v ...*Role) *DeptUpdateOne {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return duo.AddRoleIDs(ids...)
+	return _u.AddRoleIDs(ids...)
 }
 
 // Mutation returns the DeptMutation object of the builder.
-func (duo *DeptUpdateOne) Mutation() *DeptMutation {
-	return duo.mutation
+func (_u *DeptUpdateOne) Mutation() *DeptMutation {
+	return _u.mutation
 }
 
 // ClearUsers clears all "users" edges to the User entity.
-func (duo *DeptUpdateOne) ClearUsers() *DeptUpdateOne {
-	duo.mutation.ClearUsers()
-	return duo
+func (_u *DeptUpdateOne) ClearUsers() *DeptUpdateOne {
+	_u.mutation.ClearUsers()
+	return _u
 }
 
 // RemoveUserIDs removes the "users" edge to User entities by IDs.
-func (duo *DeptUpdateOne) RemoveUserIDs(ids ...int64) *DeptUpdateOne {
-	duo.mutation.RemoveUserIDs(ids...)
-	return duo
+func (_u *DeptUpdateOne) RemoveUserIDs(ids ...int64) *DeptUpdateOne {
+	_u.mutation.RemoveUserIDs(ids...)
+	return _u
 }
 
 // RemoveUsers removes "users" edges to User entities.
-func (duo *DeptUpdateOne) RemoveUsers(u ...*User) *DeptUpdateOne {
-	ids := make([]int64, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
+func (_u *DeptUpdateOne) RemoveUsers(v ...*User) *DeptUpdateOne {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return duo.RemoveUserIDs(ids...)
+	return _u.RemoveUserIDs(ids...)
 }
 
 // ClearRoles clears all "roles" edges to the Role entity.
-func (duo *DeptUpdateOne) ClearRoles() *DeptUpdateOne {
-	duo.mutation.ClearRoles()
-	return duo
+func (_u *DeptUpdateOne) ClearRoles() *DeptUpdateOne {
+	_u.mutation.ClearRoles()
+	return _u
 }
 
 // RemoveRoleIDs removes the "roles" edge to Role entities by IDs.
-func (duo *DeptUpdateOne) RemoveRoleIDs(ids ...int64) *DeptUpdateOne {
-	duo.mutation.RemoveRoleIDs(ids...)
-	return duo
+func (_u *DeptUpdateOne) RemoveRoleIDs(ids ...int64) *DeptUpdateOne {
+	_u.mutation.RemoveRoleIDs(ids...)
+	return _u
 }
 
 // RemoveRoles removes "roles" edges to Role entities.
-func (duo *DeptUpdateOne) RemoveRoles(r ...*Role) *DeptUpdateOne {
-	ids := make([]int64, len(r))
-	for i := range r {
-		ids[i] = r[i].ID
+func (_u *DeptUpdateOne) RemoveRoles(v ...*Role) *DeptUpdateOne {
+	ids := make([]int64, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return duo.RemoveRoleIDs(ids...)
+	return _u.RemoveRoleIDs(ids...)
 }
 
 // Where appends a list predicates to the DeptUpdate builder.
-func (duo *DeptUpdateOne) Where(ps ...predicate.Dept) *DeptUpdateOne {
-	duo.mutation.Where(ps...)
-	return duo
+func (_u *DeptUpdateOne) Where(ps ...predicate.Dept) *DeptUpdateOne {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (duo *DeptUpdateOne) Select(field string, fields ...string) *DeptUpdateOne {
-	duo.fields = append([]string{field}, fields...)
-	return duo
+func (_u *DeptUpdateOne) Select(field string, fields ...string) *DeptUpdateOne {
+	_u.fields = append([]string{field}, fields...)
+	return _u
 }
 
 // Save executes the query and returns the updated Dept entity.
-func (duo *DeptUpdateOne) Save(ctx context.Context) (*Dept, error) {
-	return withHooks(ctx, duo.sqlSave, duo.mutation, duo.hooks)
+func (_u *DeptUpdateOne) Save(ctx context.Context) (*Dept, error) {
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (duo *DeptUpdateOne) SaveX(ctx context.Context) *Dept {
-	node, err := duo.Save(ctx)
+func (_u *DeptUpdateOne) SaveX(ctx context.Context) *Dept {
+	node, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -681,26 +681,26 @@ func (duo *DeptUpdateOne) SaveX(ctx context.Context) *Dept {
 }
 
 // Exec executes the query on the entity.
-func (duo *DeptUpdateOne) Exec(ctx context.Context) error {
-	_, err := duo.Save(ctx)
+func (_u *DeptUpdateOne) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (duo *DeptUpdateOne) ExecX(ctx context.Context) {
-	if err := duo.Exec(ctx); err != nil {
+func (_u *DeptUpdateOne) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
-func (duo *DeptUpdateOne) sqlSave(ctx context.Context) (_node *Dept, err error) {
+func (_u *DeptUpdateOne) sqlSave(ctx context.Context) (_node *Dept, err error) {
 	_spec := sqlgraph.NewUpdateSpec(dept.Table, dept.Columns, sqlgraph.NewFieldSpec(dept.FieldID, field.TypeInt64))
-	id, ok := duo.mutation.ID()
+	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Dept.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := duo.fields; len(fields) > 0 {
+	if fields := _u.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, dept.FieldID)
 		for _, f := range fields {
@@ -712,56 +712,56 @@ func (duo *DeptUpdateOne) sqlSave(ctx context.Context) (_node *Dept, err error) 
 			}
 		}
 	}
-	if ps := duo.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := duo.mutation.ParentID(); ok {
+	if value, ok := _u.mutation.ParentID(); ok {
 		_spec.SetField(dept.FieldParentID, field.TypeInt64, value)
 	}
-	if value, ok := duo.mutation.AddedParentID(); ok {
+	if value, ok := _u.mutation.AddedParentID(); ok {
 		_spec.AddField(dept.FieldParentID, field.TypeInt64, value)
 	}
-	if value, ok := duo.mutation.Ancestors(); ok {
+	if value, ok := _u.mutation.Ancestors(); ok {
 		_spec.SetField(dept.FieldAncestors, field.TypeString, value)
 	}
-	if duo.mutation.AncestorsCleared() {
+	if _u.mutation.AncestorsCleared() {
 		_spec.ClearField(dept.FieldAncestors, field.TypeString)
 	}
-	if value, ok := duo.mutation.DeptName(); ok {
+	if value, ok := _u.mutation.DeptName(); ok {
 		_spec.SetField(dept.FieldDeptName, field.TypeString, value)
 	}
-	if duo.mutation.DeptNameCleared() {
+	if _u.mutation.DeptNameCleared() {
 		_spec.ClearField(dept.FieldDeptName, field.TypeString)
 	}
-	if value, ok := duo.mutation.DeptCode(); ok {
+	if value, ok := _u.mutation.DeptCode(); ok {
 		_spec.SetField(dept.FieldDeptCode, field.TypeString, value)
 	}
-	if duo.mutation.DeptCodeCleared() {
+	if _u.mutation.DeptCodeCleared() {
 		_spec.ClearField(dept.FieldDeptCode, field.TypeString)
 	}
-	if value, ok := duo.mutation.Leader(); ok {
+	if value, ok := _u.mutation.Leader(); ok {
 		_spec.SetField(dept.FieldLeader, field.TypeString, value)
 	}
-	if duo.mutation.LeaderCleared() {
+	if _u.mutation.LeaderCleared() {
 		_spec.ClearField(dept.FieldLeader, field.TypeString)
 	}
-	if value, ok := duo.mutation.Phone(); ok {
+	if value, ok := _u.mutation.Phone(); ok {
 		_spec.SetField(dept.FieldPhone, field.TypeString, value)
 	}
-	if duo.mutation.PhoneCleared() {
+	if _u.mutation.PhoneCleared() {
 		_spec.ClearField(dept.FieldPhone, field.TypeString)
 	}
-	if value, ok := duo.mutation.Email(); ok {
+	if value, ok := _u.mutation.Email(); ok {
 		_spec.SetField(dept.FieldEmail, field.TypeString, value)
 	}
-	if duo.mutation.EmailCleared() {
+	if _u.mutation.EmailCleared() {
 		_spec.ClearField(dept.FieldEmail, field.TypeString)
 	}
-	if duo.mutation.UsersCleared() {
+	if _u.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -774,7 +774,7 @@ func (duo *DeptUpdateOne) sqlSave(ctx context.Context) (_node *Dept, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := duo.mutation.RemovedUsersIDs(); len(nodes) > 0 && !duo.mutation.UsersCleared() {
+	if nodes := _u.mutation.RemovedUsersIDs(); len(nodes) > 0 && !_u.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -790,7 +790,7 @@ func (duo *DeptUpdateOne) sqlSave(ctx context.Context) (_node *Dept, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := duo.mutation.UsersIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.UsersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -806,7 +806,7 @@ func (duo *DeptUpdateOne) sqlSave(ctx context.Context) (_node *Dept, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if duo.mutation.RolesCleared() {
+	if _u.mutation.RolesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
@@ -819,7 +819,7 @@ func (duo *DeptUpdateOne) sqlSave(ctx context.Context) (_node *Dept, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := duo.mutation.RemovedRolesIDs(); len(nodes) > 0 && !duo.mutation.RolesCleared() {
+	if nodes := _u.mutation.RemovedRolesIDs(); len(nodes) > 0 && !_u.mutation.RolesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
@@ -835,7 +835,7 @@ func (duo *DeptUpdateOne) sqlSave(ctx context.Context) (_node *Dept, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := duo.mutation.RolesIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.RolesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: true,
@@ -851,10 +851,10 @@ func (duo *DeptUpdateOne) sqlSave(ctx context.Context) (_node *Dept, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &Dept{config: duo.config}
+	_node = &Dept{config: _u.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, duo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{dept.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -862,6 +862,6 @@ func (duo *DeptUpdateOne) sqlSave(ctx context.Context) (_node *Dept, err error) 
 		}
 		return nil, err
 	}
-	duo.mutation.done = true
+	_u.mutation.done = true
 	return _node, nil
 }
