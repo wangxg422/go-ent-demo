@@ -31,10 +31,10 @@ const (
 	// Table holds the table name of the sysdept in the database.
 	Table = "sys_dept"
 	// SysUsersTable is the table that holds the sys_users relation/edge.
-	SysUsersTable = "user"
+	SysUsersTable = "sys_user"
 	// SysUsersInverseTable is the table name for the SysUser entity.
 	// It exists in this package in order to avoid circular dependency with the "sysuser" package.
-	SysUsersInverseTable = "user"
+	SysUsersInverseTable = "sys_user"
 	// SysUsersColumn is the table column denoting the sys_users relation/edge.
 	SysUsersColumn = "dept_id"
 )

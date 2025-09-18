@@ -129,6 +129,16 @@ func ParentIDLTE(v int64) predicate.SysDept {
 	return predicate.SysDept(sql.FieldLTE(FieldParentID, v))
 }
 
+// ParentIDIsNil applies the IsNil predicate on the "parent_id" field.
+func ParentIDIsNil() predicate.SysDept {
+	return predicate.SysDept(sql.FieldIsNull(FieldParentID))
+}
+
+// ParentIDNotNil applies the NotNil predicate on the "parent_id" field.
+func ParentIDNotNil() predicate.SysDept {
+	return predicate.SysDept(sql.FieldNotNull(FieldParentID))
+}
+
 // AncestorsEQ applies the EQ predicate on the "ancestors" field.
 func AncestorsEQ(v string) predicate.SysDept {
 	return predicate.SysDept(sql.FieldEQ(FieldAncestors, v))

@@ -31,9 +31,9 @@ const (
 	// EdgeSysRoles holds the string denoting the sys_roles edge name in mutations.
 	EdgeSysRoles = "sys_roles"
 	// Table holds the table name of the sysuser in the database.
-	Table = "user"
+	Table = "sys_user"
 	// SysDeptTable is the table that holds the sys_dept relation/edge.
-	SysDeptTable = "user"
+	SysDeptTable = "sys_user"
 	// SysDeptInverseTable is the table name for the SysDept entity.
 	// It exists in this package in order to avoid circular dependency with the "sysdept" package.
 	SysDeptInverseTable = "sys_dept"

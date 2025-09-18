@@ -17,13 +17,13 @@ type SysDept struct {
 func (SysDept) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("id").StructTag(`json:"id,string"`).Comment("部门id"),
-		field.Int64("parent_id").StructTag(`json:"parentId,string"`).Comment("父级部门id"),
-		field.String("ancestors").StructTag(`json:"ancestors"`).Optional().Comment("祖先部门列表"),
-		field.String("dept_name").StructTag(`json:"deptName"`).Optional().Comment("部门名称"),
-		field.String("dept_code").StructTag(`json:"deptCode"`).Optional().Comment("部门编码"),
-		field.String("leader").StructTag(`json:"leader"`).Optional().Comment("负责人"),
-		field.String("phone").StructTag(`json:"phone"`).Optional().Comment("部门联系电话"),
-		field.String("email").StructTag(`json:"email"`).Optional().Comment("部门电子邮箱"),
+		field.Int64("parent_id").StructTag(`json:"parentId,string"`).Comment("父级部门id").Optional(),
+		field.String("ancestors").StructTag(`json:"ancestors"`).Optional().Comment("祖先部门列表").Optional(),
+		field.String("dept_name").StructTag(`json:"deptName"`).Optional().Comment("部门名称").Optional(),
+		field.String("dept_code").StructTag(`json:"deptCode"`).Optional().Comment("部门编码").Optional(),
+		field.String("leader").StructTag(`json:"leader"`).Optional().Comment("负责人").Optional(),
+		field.String("phone").StructTag(`json:"phone"`).Optional().Comment("部门联系电话").Optional(),
+		field.String("email").StructTag(`json:"email"`).Optional().Comment("部门电子邮箱").Optional(),
 	}
 }
 

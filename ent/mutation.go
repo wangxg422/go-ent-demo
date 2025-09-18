@@ -207,10 +207,24 @@ func (m *SysDeptMutation) AddedParentID() (r int64, exists bool) {
 	return *v, true
 }
 
+// ClearParentID clears the value of the "parent_id" field.
+func (m *SysDeptMutation) ClearParentID() {
+	m.parent_id = nil
+	m.addparent_id = nil
+	m.clearedFields[sysdept.FieldParentID] = struct{}{}
+}
+
+// ParentIDCleared returns if the "parent_id" field was cleared in this mutation.
+func (m *SysDeptMutation) ParentIDCleared() bool {
+	_, ok := m.clearedFields[sysdept.FieldParentID]
+	return ok
+}
+
 // ResetParentID resets all changes to the "parent_id" field.
 func (m *SysDeptMutation) ResetParentID() {
 	m.parent_id = nil
 	m.addparent_id = nil
+	delete(m.clearedFields, sysdept.FieldParentID)
 }
 
 // SetAncestors sets the "ancestors" field.
@@ -765,6 +779,9 @@ func (m *SysDeptMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *SysDeptMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(sysdept.FieldParentID) {
+		fields = append(fields, sysdept.FieldParentID)
+	}
 	if m.FieldCleared(sysdept.FieldAncestors) {
 		fields = append(fields, sysdept.FieldAncestors)
 	}
@@ -797,6 +814,9 @@ func (m *SysDeptMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *SysDeptMutation) ClearField(name string) error {
 	switch name {
+	case sysdept.FieldParentID:
+		m.ClearParentID()
+		return nil
 	case sysdept.FieldAncestors:
 		m.ClearAncestors()
 		return nil
@@ -1611,9 +1631,22 @@ func (m *SysUserMutation) OldUserName(ctx context.Context) (v string, err error)
 	return oldValue.UserName, nil
 }
 
+// ClearUserName clears the value of the "user_name" field.
+func (m *SysUserMutation) ClearUserName() {
+	m.user_name = nil
+	m.clearedFields[sysuser.FieldUserName] = struct{}{}
+}
+
+// UserNameCleared returns if the "user_name" field was cleared in this mutation.
+func (m *SysUserMutation) UserNameCleared() bool {
+	_, ok := m.clearedFields[sysuser.FieldUserName]
+	return ok
+}
+
 // ResetUserName resets all changes to the "user_name" field.
 func (m *SysUserMutation) ResetUserName() {
 	m.user_name = nil
+	delete(m.clearedFields, sysuser.FieldUserName)
 }
 
 // SetNickName sets the "nick_name" field.
@@ -2229,6 +2262,9 @@ func (m *SysUserMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *SysUserMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(sysuser.FieldUserName) {
+		fields = append(fields, sysuser.FieldUserName)
+	}
 	if m.FieldCleared(sysuser.FieldNickName) {
 		fields = append(fields, sysuser.FieldNickName)
 	}
@@ -2261,6 +2297,9 @@ func (m *SysUserMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *SysUserMutation) ClearField(name string) error {
 	switch name {
+	case sysuser.FieldUserName:
+		m.ClearUserName()
+		return nil
 	case sysuser.FieldNickName:
 		m.ClearNickName()
 		return nil

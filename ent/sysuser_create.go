@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"go-ent-demo/ent/sysdept"
 	"go-ent-demo/ent/sysrole"
@@ -24,6 +23,14 @@ type SysUserCreate struct {
 // SetUserName sets the "user_name" field.
 func (_c *SysUserCreate) SetUserName(v string) *SysUserCreate {
 	_c.mutation.SetUserName(v)
+	return _c
+}
+
+// SetNillableUserName sets the "user_name" field if the given value is not nil.
+func (_c *SysUserCreate) SetNillableUserName(v *string) *SysUserCreate {
+	if v != nil {
+		_c.SetUserName(*v)
+	}
 	return _c
 }
 
@@ -185,9 +192,6 @@ func (_c *SysUserCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *SysUserCreate) check() error {
-	if _, ok := _c.mutation.UserName(); !ok {
-		return &ValidationError{Name: "user_name", err: errors.New(`ent: missing required field "SysUser.user_name"`)}
-	}
 	return nil
 }
 

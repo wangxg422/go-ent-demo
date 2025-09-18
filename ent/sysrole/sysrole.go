@@ -24,7 +24,7 @@ const (
 	SysUsersTable = "sys_user_role"
 	// SysUsersInverseTable is the table name for the SysUser entity.
 	// It exists in this package in order to avoid circular dependency with the "sysuser" package.
-	SysUsersInverseTable = "user"
+	SysUsersInverseTable = "sys_user"
 )
 
 // Columns holds all SQL columns for sysrole fields.

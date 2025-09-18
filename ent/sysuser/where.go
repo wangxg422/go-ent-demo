@@ -144,6 +144,16 @@ func UserNameHasSuffix(v string) predicate.SysUser {
 	return predicate.SysUser(sql.FieldHasSuffix(FieldUserName, v))
 }
 
+// UserNameIsNil applies the IsNil predicate on the "user_name" field.
+func UserNameIsNil() predicate.SysUser {
+	return predicate.SysUser(sql.FieldIsNull(FieldUserName))
+}
+
+// UserNameNotNil applies the NotNil predicate on the "user_name" field.
+func UserNameNotNil() predicate.SysUser {
+	return predicate.SysUser(sql.FieldNotNull(FieldUserName))
+}
+
 // UserNameEqualFold applies the EqualFold predicate on the "user_name" field.
 func UserNameEqualFold(v string) predicate.SysUser {
 	return predicate.SysUser(sql.FieldEqualFold(FieldUserName, v))

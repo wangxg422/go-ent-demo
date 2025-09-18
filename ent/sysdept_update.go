@@ -49,6 +49,12 @@ func (_u *SysDeptUpdate) AddParentID(v int64) *SysDeptUpdate {
 	return _u
 }
 
+// ClearParentID clears the value of the "parent_id" field.
+func (_u *SysDeptUpdate) ClearParentID() *SysDeptUpdate {
+	_u.mutation.ClearParentID()
+	return _u
+}
+
 // SetAncestors sets the "ancestors" field.
 func (_u *SysDeptUpdate) SetAncestors(v string) *SysDeptUpdate {
 	_u.mutation.SetAncestors(v)
@@ -252,6 +258,9 @@ func (_u *SysDeptUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.AddedParentID(); ok {
 		_spec.AddField(sysdept.FieldParentID, field.TypeInt64, value)
 	}
+	if _u.mutation.ParentIDCleared() {
+		_spec.ClearField(sysdept.FieldParentID, field.TypeInt64)
+	}
 	if value, ok := _u.mutation.Ancestors(); ok {
 		_spec.SetField(sysdept.FieldAncestors, field.TypeString, value)
 	}
@@ -371,6 +380,12 @@ func (_u *SysDeptUpdateOne) SetNillableParentID(v *int64) *SysDeptUpdateOne {
 // AddParentID adds value to the "parent_id" field.
 func (_u *SysDeptUpdateOne) AddParentID(v int64) *SysDeptUpdateOne {
 	_u.mutation.AddParentID(v)
+	return _u
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (_u *SysDeptUpdateOne) ClearParentID() *SysDeptUpdateOne {
+	_u.mutation.ClearParentID()
 	return _u
 }
 
@@ -606,6 +621,9 @@ func (_u *SysDeptUpdateOne) sqlSave(ctx context.Context) (_node *SysDept, err er
 	}
 	if value, ok := _u.mutation.AddedParentID(); ok {
 		_spec.AddField(sysdept.FieldParentID, field.TypeInt64, value)
+	}
+	if _u.mutation.ParentIDCleared() {
+		_spec.ClearField(sysdept.FieldParentID, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.Ancestors(); ok {
 		_spec.SetField(sysdept.FieldAncestors, field.TypeString, value)

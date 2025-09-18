@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"go-ent-demo/ent/sysdept"
 	"go-ent-demo/ent/sysuser"
@@ -23,6 +22,14 @@ type SysDeptCreate struct {
 // SetParentID sets the "parent_id" field.
 func (_c *SysDeptCreate) SetParentID(v int64) *SysDeptCreate {
 	_c.mutation.SetParentID(v)
+	return _c
+}
+
+// SetNillableParentID sets the "parent_id" field if the given value is not nil.
+func (_c *SysDeptCreate) SetNillableParentID(v *int64) *SysDeptCreate {
+	if v != nil {
+		_c.SetParentID(*v)
+	}
 	return _c
 }
 
@@ -165,9 +172,6 @@ func (_c *SysDeptCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *SysDeptCreate) check() error {
-	if _, ok := _c.mutation.ParentID(); !ok {
-		return &ValidationError{Name: "parent_id", err: errors.New(`ent: missing required field "SysDept.parent_id"`)}
-	}
 	return nil
 }
 

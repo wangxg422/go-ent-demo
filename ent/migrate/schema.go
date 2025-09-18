@@ -12,7 +12,7 @@ var (
 	// SysDeptColumns holds the columns for the "sys_dept" table.
 	SysDeptColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "部门id"},
-		{Name: "parent_id", Type: field.TypeInt64, Comment: "父级部门id"},
+		{Name: "parent_id", Type: field.TypeInt64, Nullable: true, Comment: "父级部门id"},
 		{Name: "ancestors", Type: field.TypeString, Nullable: true, Comment: "祖先部门列表"},
 		{Name: "dept_name", Type: field.TypeString, Nullable: true, Comment: "部门名称"},
 		{Name: "dept_code", Type: field.TypeString, Nullable: true, Comment: "部门编码"},
@@ -40,10 +40,10 @@ var (
 		Columns:    SysRoleColumns,
 		PrimaryKey: []*schema.Column{SysRoleColumns[0]},
 	}
-	// UserColumns holds the columns for the "user" table.
-	UserColumns = []*schema.Column{
+	// SysUserColumns holds the columns for the "sys_user" table.
+	SysUserColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "用户id"},
-		{Name: "user_name", Type: field.TypeString},
+		{Name: "user_name", Type: field.TypeString, Nullable: true},
 		{Name: "nick_name", Type: field.TypeString, Nullable: true, Comment: "用户昵称"},
 		{Name: "mobile", Type: field.TypeString, Nullable: true},
 		{Name: "password", Type: field.TypeString, Nullable: true},
@@ -51,16 +51,16 @@ var (
 		{Name: "sex", Type: field.TypeInt8, Nullable: true},
 		{Name: "dept_id", Type: field.TypeInt64, Nullable: true, Comment: "用户所属部门"},
 	}
-	// UserTable holds the schema information for the "user" table.
-	UserTable = &schema.Table{
-		Name:       "user",
+	// SysUserTable holds the schema information for the "sys_user" table.
+	SysUserTable = &schema.Table{
+		Name:       "sys_user",
 		Comment:    "系统用户表",
-		Columns:    UserColumns,
-		PrimaryKey: []*schema.Column{UserColumns[0]},
+		Columns:    SysUserColumns,
+		PrimaryKey: []*schema.Column{SysUserColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "user_sys_dept_sys_users",
-				Columns:    []*schema.Column{UserColumns[7]},
+				Symbol:     "sys_user_sys_dept_sys_users",
+				Columns:    []*schema.Column{SysUserColumns[7]},
 				RefColumns: []*schema.Column{SysDeptColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -80,7 +80,7 @@ var (
 			{
 				Symbol:     "sys_user_role_user_id",
 				Columns:    []*schema.Column{SysUserRoleColumns[0]},
-				RefColumns: []*schema.Column{UserColumns[0]},
+				RefColumns: []*schema.Column{SysUserColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 			{
@@ -95,7 +95,7 @@ var (
 	Tables = []*schema.Table{
 		SysDeptTable,
 		SysRoleTable,
-		UserTable,
+		SysUserTable,
 		SysUserRoleTable,
 	}
 )
@@ -107,10 +107,10 @@ func init() {
 	SysRoleTable.Annotation = &entsql.Annotation{
 		Table: "sys_role",
 	}
-	UserTable.ForeignKeys[0].RefTable = SysDeptTable
-	UserTable.Annotation = &entsql.Annotation{
-		Table: "user",
+	SysUserTable.ForeignKeys[0].RefTable = SysDeptTable
+	SysUserTable.Annotation = &entsql.Annotation{
+		Table: "sys_user",
 	}
-	SysUserRoleTable.ForeignKeys[0].RefTable = UserTable
+	SysUserRoleTable.ForeignKeys[0].RefTable = SysUserTable
 	SysUserRoleTable.ForeignKeys[1].RefTable = SysRoleTable
 }

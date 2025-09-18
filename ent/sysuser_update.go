@@ -43,6 +43,12 @@ func (_u *SysUserUpdate) SetNillableUserName(v *string) *SysUserUpdate {
 	return _u
 }
 
+// ClearUserName clears the value of the "user_name" field.
+func (_u *SysUserUpdate) ClearUserName() *SysUserUpdate {
+	_u.mutation.ClearUserName()
+	return _u
+}
+
 // SetNickName sets the "nick_name" field.
 func (_u *SysUserUpdate) SetNickName(v string) *SysUserUpdate {
 	_u.mutation.SetNickName(v)
@@ -275,6 +281,9 @@ func (_u *SysUserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.UserName(); ok {
 		_spec.SetField(sysuser.FieldUserName, field.TypeString, value)
 	}
+	if _u.mutation.UserNameCleared() {
+		_spec.ClearField(sysuser.FieldUserName, field.TypeString)
+	}
 	if value, ok := _u.mutation.NickName(); ok {
 		_spec.SetField(sysuser.FieldNickName, field.TypeString, value)
 	}
@@ -413,6 +422,12 @@ func (_u *SysUserUpdateOne) SetNillableUserName(v *string) *SysUserUpdateOne {
 	if v != nil {
 		_u.SetUserName(*v)
 	}
+	return _u
+}
+
+// ClearUserName clears the value of the "user_name" field.
+func (_u *SysUserUpdateOne) ClearUserName() *SysUserUpdateOne {
+	_u.mutation.ClearUserName()
 	return _u
 }
 
@@ -677,6 +692,9 @@ func (_u *SysUserUpdateOne) sqlSave(ctx context.Context) (_node *SysUser, err er
 	}
 	if value, ok := _u.mutation.UserName(); ok {
 		_spec.SetField(sysuser.FieldUserName, field.TypeString, value)
+	}
+	if _u.mutation.UserNameCleared() {
+		_spec.ClearField(sysuser.FieldUserName, field.TypeString)
 	}
 	if value, ok := _u.mutation.NickName(); ok {
 		_spec.SetField(sysuser.FieldNickName, field.TypeString, value)

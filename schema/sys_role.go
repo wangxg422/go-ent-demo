@@ -17,8 +17,8 @@ type SysRole struct {
 func (SysRole) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("id").StructTag(`json:"id,string"`).Comment("角色id"),
-		field.String("role_name").StructTag(`json:"roleName"`).Optional().Comment("角色名称"),
-		field.String("role_code").StructTag(`json:"roleCode"`).Optional().Comment("角色编码"),
+		field.String("role_name").StructTag(`json:"roleName"`).Optional().Comment("角色名称").Optional(),
+		field.String("role_code").StructTag(`json:"roleCode"`).Optional().Comment("角色编码").Optional(),
 	}
 }
 

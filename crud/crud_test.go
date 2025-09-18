@@ -8,6 +8,7 @@ import (
 	"log"
 	"testing"
 
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -42,20 +43,22 @@ func TestEntRelationsWithAssert(t *testing.T) {
 	// --- 1. 创建部门 ---
 	dept, err := client.SysDept.
 		Create().
+		SetID(1).
 		SetDeptName("研发部").
 		Save(ctx)
 	assert.NoError(err)
 	assert.NotNil(dept)
 
 	// --- 2. 创建角色 ---
-	roleAdmin, err := client.SysRole.Create().SetRoleName("管理员").Save(ctx)
+	roleAdmin, err := client.SysRole.Create().SetID(1).SetRoleName("管理员").Save(ctx)
 	assert.NoError(err)
-	roleUser, err := client.SysRole.Create().SetRoleName("普通用户").Save(ctx)
+	roleUser, err := client.SysRole.Create().SetID(2).SetRoleName("普通用户").Save(ctx)
 	assert.NoError(err)
 
 	// --- 3. 创建用户，并关联部门 ---
 	user1, err := client.SysUser.
 		Create().
+		SetID(1).
 		SetUserName("Alice").
 		SetSysDept(dept).
 		AddSysRoles(roleAdmin, roleUser). // 多对多关联角色
@@ -65,6 +68,7 @@ func TestEntRelationsWithAssert(t *testing.T) {
 
 	user2, err := client.SysUser.
 		Create().
+		SetID(2).
 		SetUserName("Bob").
 		SetSysDept(dept).
 		AddSysRoles(roleUser).

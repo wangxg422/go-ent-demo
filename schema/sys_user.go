@@ -17,7 +17,7 @@ type SysUser struct {
 func (SysUser) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("id").StructTag(`json:"id,string"`).Comment("用户id"),
-		field.String("user_name").StructTag(`json:"userName"`),
+		field.String("user_name").StructTag(`json:"userName"`).Optional(),
 		field.String("nick_name").StructTag(`json:"nickName"`).Optional().Comment("用户昵称"),
 		field.String("mobile").StructTag(`json:"mobile"`).Optional(),
 		field.String("password").StructTag(`json:"password"`).Optional(),
