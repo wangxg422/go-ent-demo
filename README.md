@@ -11,3 +11,9 @@ go run -mod=mod entgo.io/ent/cmd/ent new Dept
 ``` shell
 go generate ./ent
 ```
+
+## run
+
+``` shell
+CGO_ENABLED=1 go run main.go
+```
