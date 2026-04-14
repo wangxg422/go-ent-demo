@@ -36,6 +36,8 @@ type SysRole struct {
 	DeletedAt time.Time `json:"-"`
 	// Remark holds the value of the "remark" field.
 	Remark string `json:"remark"`
+	// 删除标志(0正常,1已删除)
+	DelFlag int8 `json:"-"`
 	// 角色名称
 	RoleName string `json:"roleName"`
 	// 角色编码
@@ -99,7 +101,7 @@ func (*SysRole) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case sysrole.FieldSort, sysrole.FieldMenuCheckStrictly, sysrole.FieldDeptCheckStrictly, sysrole.FieldDataScope:
+		case sysrole.FieldSort, sysrole.FieldDelFlag, sysrole.FieldMenuCheckStrictly, sysrole.FieldDeptCheckStrictly, sysrole.FieldDataScope:
 			values[i] = new(sql.NullInt64)
 		case sysrole.FieldStatus, sysrole.FieldCreatedBy, sysrole.FieldUpdatedBy, sysrole.FieldDeletedBy, sysrole.FieldRemark, sysrole.FieldRoleName, sysrole.FieldRoleCode, sysrole.FieldDescription:
 			values[i] = new(sql.NullString)
@@ -183,6 +185,12 @@ func (_m *SysRole) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field remark", values[i])
 			} else if value.Valid {
 				_m.Remark = value.String
+			}
+		case sysrole.FieldDelFlag:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field del_flag", values[i])
+			} else if value.Valid {
+				_m.DelFlag = int8(value.Int64)
 			}
 		case sysrole.FieldRoleName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -297,6 +305,9 @@ func (_m *SysRole) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("remark=")
 	builder.WriteString(_m.Remark)
+	builder.WriteString(", ")
+	builder.WriteString("del_flag=")
+	builder.WriteString(fmt.Sprintf("%v", _m.DelFlag))
 	builder.WriteString(", ")
 	builder.WriteString("role_name=")
 	builder.WriteString(_m.RoleName)

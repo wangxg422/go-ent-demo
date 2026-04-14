@@ -38,6 +38,8 @@ type SysMenu struct {
 	DeletedAt time.Time `json:"-"`
 	// Remark holds the value of the "remark" field.
 	Remark string `json:"remark"`
+	// 删除标志(0正常,1已删除)
+	DelFlag int8 `json:"-"`
 	// 菜单名称
 	Name string `json:"name"`
 	// 路由地址
@@ -155,7 +157,7 @@ func (*SysMenu) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case sysmenu.FieldParentID:
 			values[i] = &sql.NullScanner{S: new(types.ID)}
-		case sysmenu.FieldSort, sysmenu.FieldType, sysmenu.FieldMetaKeepAlive, sysmenu.FieldMetaHideInMenu, sysmenu.FieldMetaHideInTab, sysmenu.FieldMetaHideInBreadcrumb, sysmenu.FieldMetaHideChildrenInMenu, sysmenu.FieldMetaBadgeType, sysmenu.FieldMetaBadgeVariants, sysmenu.FieldMetaFullPathKey, sysmenu.FieldMetaAffixTab, sysmenu.FieldMetaAffixTabOrder, sysmenu.FieldMetaIgnoreAccess, sysmenu.FieldMetaMaxNumOfOpenTab, sysmenu.FieldMetaMenuVisibleWithForbidden, sysmenu.FieldMetaOpenInNewWindow, sysmenu.FieldMetaOrder, sysmenu.FieldMetaNoBasicLayout:
+		case sysmenu.FieldSort, sysmenu.FieldDelFlag, sysmenu.FieldType, sysmenu.FieldMetaKeepAlive, sysmenu.FieldMetaHideInMenu, sysmenu.FieldMetaHideInTab, sysmenu.FieldMetaHideInBreadcrumb, sysmenu.FieldMetaHideChildrenInMenu, sysmenu.FieldMetaBadgeType, sysmenu.FieldMetaBadgeVariants, sysmenu.FieldMetaFullPathKey, sysmenu.FieldMetaAffixTab, sysmenu.FieldMetaAffixTabOrder, sysmenu.FieldMetaIgnoreAccess, sysmenu.FieldMetaMaxNumOfOpenTab, sysmenu.FieldMetaMenuVisibleWithForbidden, sysmenu.FieldMetaOpenInNewWindow, sysmenu.FieldMetaOrder, sysmenu.FieldMetaNoBasicLayout:
 			values[i] = new(sql.NullInt64)
 		case sysmenu.FieldStatus, sysmenu.FieldCreatedBy, sysmenu.FieldUpdatedBy, sysmenu.FieldDeletedBy, sysmenu.FieldRemark, sysmenu.FieldName, sysmenu.FieldPath, sysmenu.FieldComponent, sysmenu.FieldPermission, sysmenu.FieldRedirect, sysmenu.FieldMetaTitle, sysmenu.FieldMetaIcon, sysmenu.FieldMetaActiveIcon, sysmenu.FieldMetaAuthority, sysmenu.FieldMetaBadge, sysmenu.FieldMetaActivePath, sysmenu.FieldMetaIframeSrc, sysmenu.FieldMetaLink, sysmenu.FieldMetaQuery:
 			values[i] = new(sql.NullString)
@@ -246,6 +248,12 @@ func (_m *SysMenu) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field remark", values[i])
 			} else if value.Valid {
 				_m.Remark = value.String
+			}
+		case sysmenu.FieldDelFlag:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field del_flag", values[i])
+			} else if value.Valid {
+				_m.DelFlag = int8(value.Int64)
 			}
 		case sysmenu.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -515,6 +523,9 @@ func (_m *SysMenu) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("remark=")
 	builder.WriteString(_m.Remark)
+	builder.WriteString(", ")
+	builder.WriteString("del_flag=")
+	builder.WriteString(fmt.Sprintf("%v", _m.DelFlag))
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(_m.Name)

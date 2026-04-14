@@ -403,12 +403,14 @@ func (c *SysDeptClient) QueryChildren(_m *SysDept) *SysDeptQuery {
 
 // Hooks returns the client hooks.
 func (c *SysDeptClient) Hooks() []Hook {
-	return c.hooks.SysDept
+	hooks := c.hooks.SysDept
+	return append(hooks[:len(hooks):len(hooks)], sysdept.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
 func (c *SysDeptClient) Interceptors() []Interceptor {
-	return c.inters.SysDept
+	inters := c.inters.SysDept
+	return append(inters[:len(inters):len(inters)], sysdept.Interceptors[:]...)
 }
 
 func (c *SysDeptClient) mutate(ctx context.Context, m *SysDeptMutation) (Value, error) {
@@ -584,12 +586,14 @@ func (c *SysMenuClient) QueryChildren(_m *SysMenu) *SysMenuQuery {
 
 // Hooks returns the client hooks.
 func (c *SysMenuClient) Hooks() []Hook {
-	return c.hooks.SysMenu
+	hooks := c.hooks.SysMenu
+	return append(hooks[:len(hooks):len(hooks)], sysmenu.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
 func (c *SysMenuClient) Interceptors() []Interceptor {
-	return c.inters.SysMenu
+	inters := c.inters.SysMenu
+	return append(inters[:len(inters):len(inters)], sysmenu.Interceptors[:]...)
 }
 
 func (c *SysMenuClient) mutate(ctx context.Context, m *SysMenuMutation) (Value, error) {
@@ -765,12 +769,14 @@ func (c *SysRoleClient) QuerySysMenus(_m *SysRole) *SysMenuQuery {
 
 // Hooks returns the client hooks.
 func (c *SysRoleClient) Hooks() []Hook {
-	return c.hooks.SysRole
+	hooks := c.hooks.SysRole
+	return append(hooks[:len(hooks):len(hooks)], sysrole.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
 func (c *SysRoleClient) Interceptors() []Interceptor {
-	return c.inters.SysRole
+	inters := c.inters.SysRole
+	return append(inters[:len(inters):len(inters)], sysrole.Interceptors[:]...)
 }
 
 func (c *SysRoleClient) mutate(ctx context.Context, m *SysRoleMutation) (Value, error) {
@@ -930,12 +936,14 @@ func (c *SysUserClient) QuerySysRoles(_m *SysUser) *SysRoleQuery {
 
 // Hooks returns the client hooks.
 func (c *SysUserClient) Hooks() []Hook {
-	return c.hooks.SysUser
+	hooks := c.hooks.SysUser
+	return append(hooks[:len(hooks):len(hooks)], sysuser.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
 func (c *SysUserClient) Interceptors() []Interceptor {
-	return c.inters.SysUser
+	inters := c.inters.SysUser
+	return append(inters[:len(inters):len(inters)], sysuser.Interceptors[:]...)
 }
 
 func (c *SysUserClient) mutate(ctx context.Context, m *SysUserMutation) (Value, error) {

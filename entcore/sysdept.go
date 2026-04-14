@@ -38,6 +38,8 @@ type SysDept struct {
 	DeletedAt time.Time `json:"-"`
 	// Remark holds the value of the "remark" field.
 	Remark string `json:"remark"`
+	// 删除标志(0正常,1已删除)
+	DelFlag int8 `json:"-"`
 	// 祖先部门列表,以','分隔
 	Ancestors string `json:"ancestors"`
 	// 部门名称
@@ -118,7 +120,7 @@ func (*SysDept) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case sysdept.FieldParentID:
 			values[i] = &sql.NullScanner{S: new(types.ID)}
-		case sysdept.FieldSort:
+		case sysdept.FieldSort, sysdept.FieldDelFlag:
 			values[i] = new(sql.NullInt64)
 		case sysdept.FieldStatus, sysdept.FieldCreatedBy, sysdept.FieldUpdatedBy, sysdept.FieldDeletedBy, sysdept.FieldRemark, sysdept.FieldAncestors, sysdept.FieldDeptName, sysdept.FieldDeptCode, sysdept.FieldLeader, sysdept.FieldPhone, sysdept.FieldEmail, sysdept.FieldAddress:
 			values[i] = new(sql.NullString)
@@ -209,6 +211,12 @@ func (_m *SysDept) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field remark", values[i])
 			} else if value.Valid {
 				_m.Remark = value.String
+			}
+		case sysdept.FieldDelFlag:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field del_flag", values[i])
+			} else if value.Valid {
+				_m.DelFlag = int8(value.Int64)
 			}
 		case sysdept.FieldAncestors:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -339,6 +347,9 @@ func (_m *SysDept) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("remark=")
 	builder.WriteString(_m.Remark)
+	builder.WriteString(", ")
+	builder.WriteString("del_flag=")
+	builder.WriteString(fmt.Sprintf("%v", _m.DelFlag))
 	builder.WriteString(", ")
 	builder.WriteString("ancestors=")
 	builder.WriteString(_m.Ancestors)

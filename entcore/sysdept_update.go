@@ -210,6 +210,27 @@ func (_u *SysDeptUpdate) ClearRemark() *SysDeptUpdate {
 	return _u
 }
 
+// SetDelFlag sets the "del_flag" field.
+func (_u *SysDeptUpdate) SetDelFlag(v int8) *SysDeptUpdate {
+	_u.mutation.ResetDelFlag()
+	_u.mutation.SetDelFlag(v)
+	return _u
+}
+
+// SetNillableDelFlag sets the "del_flag" field if the given value is not nil.
+func (_u *SysDeptUpdate) SetNillableDelFlag(v *int8) *SysDeptUpdate {
+	if v != nil {
+		_u.SetDelFlag(*v)
+	}
+	return _u
+}
+
+// AddDelFlag adds value to the "del_flag" field.
+func (_u *SysDeptUpdate) AddDelFlag(v int8) *SysDeptUpdate {
+	_u.mutation.AddDelFlag(v)
+	return _u
+}
+
 // SetAncestors sets the "ancestors" field.
 func (_u *SysDeptUpdate) SetAncestors(v string) *SysDeptUpdate {
 	_u.mutation.SetAncestors(v)
@@ -476,7 +497,9 @@ func (_u *SysDeptUpdate) RemoveChildren(v ...*SysDept) *SysDeptUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *SysDeptUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return 0, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -503,15 +526,22 @@ func (_u *SysDeptUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *SysDeptUpdate) defaults() {
+func (_u *SysDeptUpdate) defaults() error {
 	if _, ok := _u.mutation.CreatedAt(); !ok && !_u.mutation.CreatedAtCleared() {
+		if sysdept.UpdateDefaultCreatedAt == nil {
+			return fmt.Errorf("entcore: uninitialized sysdept.UpdateDefaultCreatedAt (forgotten import entcore/runtime?)")
+		}
 		v := sysdept.UpdateDefaultCreatedAt()
 		_u.mutation.SetCreatedAt(v)
 	}
 	if _, ok := _u.mutation.UpdatedAt(); !ok && !_u.mutation.UpdatedAtCleared() {
+		if sysdept.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("entcore: uninitialized sysdept.UpdateDefaultUpdatedAt (forgotten import entcore/runtime?)")
+		}
 		v := sysdept.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 func (_u *SysDeptUpdate) sqlSave(ctx context.Context) (_node int, err error) {
@@ -573,6 +603,12 @@ func (_u *SysDeptUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.RemarkCleared() {
 		_spec.ClearField(sysdept.FieldRemark, field.TypeString)
+	}
+	if value, ok := _u.mutation.DelFlag(); ok {
+		_spec.SetField(sysdept.FieldDelFlag, field.TypeInt8, value)
+	}
+	if value, ok := _u.mutation.AddedDelFlag(); ok {
+		_spec.AddField(sysdept.FieldDelFlag, field.TypeInt8, value)
 	}
 	if value, ok := _u.mutation.Ancestors(); ok {
 		_spec.SetField(sysdept.FieldAncestors, field.TypeString, value)
@@ -979,6 +1015,27 @@ func (_u *SysDeptUpdateOne) ClearRemark() *SysDeptUpdateOne {
 	return _u
 }
 
+// SetDelFlag sets the "del_flag" field.
+func (_u *SysDeptUpdateOne) SetDelFlag(v int8) *SysDeptUpdateOne {
+	_u.mutation.ResetDelFlag()
+	_u.mutation.SetDelFlag(v)
+	return _u
+}
+
+// SetNillableDelFlag sets the "del_flag" field if the given value is not nil.
+func (_u *SysDeptUpdateOne) SetNillableDelFlag(v *int8) *SysDeptUpdateOne {
+	if v != nil {
+		_u.SetDelFlag(*v)
+	}
+	return _u
+}
+
+// AddDelFlag adds value to the "del_flag" field.
+func (_u *SysDeptUpdateOne) AddDelFlag(v int8) *SysDeptUpdateOne {
+	_u.mutation.AddDelFlag(v)
+	return _u
+}
+
 // SetAncestors sets the "ancestors" field.
 func (_u *SysDeptUpdateOne) SetAncestors(v string) *SysDeptUpdateOne {
 	_u.mutation.SetAncestors(v)
@@ -1258,7 +1315,9 @@ func (_u *SysDeptUpdateOne) Select(field string, fields ...string) *SysDeptUpdat
 
 // Save executes the query and returns the updated SysDept entity.
 func (_u *SysDeptUpdateOne) Save(ctx context.Context) (*SysDept, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -1285,15 +1344,22 @@ func (_u *SysDeptUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *SysDeptUpdateOne) defaults() {
+func (_u *SysDeptUpdateOne) defaults() error {
 	if _, ok := _u.mutation.CreatedAt(); !ok && !_u.mutation.CreatedAtCleared() {
+		if sysdept.UpdateDefaultCreatedAt == nil {
+			return fmt.Errorf("entcore: uninitialized sysdept.UpdateDefaultCreatedAt (forgotten import entcore/runtime?)")
+		}
 		v := sysdept.UpdateDefaultCreatedAt()
 		_u.mutation.SetCreatedAt(v)
 	}
 	if _, ok := _u.mutation.UpdatedAt(); !ok && !_u.mutation.UpdatedAtCleared() {
+		if sysdept.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("entcore: uninitialized sysdept.UpdateDefaultUpdatedAt (forgotten import entcore/runtime?)")
+		}
 		v := sysdept.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 func (_u *SysDeptUpdateOne) sqlSave(ctx context.Context) (_node *SysDept, err error) {
@@ -1372,6 +1438,12 @@ func (_u *SysDeptUpdateOne) sqlSave(ctx context.Context) (_node *SysDept, err er
 	}
 	if _u.mutation.RemarkCleared() {
 		_spec.ClearField(sysdept.FieldRemark, field.TypeString)
+	}
+	if value, ok := _u.mutation.DelFlag(); ok {
+		_spec.SetField(sysdept.FieldDelFlag, field.TypeInt8, value)
+	}
+	if value, ok := _u.mutation.AddedDelFlag(); ok {
+		_spec.AddField(sysdept.FieldDelFlag, field.TypeInt8, value)
 	}
 	if value, ok := _u.mutation.Ancestors(); ok {
 		_spec.SetField(sysdept.FieldAncestors, field.TypeString, value)

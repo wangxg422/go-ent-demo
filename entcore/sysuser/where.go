@@ -91,6 +91,11 @@ func Remark(v string) predicate.SysUser {
 	return predicate.SysUser(sql.FieldEQ(FieldRemark, v))
 }
 
+// DelFlag applies equality check predicate on the "del_flag" field. It's identical to DelFlagEQ.
+func DelFlag(v int8) predicate.SysUser {
+	return predicate.SysUser(sql.FieldEQ(FieldDelFlag, v))
+}
+
 // UserName applies equality check predicate on the "user_name" field. It's identical to UserNameEQ.
 func UserName(v string) predicate.SysUser {
 	return predicate.SysUser(sql.FieldEQ(FieldUserName, v))
@@ -604,6 +609,46 @@ func RemarkEqualFold(v string) predicate.SysUser {
 // RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
 func RemarkContainsFold(v string) predicate.SysUser {
 	return predicate.SysUser(sql.FieldContainsFold(FieldRemark, v))
+}
+
+// DelFlagEQ applies the EQ predicate on the "del_flag" field.
+func DelFlagEQ(v int8) predicate.SysUser {
+	return predicate.SysUser(sql.FieldEQ(FieldDelFlag, v))
+}
+
+// DelFlagNEQ applies the NEQ predicate on the "del_flag" field.
+func DelFlagNEQ(v int8) predicate.SysUser {
+	return predicate.SysUser(sql.FieldNEQ(FieldDelFlag, v))
+}
+
+// DelFlagIn applies the In predicate on the "del_flag" field.
+func DelFlagIn(vs ...int8) predicate.SysUser {
+	return predicate.SysUser(sql.FieldIn(FieldDelFlag, vs...))
+}
+
+// DelFlagNotIn applies the NotIn predicate on the "del_flag" field.
+func DelFlagNotIn(vs ...int8) predicate.SysUser {
+	return predicate.SysUser(sql.FieldNotIn(FieldDelFlag, vs...))
+}
+
+// DelFlagGT applies the GT predicate on the "del_flag" field.
+func DelFlagGT(v int8) predicate.SysUser {
+	return predicate.SysUser(sql.FieldGT(FieldDelFlag, v))
+}
+
+// DelFlagGTE applies the GTE predicate on the "del_flag" field.
+func DelFlagGTE(v int8) predicate.SysUser {
+	return predicate.SysUser(sql.FieldGTE(FieldDelFlag, v))
+}
+
+// DelFlagLT applies the LT predicate on the "del_flag" field.
+func DelFlagLT(v int8) predicate.SysUser {
+	return predicate.SysUser(sql.FieldLT(FieldDelFlag, v))
+}
+
+// DelFlagLTE applies the LTE predicate on the "del_flag" field.
+func DelFlagLTE(v int8) predicate.SysUser {
+	return predicate.SysUser(sql.FieldLTE(FieldDelFlag, v))
 }
 
 // UserNameEQ applies the EQ predicate on the "user_name" field.

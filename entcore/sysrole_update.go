@@ -191,6 +191,27 @@ func (_u *SysRoleUpdate) ClearRemark() *SysRoleUpdate {
 	return _u
 }
 
+// SetDelFlag sets the "del_flag" field.
+func (_u *SysRoleUpdate) SetDelFlag(v int8) *SysRoleUpdate {
+	_u.mutation.ResetDelFlag()
+	_u.mutation.SetDelFlag(v)
+	return _u
+}
+
+// SetNillableDelFlag sets the "del_flag" field if the given value is not nil.
+func (_u *SysRoleUpdate) SetNillableDelFlag(v *int8) *SysRoleUpdate {
+	if v != nil {
+		_u.SetDelFlag(*v)
+	}
+	return _u
+}
+
+// AddDelFlag adds value to the "del_flag" field.
+func (_u *SysRoleUpdate) AddDelFlag(v int8) *SysRoleUpdate {
+	_u.mutation.AddDelFlag(v)
+	return _u
+}
+
 // SetRoleName sets the "role_name" field.
 func (_u *SysRoleUpdate) SetRoleName(v string) *SysRoleUpdate {
 	_u.mutation.SetRoleName(v)
@@ -435,7 +456,9 @@ func (_u *SysRoleUpdate) RemoveSysMenus(v ...*SysMenu) *SysRoleUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *SysRoleUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return 0, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -462,15 +485,22 @@ func (_u *SysRoleUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *SysRoleUpdate) defaults() {
+func (_u *SysRoleUpdate) defaults() error {
 	if _, ok := _u.mutation.CreatedAt(); !ok && !_u.mutation.CreatedAtCleared() {
+		if sysrole.UpdateDefaultCreatedAt == nil {
+			return fmt.Errorf("entcore: uninitialized sysrole.UpdateDefaultCreatedAt (forgotten import entcore/runtime?)")
+		}
 		v := sysrole.UpdateDefaultCreatedAt()
 		_u.mutation.SetCreatedAt(v)
 	}
 	if _, ok := _u.mutation.UpdatedAt(); !ok && !_u.mutation.UpdatedAtCleared() {
+		if sysrole.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("entcore: uninitialized sysrole.UpdateDefaultUpdatedAt (forgotten import entcore/runtime?)")
+		}
 		v := sysrole.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 func (_u *SysRoleUpdate) sqlSave(ctx context.Context) (_node int, err error) {
@@ -532,6 +562,12 @@ func (_u *SysRoleUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.RemarkCleared() {
 		_spec.ClearField(sysrole.FieldRemark, field.TypeString)
+	}
+	if value, ok := _u.mutation.DelFlag(); ok {
+		_spec.SetField(sysrole.FieldDelFlag, field.TypeInt8, value)
+	}
+	if value, ok := _u.mutation.AddedDelFlag(); ok {
+		_spec.AddField(sysrole.FieldDelFlag, field.TypeInt8, value)
 	}
 	if value, ok := _u.mutation.RoleName(); ok {
 		_spec.SetField(sysrole.FieldRoleName, field.TypeString, value)
@@ -886,6 +922,27 @@ func (_u *SysRoleUpdateOne) ClearRemark() *SysRoleUpdateOne {
 	return _u
 }
 
+// SetDelFlag sets the "del_flag" field.
+func (_u *SysRoleUpdateOne) SetDelFlag(v int8) *SysRoleUpdateOne {
+	_u.mutation.ResetDelFlag()
+	_u.mutation.SetDelFlag(v)
+	return _u
+}
+
+// SetNillableDelFlag sets the "del_flag" field if the given value is not nil.
+func (_u *SysRoleUpdateOne) SetNillableDelFlag(v *int8) *SysRoleUpdateOne {
+	if v != nil {
+		_u.SetDelFlag(*v)
+	}
+	return _u
+}
+
+// AddDelFlag adds value to the "del_flag" field.
+func (_u *SysRoleUpdateOne) AddDelFlag(v int8) *SysRoleUpdateOne {
+	_u.mutation.AddDelFlag(v)
+	return _u
+}
+
 // SetRoleName sets the "role_name" field.
 func (_u *SysRoleUpdateOne) SetRoleName(v string) *SysRoleUpdateOne {
 	_u.mutation.SetRoleName(v)
@@ -1143,7 +1200,9 @@ func (_u *SysRoleUpdateOne) Select(field string, fields ...string) *SysRoleUpdat
 
 // Save executes the query and returns the updated SysRole entity.
 func (_u *SysRoleUpdateOne) Save(ctx context.Context) (*SysRole, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -1170,15 +1229,22 @@ func (_u *SysRoleUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *SysRoleUpdateOne) defaults() {
+func (_u *SysRoleUpdateOne) defaults() error {
 	if _, ok := _u.mutation.CreatedAt(); !ok && !_u.mutation.CreatedAtCleared() {
+		if sysrole.UpdateDefaultCreatedAt == nil {
+			return fmt.Errorf("entcore: uninitialized sysrole.UpdateDefaultCreatedAt (forgotten import entcore/runtime?)")
+		}
 		v := sysrole.UpdateDefaultCreatedAt()
 		_u.mutation.SetCreatedAt(v)
 	}
 	if _, ok := _u.mutation.UpdatedAt(); !ok && !_u.mutation.UpdatedAtCleared() {
+		if sysrole.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("entcore: uninitialized sysrole.UpdateDefaultUpdatedAt (forgotten import entcore/runtime?)")
+		}
 		v := sysrole.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 func (_u *SysRoleUpdateOne) sqlSave(ctx context.Context) (_node *SysRole, err error) {
@@ -1257,6 +1323,12 @@ func (_u *SysRoleUpdateOne) sqlSave(ctx context.Context) (_node *SysRole, err er
 	}
 	if _u.mutation.RemarkCleared() {
 		_spec.ClearField(sysrole.FieldRemark, field.TypeString)
+	}
+	if value, ok := _u.mutation.DelFlag(); ok {
+		_spec.SetField(sysrole.FieldDelFlag, field.TypeInt8, value)
+	}
+	if value, ok := _u.mutation.AddedDelFlag(); ok {
+		_spec.AddField(sysrole.FieldDelFlag, field.TypeInt8, value)
 	}
 	if value, ok := _u.mutation.RoleName(); ok {
 		_spec.SetField(sysrole.FieldRoleName, field.TypeString, value)

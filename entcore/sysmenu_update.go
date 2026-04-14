@@ -209,6 +209,27 @@ func (_u *SysMenuUpdate) ClearRemark() *SysMenuUpdate {
 	return _u
 }
 
+// SetDelFlag sets the "del_flag" field.
+func (_u *SysMenuUpdate) SetDelFlag(v int8) *SysMenuUpdate {
+	_u.mutation.ResetDelFlag()
+	_u.mutation.SetDelFlag(v)
+	return _u
+}
+
+// SetNillableDelFlag sets the "del_flag" field if the given value is not nil.
+func (_u *SysMenuUpdate) SetNillableDelFlag(v *int8) *SysMenuUpdate {
+	if v != nil {
+		_u.SetDelFlag(*v)
+	}
+	return _u
+}
+
+// AddDelFlag adds value to the "del_flag" field.
+func (_u *SysMenuUpdate) AddDelFlag(v int8) *SysMenuUpdate {
+	_u.mutation.AddDelFlag(v)
+	return _u
+}
+
 // SetName sets the "name" field.
 func (_u *SysMenuUpdate) SetName(v string) *SysMenuUpdate {
 	_u.mutation.SetName(v)
@@ -864,7 +885,9 @@ func (_u *SysMenuUpdate) RemoveChildren(v ...*SysMenu) *SysMenuUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *SysMenuUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return 0, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -891,15 +914,22 @@ func (_u *SysMenuUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *SysMenuUpdate) defaults() {
+func (_u *SysMenuUpdate) defaults() error {
 	if _, ok := _u.mutation.CreatedAt(); !ok && !_u.mutation.CreatedAtCleared() {
+		if sysmenu.UpdateDefaultCreatedAt == nil {
+			return fmt.Errorf("entcore: uninitialized sysmenu.UpdateDefaultCreatedAt (forgotten import entcore/runtime?)")
+		}
 		v := sysmenu.UpdateDefaultCreatedAt()
 		_u.mutation.SetCreatedAt(v)
 	}
 	if _, ok := _u.mutation.UpdatedAt(); !ok && !_u.mutation.UpdatedAtCleared() {
+		if sysmenu.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("entcore: uninitialized sysmenu.UpdateDefaultUpdatedAt (forgotten import entcore/runtime?)")
+		}
 		v := sysmenu.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 func (_u *SysMenuUpdate) sqlSave(ctx context.Context) (_node int, err error) {
@@ -961,6 +991,12 @@ func (_u *SysMenuUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.RemarkCleared() {
 		_spec.ClearField(sysmenu.FieldRemark, field.TypeString)
+	}
+	if value, ok := _u.mutation.DelFlag(); ok {
+		_spec.SetField(sysmenu.FieldDelFlag, field.TypeInt8, value)
+	}
+	if value, ok := _u.mutation.AddedDelFlag(); ok {
+		_spec.AddField(sysmenu.FieldDelFlag, field.TypeInt8, value)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(sysmenu.FieldName, field.TypeString, value)
@@ -1427,6 +1463,27 @@ func (_u *SysMenuUpdateOne) SetNillableRemark(v *string) *SysMenuUpdateOne {
 // ClearRemark clears the value of the "remark" field.
 func (_u *SysMenuUpdateOne) ClearRemark() *SysMenuUpdateOne {
 	_u.mutation.ClearRemark()
+	return _u
+}
+
+// SetDelFlag sets the "del_flag" field.
+func (_u *SysMenuUpdateOne) SetDelFlag(v int8) *SysMenuUpdateOne {
+	_u.mutation.ResetDelFlag()
+	_u.mutation.SetDelFlag(v)
+	return _u
+}
+
+// SetNillableDelFlag sets the "del_flag" field if the given value is not nil.
+func (_u *SysMenuUpdateOne) SetNillableDelFlag(v *int8) *SysMenuUpdateOne {
+	if v != nil {
+		_u.SetDelFlag(*v)
+	}
+	return _u
+}
+
+// AddDelFlag adds value to the "del_flag" field.
+func (_u *SysMenuUpdateOne) AddDelFlag(v int8) *SysMenuUpdateOne {
+	_u.mutation.AddDelFlag(v)
 	return _u
 }
 
@@ -2098,7 +2155,9 @@ func (_u *SysMenuUpdateOne) Select(field string, fields ...string) *SysMenuUpdat
 
 // Save executes the query and returns the updated SysMenu entity.
 func (_u *SysMenuUpdateOne) Save(ctx context.Context) (*SysMenu, error) {
-	_u.defaults()
+	if err := _u.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -2125,15 +2184,22 @@ func (_u *SysMenuUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_u *SysMenuUpdateOne) defaults() {
+func (_u *SysMenuUpdateOne) defaults() error {
 	if _, ok := _u.mutation.CreatedAt(); !ok && !_u.mutation.CreatedAtCleared() {
+		if sysmenu.UpdateDefaultCreatedAt == nil {
+			return fmt.Errorf("entcore: uninitialized sysmenu.UpdateDefaultCreatedAt (forgotten import entcore/runtime?)")
+		}
 		v := sysmenu.UpdateDefaultCreatedAt()
 		_u.mutation.SetCreatedAt(v)
 	}
 	if _, ok := _u.mutation.UpdatedAt(); !ok && !_u.mutation.UpdatedAtCleared() {
+		if sysmenu.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("entcore: uninitialized sysmenu.UpdateDefaultUpdatedAt (forgotten import entcore/runtime?)")
+		}
 		v := sysmenu.UpdateDefaultUpdatedAt()
 		_u.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 func (_u *SysMenuUpdateOne) sqlSave(ctx context.Context) (_node *SysMenu, err error) {
@@ -2212,6 +2278,12 @@ func (_u *SysMenuUpdateOne) sqlSave(ctx context.Context) (_node *SysMenu, err er
 	}
 	if _u.mutation.RemarkCleared() {
 		_spec.ClearField(sysmenu.FieldRemark, field.TypeString)
+	}
+	if value, ok := _u.mutation.DelFlag(); ok {
+		_spec.SetField(sysmenu.FieldDelFlag, field.TypeInt8, value)
+	}
+	if value, ok := _u.mutation.AddedDelFlag(); ok {
+		_spec.AddField(sysmenu.FieldDelFlag, field.TypeInt8, value)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(sysmenu.FieldName, field.TypeString, value)

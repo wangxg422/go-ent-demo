@@ -162,6 +162,20 @@ func (_c *SysMenuCreate) SetNillableRemark(v *string) *SysMenuCreate {
 	return _c
 }
 
+// SetDelFlag sets the "del_flag" field.
+func (_c *SysMenuCreate) SetDelFlag(v int8) *SysMenuCreate {
+	_c.mutation.SetDelFlag(v)
+	return _c
+}
+
+// SetNillableDelFlag sets the "del_flag" field if the given value is not nil.
+func (_c *SysMenuCreate) SetNillableDelFlag(v *int8) *SysMenuCreate {
+	if v != nil {
+		_c.SetDelFlag(*v)
+	}
+	return _c
+}
+
 // SetName sets the "name" field.
 func (_c *SysMenuCreate) SetName(v string) *SysMenuCreate {
 	_c.mutation.SetName(v)
@@ -628,7 +642,9 @@ func (_c *SysMenuCreate) Mutation() *SysMenuMutation {
 
 // Save creates the SysMenu in the database.
 func (_c *SysMenuCreate) Save(ctx context.Context) (*SysMenu, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -655,7 +671,7 @@ func (_c *SysMenuCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *SysMenuCreate) defaults() {
+func (_c *SysMenuCreate) defaults() error {
 	if _, ok := _c.mutation.Sort(); !ok {
 		v := sysmenu.DefaultSort
 		_c.mutation.SetSort(v)
@@ -665,12 +681,22 @@ func (_c *SysMenuCreate) defaults() {
 		_c.mutation.SetStatus(v)
 	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
+		if sysmenu.DefaultCreatedAt == nil {
+			return fmt.Errorf("entcore: uninitialized sysmenu.DefaultCreatedAt (forgotten import entcore/runtime?)")
+		}
 		v := sysmenu.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		if sysmenu.DefaultUpdatedAt == nil {
+			return fmt.Errorf("entcore: uninitialized sysmenu.DefaultUpdatedAt (forgotten import entcore/runtime?)")
+		}
 		v := sysmenu.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
+	}
+	if _, ok := _c.mutation.DelFlag(); !ok {
+		v := sysmenu.DefaultDelFlag
+		_c.mutation.SetDelFlag(v)
 	}
 	if _, ok := _c.mutation.Component(); !ok {
 		v := sysmenu.DefaultComponent
@@ -781,9 +807,13 @@ func (_c *SysMenuCreate) defaults() {
 		_c.mutation.SetMetaNoBasicLayout(v)
 	}
 	if _, ok := _c.mutation.ID(); !ok {
+		if sysmenu.DefaultID == nil {
+			return fmt.Errorf("entcore: uninitialized sysmenu.DefaultID (forgotten import entcore/runtime?)")
+		}
 		v := sysmenu.DefaultID()
 		_c.mutation.SetID(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -793,6 +823,9 @@ func (_c *SysMenuCreate) check() error {
 	}
 	if _, ok := _c.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`entcore: missing required field "SysMenu.status"`)}
+	}
+	if _, ok := _c.mutation.DelFlag(); !ok {
+		return &ValidationError{Name: "del_flag", err: errors.New(`entcore: missing required field "SysMenu.del_flag"`)}
 	}
 	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`entcore: missing required field "SysMenu.name"`)}
@@ -951,6 +984,10 @@ func (_c *SysMenuCreate) createSpec() (*SysMenu, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Remark(); ok {
 		_spec.SetField(sysmenu.FieldRemark, field.TypeString, value)
 		_node.Remark = value
+	}
+	if value, ok := _c.mutation.DelFlag(); ok {
+		_spec.SetField(sysmenu.FieldDelFlag, field.TypeInt8, value)
+		_node.DelFlag = value
 	}
 	if value, ok := _c.mutation.Name(); ok {
 		_spec.SetField(sysmenu.FieldName, field.TypeString, value)

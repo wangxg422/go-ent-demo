@@ -5,6 +5,7 @@ package sysrole
 import (
 	"go-ent-demo/types"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 )
@@ -32,6 +33,8 @@ const (
 	FieldDeletedAt = "deleted_at"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
+	// FieldDelFlag holds the string denoting the del_flag field in the database.
+	FieldDelFlag = "del_flag"
 	// FieldRoleName holds the string denoting the role_name field in the database.
 	FieldRoleName = "role_name"
 	// FieldRoleCode holds the string denoting the role_code field in the database.
@@ -81,6 +84,7 @@ var Columns = []string{
 	FieldDeletedBy,
 	FieldDeletedAt,
 	FieldRemark,
+	FieldDelFlag,
 	FieldRoleName,
 	FieldRoleCode,
 	FieldMenuCheckStrictly,
@@ -111,7 +115,14 @@ func ValidColumn(column string) bool {
 	return false
 }
 
+// Note that the variables below are initialized by the runtime
+// package on the initialization of the application. Therefore,
+// it should be imported in the main as follows:
+//
+//	import _ "go-ent-demo/entcore/runtime"
 var (
+	Hooks        [1]ent.Hook
+	Interceptors [1]ent.Interceptor
 	// DefaultSort holds the default value on creation for the "sort" field.
 	DefaultSort int
 	// DefaultStatus holds the default value on creation for the "status" field.
@@ -124,6 +135,8 @@ var (
 	DefaultUpdatedAt func() types.CustomTime
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() types.CustomTime
+	// DefaultDelFlag holds the default value on creation for the "del_flag" field.
+	DefaultDelFlag int8
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() types.ID
 )
@@ -179,6 +192,11 @@ func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByRemark orders the results by the remark field.
 func ByRemark(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRemark, opts...).ToFunc()
+}
+
+// ByDelFlag orders the results by the del_flag field.
+func ByDelFlag(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDelFlag, opts...).ToFunc()
 }
 
 // ByRoleName orders the results by the role_name field.

@@ -163,6 +163,20 @@ func (_c *SysDeptCreate) SetNillableRemark(v *string) *SysDeptCreate {
 	return _c
 }
 
+// SetDelFlag sets the "del_flag" field.
+func (_c *SysDeptCreate) SetDelFlag(v int8) *SysDeptCreate {
+	_c.mutation.SetDelFlag(v)
+	return _c
+}
+
+// SetNillableDelFlag sets the "del_flag" field if the given value is not nil.
+func (_c *SysDeptCreate) SetNillableDelFlag(v *int8) *SysDeptCreate {
+	if v != nil {
+		_c.SetDelFlag(*v)
+	}
+	return _c
+}
+
 // SetAncestors sets the "ancestors" field.
 func (_c *SysDeptCreate) SetAncestors(v string) *SysDeptCreate {
 	_c.mutation.SetAncestors(v)
@@ -332,7 +346,9 @@ func (_c *SysDeptCreate) Mutation() *SysDeptMutation {
 
 // Save creates the SysDept in the database.
 func (_c *SysDeptCreate) Save(ctx context.Context) (*SysDept, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -359,7 +375,7 @@ func (_c *SysDeptCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *SysDeptCreate) defaults() {
+func (_c *SysDeptCreate) defaults() error {
 	if _, ok := _c.mutation.Sort(); !ok {
 		v := sysdept.DefaultSort
 		_c.mutation.SetSort(v)
@@ -369,17 +385,31 @@ func (_c *SysDeptCreate) defaults() {
 		_c.mutation.SetStatus(v)
 	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
+		if sysdept.DefaultCreatedAt == nil {
+			return fmt.Errorf("entcore: uninitialized sysdept.DefaultCreatedAt (forgotten import entcore/runtime?)")
+		}
 		v := sysdept.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		if sysdept.DefaultUpdatedAt == nil {
+			return fmt.Errorf("entcore: uninitialized sysdept.DefaultUpdatedAt (forgotten import entcore/runtime?)")
+		}
 		v := sysdept.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := _c.mutation.DelFlag(); !ok {
+		v := sysdept.DefaultDelFlag
+		_c.mutation.SetDelFlag(v)
+	}
 	if _, ok := _c.mutation.ID(); !ok {
+		if sysdept.DefaultID == nil {
+			return fmt.Errorf("entcore: uninitialized sysdept.DefaultID (forgotten import entcore/runtime?)")
+		}
 		v := sysdept.DefaultID()
 		_c.mutation.SetID(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -389,6 +419,9 @@ func (_c *SysDeptCreate) check() error {
 	}
 	if _, ok := _c.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`entcore: missing required field "SysDept.status"`)}
+	}
+	if _, ok := _c.mutation.DelFlag(); !ok {
+		return &ValidationError{Name: "del_flag", err: errors.New(`entcore: missing required field "SysDept.del_flag"`)}
 	}
 	return nil
 }
@@ -460,6 +493,10 @@ func (_c *SysDeptCreate) createSpec() (*SysDept, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Remark(); ok {
 		_spec.SetField(sysdept.FieldRemark, field.TypeString, value)
 		_node.Remark = value
+	}
+	if value, ok := _c.mutation.DelFlag(); ok {
+		_spec.SetField(sysdept.FieldDelFlag, field.TypeInt8, value)
+		_node.DelFlag = value
 	}
 	if value, ok := _c.mutation.Ancestors(); ok {
 		_spec.SetField(sysdept.FieldAncestors, field.TypeString, value)

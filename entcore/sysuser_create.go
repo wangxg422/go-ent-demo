@@ -121,6 +121,20 @@ func (_c *SysUserCreate) SetNillableRemark(v *string) *SysUserCreate {
 	return _c
 }
 
+// SetDelFlag sets the "del_flag" field.
+func (_c *SysUserCreate) SetDelFlag(v int8) *SysUserCreate {
+	_c.mutation.SetDelFlag(v)
+	return _c
+}
+
+// SetNillableDelFlag sets the "del_flag" field if the given value is not nil.
+func (_c *SysUserCreate) SetNillableDelFlag(v *int8) *SysUserCreate {
+	if v != nil {
+		_c.SetDelFlag(*v)
+	}
+	return _c
+}
+
 // SetUserName sets the "user_name" field.
 func (_c *SysUserCreate) SetUserName(v string) *SysUserCreate {
 	_c.mutation.SetUserName(v)
@@ -334,7 +348,9 @@ func (_c *SysUserCreate) Mutation() *SysUserMutation {
 
 // Save creates the SysUser in the database.
 func (_c *SysUserCreate) Save(ctx context.Context) (*SysUser, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -361,23 +377,40 @@ func (_c *SysUserCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *SysUserCreate) defaults() {
+func (_c *SysUserCreate) defaults() error {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
+		if sysuser.DefaultCreatedAt == nil {
+			return fmt.Errorf("entcore: uninitialized sysuser.DefaultCreatedAt (forgotten import entcore/runtime?)")
+		}
 		v := sysuser.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		if sysuser.DefaultUpdatedAt == nil {
+			return fmt.Errorf("entcore: uninitialized sysuser.DefaultUpdatedAt (forgotten import entcore/runtime?)")
+		}
 		v := sysuser.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := _c.mutation.DelFlag(); !ok {
+		v := sysuser.DefaultDelFlag
+		_c.mutation.SetDelFlag(v)
+	}
 	if _, ok := _c.mutation.ID(); !ok {
+		if sysuser.DefaultID == nil {
+			return fmt.Errorf("entcore: uninitialized sysuser.DefaultID (forgotten import entcore/runtime?)")
+		}
 		v := sysuser.DefaultID()
 		_c.mutation.SetID(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *SysUserCreate) check() error {
+	if _, ok := _c.mutation.DelFlag(); !ok {
+		return &ValidationError{Name: "del_flag", err: errors.New(`entcore: missing required field "SysUser.del_flag"`)}
+	}
 	if _, ok := _c.mutation.UserName(); !ok {
 		return &ValidationError{Name: "user_name", err: errors.New(`entcore: missing required field "SysUser.user_name"`)}
 	}
@@ -449,6 +482,10 @@ func (_c *SysUserCreate) createSpec() (*SysUser, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Remark(); ok {
 		_spec.SetField(sysuser.FieldRemark, field.TypeString, value)
 		_node.Remark = value
+	}
+	if value, ok := _c.mutation.DelFlag(); ok {
+		_spec.SetField(sysuser.FieldDelFlag, field.TypeInt8, value)
+		_node.DelFlag = value
 	}
 	if value, ok := _c.mutation.UserName(); ok {
 		_spec.SetField(sysuser.FieldUserName, field.TypeString, value)

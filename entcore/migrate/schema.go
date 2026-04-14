@@ -21,6 +21,7 @@ var (
 		{Name: "deleted_by", Type: field.TypeString, Nullable: true},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "remark", Type: field.TypeString, Nullable: true},
+		{Name: "del_flag", Type: field.TypeInt8, Comment: "删除标志(0正常,1已删除)", Default: 0},
 		{Name: "ancestors", Type: field.TypeString, Nullable: true, Comment: "祖先部门列表,以','分隔"},
 		{Name: "dept_name", Type: field.TypeString, Nullable: true, Comment: "部门名称"},
 		{Name: "dept_code", Type: field.TypeString, Unique: true, Nullable: true, Comment: "部门编码"},
@@ -39,7 +40,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "sys_dept_sys_dept_children",
-				Columns:    []*schema.Column{SysDeptColumns[17]},
+				Columns:    []*schema.Column{SysDeptColumns[18]},
 				RefColumns: []*schema.Column{SysDeptColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -57,6 +58,7 @@ var (
 		{Name: "deleted_by", Type: field.TypeString, Nullable: true},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "remark", Type: field.TypeString, Nullable: true},
+		{Name: "del_flag", Type: field.TypeInt8, Comment: "删除标志(0正常,1已删除)", Default: 0},
 		{Name: "name", Type: field.TypeString, Comment: "菜单名称"},
 		{Name: "path", Type: field.TypeString, Nullable: true, Comment: "路由地址"},
 		{Name: "type", Type: field.TypeInt8, Comment: "菜单类型 (1: 目录, 2: 菜单, 3: 按钮)"},
@@ -99,7 +101,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "sys_menu_sys_menu_children",
-				Columns:    []*schema.Column{SysMenuColumns[41]},
+				Columns:    []*schema.Column{SysMenuColumns[42]},
 				RefColumns: []*schema.Column{SysMenuColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -117,6 +119,7 @@ var (
 		{Name: "deleted_by", Type: field.TypeString, Nullable: true},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "remark", Type: field.TypeString, Nullable: true},
+		{Name: "del_flag", Type: field.TypeInt8, Comment: "删除标志(0正常,1已删除)", Default: 0},
 		{Name: "role_name", Type: field.TypeString, Nullable: true, Comment: "角色名称"},
 		{Name: "role_code", Type: field.TypeString, Unique: true, Nullable: true, Comment: "角色编码"},
 		{Name: "menu_check_strictly", Type: field.TypeInt8, Comment: "菜单树选择项是否关联显示"},
@@ -141,6 +144,7 @@ var (
 		{Name: "deleted_by", Type: field.TypeString, Nullable: true},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "remark", Type: field.TypeString, Nullable: true},
+		{Name: "del_flag", Type: field.TypeInt8, Comment: "删除标志(0正常,1已删除)", Default: 0},
 		{Name: "user_name", Type: field.TypeString, Unique: true, Comment: "用户名"},
 		{Name: "nick_name", Type: field.TypeString, Nullable: true, Comment: "用户昵称"},
 		{Name: "real_name", Type: field.TypeString, Comment: "真实姓名"},
@@ -164,7 +168,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "sys_user_sys_dept_sysUsers",
-				Columns:    []*schema.Column{SysUserColumns[20]},
+				Columns:    []*schema.Column{SysUserColumns[21]},
 				RefColumns: []*schema.Column{SysDeptColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

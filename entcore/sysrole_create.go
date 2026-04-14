@@ -150,6 +150,20 @@ func (_c *SysRoleCreate) SetNillableRemark(v *string) *SysRoleCreate {
 	return _c
 }
 
+// SetDelFlag sets the "del_flag" field.
+func (_c *SysRoleCreate) SetDelFlag(v int8) *SysRoleCreate {
+	_c.mutation.SetDelFlag(v)
+	return _c
+}
+
+// SetNillableDelFlag sets the "del_flag" field if the given value is not nil.
+func (_c *SysRoleCreate) SetNillableDelFlag(v *int8) *SysRoleCreate {
+	if v != nil {
+		_c.SetDelFlag(*v)
+	}
+	return _c
+}
+
 // SetRoleName sets the "role_name" field.
 func (_c *SysRoleCreate) SetRoleName(v string) *SysRoleCreate {
 	_c.mutation.SetRoleName(v)
@@ -284,7 +298,9 @@ func (_c *SysRoleCreate) Mutation() *SysRoleMutation {
 
 // Save creates the SysRole in the database.
 func (_c *SysRoleCreate) Save(ctx context.Context) (*SysRole, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -311,7 +327,7 @@ func (_c *SysRoleCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *SysRoleCreate) defaults() {
+func (_c *SysRoleCreate) defaults() error {
 	if _, ok := _c.mutation.Sort(); !ok {
 		v := sysrole.DefaultSort
 		_c.mutation.SetSort(v)
@@ -321,17 +337,31 @@ func (_c *SysRoleCreate) defaults() {
 		_c.mutation.SetStatus(v)
 	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
+		if sysrole.DefaultCreatedAt == nil {
+			return fmt.Errorf("entcore: uninitialized sysrole.DefaultCreatedAt (forgotten import entcore/runtime?)")
+		}
 		v := sysrole.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		if sysrole.DefaultUpdatedAt == nil {
+			return fmt.Errorf("entcore: uninitialized sysrole.DefaultUpdatedAt (forgotten import entcore/runtime?)")
+		}
 		v := sysrole.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := _c.mutation.DelFlag(); !ok {
+		v := sysrole.DefaultDelFlag
+		_c.mutation.SetDelFlag(v)
+	}
 	if _, ok := _c.mutation.ID(); !ok {
+		if sysrole.DefaultID == nil {
+			return fmt.Errorf("entcore: uninitialized sysrole.DefaultID (forgotten import entcore/runtime?)")
+		}
 		v := sysrole.DefaultID()
 		_c.mutation.SetID(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -341,6 +371,9 @@ func (_c *SysRoleCreate) check() error {
 	}
 	if _, ok := _c.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`entcore: missing required field "SysRole.status"`)}
+	}
+	if _, ok := _c.mutation.DelFlag(); !ok {
+		return &ValidationError{Name: "del_flag", err: errors.New(`entcore: missing required field "SysRole.del_flag"`)}
 	}
 	if _, ok := _c.mutation.MenuCheckStrictly(); !ok {
 		return &ValidationError{Name: "menu_check_strictly", err: errors.New(`entcore: missing required field "SysRole.menu_check_strictly"`)}
@@ -418,6 +451,10 @@ func (_c *SysRoleCreate) createSpec() (*SysRole, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Remark(); ok {
 		_spec.SetField(sysrole.FieldRemark, field.TypeString, value)
 		_node.Remark = value
+	}
+	if value, ok := _c.mutation.DelFlag(); ok {
+		_spec.SetField(sysrole.FieldDelFlag, field.TypeInt8, value)
+		_node.DelFlag = value
 	}
 	if value, ok := _c.mutation.RoleName(); ok {
 		_spec.SetField(sysrole.FieldRoleName, field.TypeString, value)
