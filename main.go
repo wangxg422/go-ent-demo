@@ -7,6 +7,8 @@ import (
 	"go-ent-demo/ent/sysuser"
 	"log"
 
+	_ "go-ent-demo/ent/runtime"
+
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -30,7 +32,7 @@ func main() {
 	clientProd := NewClient()
 	defer clientProd.Close()
 	Migration(clientProd)
-	
+
 	client := clientProd.Debug()
 
 	ctx := context.Background()
